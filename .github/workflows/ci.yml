@@ -1,285 +1,123 @@
-# CONTRIBUTING.md  
-## Contribution Guidelines for Coldchain Freight Monte Carlo
-
----
-
-## Welcome
-
-Thank you for contributing to this research-grade distributed freight emissions modeling system.
-
-This repository implements a reproducible, mathematically rigorous Monte Carlo simulation with distributed aggregation. Contributions are welcome, but must preserve:
-
-- Mathematical correctness
-- Reproducibility
-- Transparency
-- Offline functionality
-- Aggregation integrity
-
----
-
-## Contribution Types
-
-You may contribute:
-
-- Code improvements
-- Performance optimizations
-- Test expansions
-- Documentation improvements
-- New scenario definitions
-- Input parameter updates (with citations)
-- Distributed Monte Carlo chunks
-- Cloud adapter enhancements (optional)
-
----
-
-## Before You Begin
-
-1. Clone the repository.
-2. Install dependencies:
-
-```r
-install.packages("renv")
-renv::restore()
-install.packages("targets")
-```
-
-3. Run full pipeline:
-
-```r
-targets::tar_make()
-```
-
-4. Ensure all tests pass:
-
-```r
-devtools::test()
-```
-
-No contribution will be accepted if tests fail.
-
----
-
-## Development Workflow
-
-### 1. Create a Branch
-
-Use descriptive branch names:
-
-```
-feature/histogram-optimization
-fix/variance-calculation
-docs/update-readme
-```
-
-Do not work directly on `main`.
-
----
-
-### 2. Make Changes Carefully
-
-You must not change:
-
-- System boundary
-- Functional unit
-- Core emissions equation structure
-- Histogram merge logic
-- Aggregation compatibility rules
-
-Unless explicitly coordinated and documented.
-
-See `AI_CONTRACT.md` for invariants.
-
----
-
-### 3. Add or Update Tests
-
-All logic changes must include:
-
-- New tests if behavior changes
-- Updated regression tests if outputs change intentionally
-
-Required categories:
-
-- Deterministic equation tests
-- Histogram merge invariance tests
-- Moment merge tests
-- Seed reproducibility tests
-
-Run tests locally before pushing.
-
----
-
-### 4. Run Full Pipeline
-
-After changes:
-
-```r
-targets::tar_make()
-```
-
-Confirm:
-- Outputs generate correctly
-- No unexpected output drift
-- No warnings related to reproducibility
-
----
-
-### 5. Submit Pull Request
-
-Pull request must include:
-
-- Clear description of change
-- Scientific or engineering justification
-- Confirmation tests pass
-- Confirmation invariants preserved
-- Statement of AI usage (if applicable)
-
-Example:
-
-```
-This PR optimizes histogram bin merging.
-No changes to model equations.
-All tests pass.
-Histogram invariance tests updated.
-AI-assisted refactor via Copilot.
-```
-
----
-
-## Contributing Monte Carlo Compute
-
-You may contribute distributed compute by running:
-
-```bash
-Rscript tools/run_chunk.R --scenario BASE --n 200000
-```
-
-This generates:
-
-- Local results
-- Contribution artifact (JSON)
-
-If you have aggregation permissions, upload via:
-
-```bash
---upload bigquery
-```
-
-Otherwise, submit artifact via PR into `contrib/incoming/`.
-
----
-
-## Input Updates
-
-If updating emission factors or scenario parameters:
-
-You must provide:
-
-- Citation (DOI, federal dataset, etc.)
-- Version information
-- Explanation of change
-- Updated `inputs_hash`
-
-You may not introduce uncited parameter values.
-
----
-
-## Snapshot Updates
-
-When refreshing authoritative sources:
-
-1. Use `tools/refresh_snapshot.R`
-2. Do not overwrite old snapshots
-3. Update `manifest.csv`
-4. Record SHA256
-5. Document changes in PR
-
----
-
-## Coding Standards
-
-- Use clear function names.
-- Document with roxygen-style comments.
-- Avoid magic numbers.
-- Avoid hidden state.
-- Avoid runtime network calls.
-- Maintain offline execution capability.
-
----
-
-## Cloud Integration Contributions
-
-Cloud adapters must:
-
-- Be optional
-- Fail gracefully if credentials missing
-- Not break local execution
-
-BigQuery schema changes require:
-- Versioning
-- Migration documentation
-
----
-
-## Regression Policy
-
-If outputs change:
-
-- Change must be intentional
-- Justification must be provided
-- Tests must be updated accordingly
-
-Unexplained output drift will be rejected.
-
----
-
-## Code Review Criteria
-
-Maintainers will evaluate contributions based on:
-
-1. Mathematical correctness
-2. Reproducibility
-3. Transparency
-4. Compatibility with distributed aggregation
-5. Test coverage
-6. Documentation clarity
-
----
-
-## Security and Credentials
-
-Never commit:
-
-- Service account JSON files
-- API keys
-- Personal credentials
-- .env files
-
-These are ignored via `.gitignore`.
-
----
-
-## Academic Integrity
-
-This repository supports graduate-level research.  
-All parameter updates must be traceable and defensible.
-
-AI tools may assist in development, but scientific responsibility remains with human contributors.
-
----
-
-## Questions?
-
-Open an Issue describing:
-
-- What you want to change
-- Why it improves the system
-- Any mathematical implications
-
----
-
-## Final Principle
-
-Preserve rigor.  
-Preserve reproducibility.  
-Preserve aggregation integrity.
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  r-ci:
+    runs-on: ubuntu-latest
+
+    env:
+      # Force offline-first behavior in CI
+      DISABLE_CLOUD_ADAPTERS: "1"
+      REFRESH_DATA: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---- JSON artifact schema validation (PRs only) ----
+      - name: Setup Node
+        if: github.event_name == 'pull_request'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate contribution artifacts (JSON Schema)
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ ! -f "schemas/chunk_artifact.schema.json" ]; then
+            echo "Schema file schemas/chunk_artifact.schema.json not found; failing."
+            exit 1
+          fi
+
+          if [ ! -d "contrib/incoming" ]; then
+            echo "No contrib/incoming directory; skipping schema validation."
+            exit 0
+          fi
+
+          shopt -s nullglob
+          files=(contrib/incoming/*.json)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No incoming JSON artifacts; skipping schema validation."
+            exit 0
+          fi
+
+          echo "Installing ajv-cli..."
+          npm install -g ajv-cli@5 ajv-formats@2
+
+          echo "Validating JSON artifacts against schema..."
+          for f in "${files[@]}"; do
+            echo "Validating: $f"
+            ajv validate \
+              -s schemas/chunk_artifact.schema.json \
+              -d "$f" \
+              --all-errors \
+              --verbose \
+              --spec=draft2020 \
+              --formats
+          done
+
+          echo "Schema validation passed."
+
+      # ---- R setup ----
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.3"
+
+      - name: Setup Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Install system dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+      # ---- Cache and restore renv ----
+      - name: Cache renv packages
+        uses: actions/cache@v4
+        with:
+          path: renv/library
+          key: ${{ runner.os }}-renv-${{ hashFiles('renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
+
+      - name: Restore renv
+        shell: bash
+        run: |
+          Rscript -e 'install.packages("renv", repos="https://cloud.r-project.org"); renv::restore(prompt = FALSE)'
+
+      # ---- Unit tests ----
+      - name: Run unit tests (testthat)
+        shell: bash
+        run: |
+          Rscript -e 'install.packages("testthat", repos="https://cloud.r-project.org"); testthat::test_dir("tests/testthat")'
+
+      # ---- Pipeline wiring smoke test ----
+      - name: Run targets pipeline (smoke test)
+        shell: bash
+        run: |
+          Rscript -e 'install.packages("targets", repos="https://cloud.r-project.org"); targets::tar_make(callr_function = NULL)'
+
+      # ---- Optional Quarto render (non-fatal) ----
+      - name: Render Quarto report (optional smoke render)
+        shell: bash
+        run: |
+          if [ -f "report/report.qmd" ]; then
+            echo "Attempting Quarto render..."
+            if command -v quarto >/dev/null 2>&1; then
+              quarto render report/report.qmd --to html
+            else
+              echo "Quarto CLI not found on runner; skipping render."
+            fi
+          else
+            echo "No report/report.qmd found; skipping render."
+          fi
