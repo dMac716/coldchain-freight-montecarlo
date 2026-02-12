@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/chunk_artifact.schema.json",
+  "title": "Chunk Contribution Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "run_group_id",
+    "model_version",
+    "inputs_hash",
+    "metric_definitions_hash",
+    "timestamp_utc",
+    "rng_kind",
+    "seed",
+    "n_chunk",
+    "metrics",
+    "integrity"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "UUID for this chunk run."
+    },
+    "run_group_id": {
+      "type": "string",
+      "description": "Identifier for the aggregation group (scenario + inputs + model version)."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Git commit SHA or release tag used to generate this artifact."
+    },
+    "inputs_hash": {
+      "type": "string",
+      "description": "Hash of fully resolved inputs used by this run."
+    },
+    "metric_definitions_hash": {
+      "type": "string",
+      "description": "Hash of metric definitions, names, and units."
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp for the run."
+    },
+    "host_fingerprint": {
+      "type": "string",
+      "description": "Optional anonymized machine fingerprint hash.",
+      "nullable": true
+    },
+    "rng_kind": {
+      "type": "string",
+      "description": "R RNG kind string recorded during the run."
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Seed used for this chunk."
+    },
+    "n_chunk": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of Monte Carlo samples in this chunk."
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gco2_dry", "gco2_reefer", "diff_gco2", "ratio"],
+      "properties": {
+        "gco2_dry": { "$ref": "#/$defs/metric_payload" },
+        "gco2_reefer": { "$ref": "#/$defs/metric_payload" },
+        "diff_gco2": { "$ref": "#/$defs/metric_payload" },
+        "ratio": { "$ref": "#/$defs/metric_payload" }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_sha256", "inputs_resolved_sha256"],
+      "properties": {
+        "artifact_sha256": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$",
+          "description": "SHA256 hash of the artifact file content."
+        },
+        "inputs_resolved_sha256": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$",
+          "description": "SHA256 hash of the resolved input table used for this run."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "metric_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n", "sum", "sum_sq", "min", "max", "histogram"],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sum": {
+          "type": "number"
+        },
+        "sum_sq": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "histogram": {
+          "$ref": "#/$defs/histogram_payload"
+        }
+      }
+    },
+    "histogram_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bin_edges", "bin_counts", "underflow", "overflow"],
+      "properties": {
+        "bin_edges": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "number" },
+          "description": "Length B+1 numeric vector of bin edges."
+        },
+        "bin_counts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 0 },
+          "description": "Length B integer vector of counts."
+        },
+        "underflow": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overflow": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "description": "Require length(bin_edges) = length(bin_counts) + 1",
+          "if": {
+            "properties": {
+              "bin_edges": { "type": "array" },
+              "bin_counts": { "type": "array" }
+            },
+            "required": ["bin_edges", "bin_counts"]
+          },
+          "then": {}
+        }
+      ]
+    }
+  }
+}
