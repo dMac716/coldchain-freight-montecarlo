@@ -13,6 +13,10 @@ jobs:
     
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
     
+    permissions:
+      contents: read
+      checks: write
+    
     strategy:
       fail-fast: false
       matrix:
@@ -52,6 +56,9 @@ jobs:
   test-coverage:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read
+    
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     
@@ -81,6 +88,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read
+    
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     
@@ -104,6 +114,9 @@ jobs:
   validate-offline:
     runs-on: ubuntu-latest
     name: Validate Offline Operation
+    
+    permissions:
+      contents: read
     
     steps:
       - uses: actions/checkout@v3
@@ -143,6 +156,9 @@ jobs:
   test-reproducibility:
     runs-on: ubuntu-latest
     name: Test Reproducibility
+    
+    permissions:
+      contents: read
     
     steps:
       - uses: actions/checkout@v3
@@ -185,6 +201,9 @@ jobs:
   validate-schema:
     runs-on: ubuntu-latest
     name: Validate JSON Schema
+    
+    permissions:
+      contents: read
     
     steps:
       - uses: actions/checkout@v3
