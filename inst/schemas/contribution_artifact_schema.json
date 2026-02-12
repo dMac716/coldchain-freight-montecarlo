@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://example.com/schemas/contribution-artifact.json",
+  "$id": "https://github.com/dMac716/coldchain-freight-montecarlo/schemas/contribution-artifact.json",
   "title": "Cold-Chain Freight Monte Carlo Contribution Artifact",
   "description": "Schema for Monte Carlo simulation contribution artifacts ensuring reproducibility and validation",
   "type": "object",
