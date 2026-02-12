@@ -1,0 +1,29 @@
+Package: coldchainfreight
+Title: Distributed Monte Carlo Simulation for Cold-Chain Freight Emissions
+Version: 0.1.0
+Authors@R: 
+    person("Author", "Name", , "author@example.com", role = c("aut", "cre"))
+Description: Research-grade implementation of distributed Monte Carlo 
+    simulation for comparing emissions from dry versus refrigerated freight 
+    transport. Features deterministic models, chunk-based sampling, mergeable 
+    histogram aggregation, exact moment merging, strict input validation, and 
+    comprehensive reproducibility logging. Designed for offline operation with 
+    no runtime API calls.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0),
+    quarto,
+    rmarkdown,
+    knitr
+Config/testthat/edition: 3
+Imports:
+    jsonlite,
+    digest,
+    targets,
+    tarchetypes
+Depends: 
+    R (>= 4.0.0)
+VignetteBuilder: knitr

@@ -1,0 +1,16 @@
+.Rprofile
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj.user/
+_targets/
+outputs/
+*.rds
+*.RDS
+renv/library/
+renv/local/
+renv/staging/
+*.log
+.DS_Store
+.httr-oauth
+.quarto

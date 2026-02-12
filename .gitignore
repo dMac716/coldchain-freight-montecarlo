@@ -47,3 +47,24 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# targets pipeline
+_targets/
+_targets.yaml
+
+# renv
+renv/library/
+renv/local/
+renv/staging/
+
+# Outputs
+outputs/
+*.rds
+*.RDS
+
+# Logs
+*.log
+reproducibility_log.json
+
+# macOS
+.DS_Store
