@@ -183,13 +183,13 @@ No cloud services are required.
 Run a chunk:
 
 ```bash
-Rscript tools/run_chunk.R --scenario BASE --n 200000
+Rscript tools/run_chunk.R --scenario SMOKE_LOCAL --n 200000
 ```
 
 Aggregate chunks:
 
 ```bash
-Rscript tools/aggregate.R --run_group BASE
+Rscript tools/aggregate.R --run_group SMOKE_LOCAL
 ```
 
 Quick offline smoke test:
@@ -204,6 +204,28 @@ Only chunks with identical:
 - metric_definitions_hash  
 
 will be merged.
+
+---
+
+## Inputs Status
+
+Available now:
+- `data/inputs_local/products.csv` populated from:
+  - Hill's Science Diet PDF (`3675 kcal/kg`, `365 kcal/cup`)
+  - Freshpet Vital PDF (`2375 kcal/kg`, `337 kcal/cup`, `56.7%` moisture)
+- `data/inputs_local/factors.csv` populated from SmartWay OLT 2025:
+  - `TL_Dry_Van` and `Refrigerated` `CO2 g/tmi`
+  - Optional `CO2 g/mi` and default payload values
+- Source traceability is recorded in `sources/sources_manifest.csv`.
+
+Still needed:
+- `data/inputs_local/scenarios.csv` `BASE` lane distance data remains missing and marked `MISSING_DISTANCE_DATA`.
+- `data/inputs_local/histogram_config.csv` remains `TO_CALIBRATE_AFTER_FIRST_REAL_RUN`.
+- Product packaging mass values for real products remain TBD.
+
+Citation policy:
+- Every ingested numeric input must include a `source_id` plus page/table reference.
+- Keep source metadata synchronized in `sources/sources_manifest.csv`.
 
 ---
 
