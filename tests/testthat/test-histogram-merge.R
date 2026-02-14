@@ -37,3 +37,11 @@ test_that("Moment merge: merged mean and variance match algebra", {
   expect_equal(m$mean, mu, tolerance = 1e-12)
   expect_equal(m$var, var_pop, tolerance = 1e-10)
 })
+
+test_that("Histogram merge rejects mismatched bin edges", {
+  if (!exists("merge_histograms")) skip("merge_histograms not implemented yet")
+
+  h1 <- make_histogram(c(1, 2, 3), bin_edges = c(0, 1, 2, 3, 4))
+  h2 <- make_histogram(c(1, 2, 3), bin_edges = c(0, 2, 4, 6, 8))
+  expect_error(merge_histograms(list(h1, h2)))
+})

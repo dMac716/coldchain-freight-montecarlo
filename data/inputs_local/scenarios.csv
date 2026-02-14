@@ -1,0 +1,2 @@
+scenario,product_name,FU_kcal,distance_miles,truck_g_per_ton_mile,reefer_extra_g_per_ton_mile,util_dry,util_reefer,placeholder_note
+BASE,BASE_PRODUCT,1000,1200,160,25,1.00,1.05,PLACEHOLDER_VALUES

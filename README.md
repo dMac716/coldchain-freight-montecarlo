@@ -192,6 +192,12 @@ Aggregate chunks:
 Rscript tools/aggregate.R --run_group BASE
 ```
 
+Quick offline smoke test:
+
+```bash
+bash tools/smoke_test.sh
+```
+
 Only chunks with identical:
 - model_version  
 - inputs_hash  

@@ -47,3 +47,14 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# renv
+renv/library/
+renv/staging/
+
+# targets
+_targets/
+
+# outputs and artifacts
+outputs/
+contrib/chunks/

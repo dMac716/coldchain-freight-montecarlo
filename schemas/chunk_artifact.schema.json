@@ -81,7 +81,7 @@
         "artifact_sha256": {
           "type": "string",
           "pattern": "^[A-Fa-f0-9]{64}$",
-          "description": "SHA256 hash of the artifact file content."
+          "description": "SHA256 hash of canonical JSON of the artifact with the top-level integrity object removed and object keys sorted recursively."
         },
         "inputs_resolved_sha256": {
           "type": "string",

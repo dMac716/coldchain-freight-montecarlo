@@ -14,7 +14,15 @@ fixture_inputs_small <- function() {
     truck_g_per_ton_mile = 160,
     reefer_extra_g_per_ton_mile = 25,
     util_dry = 1.00,
-    util_reefer = 1.05
+    util_reefer = 1.05,
+    # Synthetic sampling ranges for deterministic test variability
+    sampling = list(
+      distance_miles = list(min = 1000, mode = 1200, max = 1400),
+      truck_g_per_ton_mile = list(min = 140, mode = 160, max = 180),
+      reefer_extra_g_per_ton_mile = list(min = 15, mode = 25, max = 35),
+      util_dry = list(min = 0.95, mode = 1.00, max = 1.05),
+      util_reefer = list(min = 1.00, mode = 1.05, max = 1.10)
+    )
   )
 }
 

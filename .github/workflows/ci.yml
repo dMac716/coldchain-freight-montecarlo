@@ -101,6 +101,11 @@ jobs:
         run: |
           Rscript -e 'install.packages("testthat", repos="https://cloud.r-project.org"); testthat::test_dir("tests/testthat")'
 
+      - name: Run smoke test (chunk + aggregate)
+        shell: bash
+        run: |
+          bash tools/smoke_test.sh
+
       # ---- Pipeline wiring smoke test ----
       - name: Run targets pipeline (smoke test)
         shell: bash

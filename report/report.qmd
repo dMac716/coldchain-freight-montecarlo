@@ -1,0 +1,54 @@
+---
+title: "Freight Emissions Monte Carlo Summary"
+format: html
+---
+
+```{r}
+#| echo: false
+options(stringsAsFactors = FALSE)
+```
+
+## Problem Statement
+
+This report summarizes a distributed Monte Carlo simulation of freight emissions for dry vs refrigerated distribution.
+The system boundary is **Manufacturing → Retail Transportation** and the functional unit is **1,000 kcal delivered to retail**.
+
+## Methods
+
+Deterministic emissions per functional unit:
+
+```
+Emissions_gCO2 = (Mass_per_FU_kg / 907.185) * Distance_miles *
+  (Truck_EF + Reefer_Penalty) * Utilization_Factor
+```
+
+Uncertainty is propagated via Monte Carlo sampling, and aggregation uses exact moment merging plus mergeable histograms.
+
+## Assumptions
+
+```{r}
+assumptions_path <- "data/inputs_local/assumptions_used.csv"
+assumptions <- if (file.exists(assumptions_path)) read.csv(assumptions_path) else data.frame()
+assumptions
+```
+
+## Results
+
+```{r}
+agg_path <- "outputs/aggregate/results_summary.csv"
+local_path <- "outputs/local/results_summary.csv"
+
+results_path <- if (file.exists(agg_path)) agg_path else local_path
+results <- if (file.exists(results_path)) read.csv(results_path) else data.frame()
+results
+```
+
+```{r}
+# Plot histogram if aggregate hist exists
+hist_path <- "outputs/aggregate/hist_diff_gco2.csv"
+if (file.exists(hist_path)) {
+  h <- read.csv(hist_path)
+  mids <- (h$bin_left + h$bin_right) / 2
+  plot(mids, h$count, type = "h", main = "diff_gco2 Histogram", xlab = "gCO2", ylab = "Count")
+}
+```
