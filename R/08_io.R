@@ -50,6 +50,11 @@ artifact_canonical_sha256 <- function(artifact_obj) {
   sha256_text(artifact_canonical_json(artifact_obj))
 }
 
+artifact_canonical_sha256_from_file <- function(path_json) {
+  artifact_obj <- jsonlite::fromJSON(path_json, simplifyVector = FALSE)
+  artifact_canonical_sha256(artifact_obj)
+}
+
 resolve_inputs <- function(scenario_row, product_row) {
   list(
     FU_kcal = scenario_row$FU_kcal,

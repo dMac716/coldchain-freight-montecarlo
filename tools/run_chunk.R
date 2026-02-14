@@ -95,10 +95,17 @@ write.csv(resolved_rows, inputs_resolved_path, row.names = FALSE)
 inputs_hash <- sha256_file(inputs_resolved_path)
 metric_definitions_hash <- sha256_file(file.path("data/inputs_local", "histogram_config.csv"))
 
-model_version <- "unknown"
-try({
-  model_version <- trimws(system("git rev-parse --short HEAD", intern = TRUE))
-}, silent = TRUE)
+model_version <- "nogit"
+git_bin <- Sys.which("git")
+if (nzchar(git_bin) && dir.exists(".git")) {
+  git_out <- tryCatch(
+    suppressWarnings(system2(git_bin, c("rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)),
+    error = function(e) character()
+  )
+  if (length(git_out) > 0 && nzchar(git_out[[1]])) {
+    model_version <- trimws(git_out[[1]])
+  }
+}
 
 run_group_id <- opt$scenario
 run_id <- paste0(
@@ -137,15 +144,18 @@ artifact <- list(
   n_chunk = opt$n,
   metrics = metrics_payload,
   integrity = list(
-    artifact_sha256 = "",
+    artifact_sha256 = paste(rep("0", 64), collapse = ""),
     inputs_resolved_sha256 = inputs_hash
   )
 )
 
-artifact$integrity$artifact_sha256 <- artifact_canonical_sha256(artifact)
-
 if (!dir.exists("contrib/chunks")) dir.create("contrib/chunks", recursive = TRUE)
 artifact_path <- file.path("contrib/chunks", paste0("chunk_", run_group_id, "_", run_id, ".json"))
 writeLines(jsonlite::toJSON(artifact, auto_unbox = TRUE, pretty = TRUE), artifact_path)
+
+artifact_sha <- artifact_canonical_sha256_from_file(artifact_path)
+artifact_roundtrip <- jsonlite::fromJSON(artifact_path, simplifyVector = FALSE)
+artifact_roundtrip$integrity$artifact_sha256 <- artifact_sha
+writeLines(jsonlite::toJSON(artifact_roundtrip, auto_unbox = TRUE, pretty = TRUE), artifact_path)
 
 message("Chunk written: ", artifact_path)

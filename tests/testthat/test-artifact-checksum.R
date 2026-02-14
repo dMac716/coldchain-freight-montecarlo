@@ -33,6 +33,7 @@ test_that("Artifact validator enforces canonical checksum semantics", {
   if (!exists("run_monte_carlo_chunk")) skip("run_monte_carlo_chunk not implemented yet")
   if (!exists("validate_artifact_schema_local")) skip("validate_artifact_schema_local not implemented yet")
   if (!exists("artifact_canonical_sha256")) skip("artifact_canonical_sha256 not implemented yet")
+  if (!exists("artifact_canonical_sha256_from_file")) skip("artifact_canonical_sha256_from_file not implemented yet")
 
   x <- fixture_inputs_small()
   h <- fixture_hist_config()
@@ -68,18 +69,29 @@ test_that("Artifact validator enforces canonical checksum semantics", {
     n_chunk = 100L,
     metrics = metrics_payload,
     integrity = list(
-      artifact_sha256 = "",
+      artifact_sha256 = paste(rep("0", 64), collapse = ""),
       inputs_resolved_sha256 = paste(rep("c", 64), collapse = "")
     )
   )
-  artifact$integrity$artifact_sha256 <- artifact_canonical_sha256(artifact)
 
   path <- file.path(tempdir(), "artifact_checksum_ok.json")
   writeLines(jsonlite::toJSON(artifact, auto_unbox = TRUE, pretty = TRUE), path)
+
+  # Simulate run_chunk flow: write placeholder, hash round-tripped payload, rewrite integrity only.
+  sha <- artifact_canonical_sha256_from_file(path)
+  artifact_rt <- jsonlite::fromJSON(path, simplifyVector = FALSE)
+  artifact_rt$integrity$artifact_sha256 <- sha
+  writeLines(jsonlite::toJSON(artifact_rt, auto_unbox = TRUE, pretty = TRUE), path)
   expect_silent(validate_artifact_schema_local(path))
 
-  artifact$metrics$ratio$sum <- artifact$metrics$ratio$sum + 1
+  # Read/write round trip should remain valid with same checksum semantics.
+  roundtrip_path <- file.path(tempdir(), "artifact_checksum_roundtrip.json")
+  artifact_rt2 <- jsonlite::fromJSON(path, simplifyVector = FALSE)
+  writeLines(jsonlite::toJSON(artifact_rt2, auto_unbox = TRUE, pretty = TRUE), roundtrip_path)
+  expect_silent(validate_artifact_schema_local(roundtrip_path))
+
+  artifact_rt$metrics$ratio$sum <- artifact_rt$metrics$ratio$sum + 1
   path_bad <- file.path(tempdir(), "artifact_checksum_bad.json")
-  writeLines(jsonlite::toJSON(artifact, auto_unbox = TRUE, pretty = TRUE), path_bad)
+  writeLines(jsonlite::toJSON(artifact_rt, auto_unbox = TRUE, pretty = TRUE), path_bad)
   expect_error(validate_artifact_schema_local(path_bad), "checksum mismatch")
 })
