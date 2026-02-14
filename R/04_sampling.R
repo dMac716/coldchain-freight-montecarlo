@@ -23,8 +23,10 @@ sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
 
   if (!is.null(seed)) set.seed(seed)
 
+  has_scenario <- !is.null(scenario_row) && !is.null(names(scenario_row))
+
   base_value <- function(name) {
-    if (!is.null(scenario_row) && name %in% names(scenario_row)) {
+    if (has_scenario && name %in% names(scenario_row)) {
       val <- scenario_row[[name]]
       if (!is.na(val)) return(val)
     }
@@ -33,29 +35,34 @@ sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
   }
 
   factors_lookup <- NULL
-  if (!is.null(factors_table)) {
+  if (!is.null(factors_table) &&
+      all(c("name", "dist", "min", "mode", "max") %in% names(factors_table))) {
     factors_lookup <- split(factors_table, factors_table$name)
   }
 
   sampling <- inputs$sampling
+  sampling_names <- if (is.null(sampling)) character() else names(sampling)
+  factor_names <- if (is.null(factors_lookup)) character() else names(factors_lookup)
 
-  out <- list()
-  for (nm in required) {
+  out <- vector("list", length(required))
+  names(out) <- required
+  for (i in seq_along(required)) {
+    nm <- required[[i]]
     sampled <- FALSE
-    if (!is.null(factors_lookup) && nm %in% names(factors_lookup)) {
+    if (nm %in% factor_names) {
       row <- factors_lookup[[nm]][1, , drop = FALSE]
       if (row$dist[1] == "triangular") {
-        out[[nm]] <- rtri(n, row$min[1], row$mode[1], row$max[1])
+        out[[i]] <- rtri(n, row$min[1], row$mode[1], row$max[1])
         sampled <- TRUE
       }
     }
-    if (!sampled && !is.null(sampling) && nm %in% names(sampling)) {
+    if (!sampled && nm %in% sampling_names) {
       tri <- sampling[[nm]]
-      out[[nm]] <- rtri(n, tri$min, tri$mode, tri$max)
+      out[[i]] <- rtri(n, tri$min, tri$mode, tri$max)
       sampled <- TRUE
     }
     if (!sampled) {
-      out[[nm]] <- rep(base_value(nm), n)
+      out[[i]] <- rep(base_value(nm), n)
     }
   }
 

@@ -3,7 +3,7 @@ metric_moments <- function(x) {
   n <- length(x)
   if (n == 0) stop("metric_moments requires at least one finite value.")
   sum_ <- sum(x)
-  sum_sq <- sum(x^2)
+  sum_sq <- as.numeric(crossprod(x))
   min_ <- min(x)
   max_ <- max(x)
   mean_ <- sum_ / n
@@ -27,7 +27,8 @@ run_monte_carlo_chunk <- function(inputs, hist_config, n, seed) {
   if (!is.null(seed)) set.seed(seed)
   rng_kind <- paste(RNGkind(), collapse = ",")
 
-  samples <- sample_inputs(inputs = inputs, scenario_row = NULL, factors_table = NULL, n = n, seed = seed)
+  # RNG is initialized once above; avoid reseeding inside the sampling helper.
+  samples <- sample_inputs(inputs = inputs, scenario_row = NULL, factors_table = NULL, n = n, seed = NULL)
 
   mass_dry <- mass_per_fu_kg(samples$FU_kcal, samples$kcal_per_kg_dry, samples$pkg_kg_per_kg_dry)
   mass_reefer <- mass_per_fu_kg(samples$FU_kcal, samples$kcal_per_kg_reefer, samples$pkg_kg_per_kg_reefer)
