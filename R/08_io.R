@@ -71,6 +71,12 @@ resolve_inputs <- function(scenario_row, product_row) {
 }
 
 build_sampling_from_factors <- function(factors_table, scenario_name = NULL) {
+  # Current factor tables may be direct sourced values (no triangular ranges).
+  required_cols <- c("name", "dist", "min", "mode", "max")
+  if (!all(required_cols %in% names(factors_table))) {
+    return(list())
+  }
+
   if (!is.null(scenario_name) && "scenario" %in% names(factors_table)) {
     factors_table <- subset(factors_table, is.na(scenario) | scenario == scenario_name)
   }

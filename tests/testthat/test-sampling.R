@@ -23,3 +23,9 @@ test_that("Monte Carlo: different seeds should differ (usually)", {
 
   expect_false(isTRUE(all.equal(out1$stats$diff_gco2$mean, out2$stats$diff_gco2$mean)))
 })
+
+test_that("Monte Carlo: rejects invalid n", {
+  x <- fixture_inputs_small()
+  h <- fixture_hist_config()
+  expect_error(run_monte_carlo_chunk(inputs = x, hist_config = h, n = 0, seed = 1))
+})

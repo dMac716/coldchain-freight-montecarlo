@@ -23,6 +23,10 @@ metric_moments <- function(x) {
 run_monte_carlo_chunk <- function(inputs, hist_config, n, seed) {
   validate_inputs(inputs)
   validate_hist_config(hist_config)
+  if (!is.numeric(n) || length(n) != 1 || !is.finite(n) || n < 1) {
+    stop("n must be a finite numeric scalar >= 1.")
+  }
+  n <- as.integer(n)
 
   if (!is.null(seed)) set.seed(seed)
   rng_kind <- paste(RNGkind(), collapse = ",")

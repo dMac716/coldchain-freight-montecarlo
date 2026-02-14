@@ -11,6 +11,11 @@ rtri <- function(n, min, mode, max) {
 }
 
 sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
+  if (!is.numeric(n) || length(n) != 1 || !is.finite(n) || n < 1) {
+    stop("n must be a finite numeric scalar >= 1.")
+  }
+  n <- as.integer(n)
+
   required <- c(
     "FU_kcal",
     "kcal_per_kg_dry", "kcal_per_kg_reefer",

@@ -65,13 +65,8 @@ run_metadata <- list(
 writeLines(jsonlite::toJSON(run_metadata, auto_unbox = TRUE, pretty = TRUE),
            file.path(opt$outdir, "run_metadata.json"))
 
-# Build resolved inputs table for hashing
-resolved_rows <- data.frame(
-  name = character(),
-  value = numeric(),
-  kind = character(),
-  stringsAsFactors = FALSE
-)
+# Build resolved inputs table for hashing.
+resolved_parts <- list()
 base_fields <- c(
   "FU_kcal", "kcal_per_kg_dry", "kcal_per_kg_reefer",
   "pkg_kg_per_kg_dry", "pkg_kg_per_kg_reefer",
@@ -79,16 +74,37 @@ base_fields <- c(
   "util_dry", "util_reefer"
 )
 for (nm in base_fields) {
-  resolved_rows <- rbind(resolved_rows, data.frame(name = nm, value = inputs_list[[nm]], kind = "base"))
+  resolved_parts[[length(resolved_parts) + 1]] <- data.frame(
+    name = nm,
+    value = inputs_list[[nm]],
+    kind = "base",
+    stringsAsFactors = FALSE
+  )
 }
 if (length(inputs_list$sampling) > 0) {
   for (nm in names(inputs_list$sampling)) {
     tri <- inputs_list$sampling[[nm]]
-    resolved_rows <- rbind(resolved_rows, data.frame(name = paste0(nm, "_min"), value = tri$min, kind = "sampling"))
-    resolved_rows <- rbind(resolved_rows, data.frame(name = paste0(nm, "_mode"), value = tri$mode, kind = "sampling"))
-    resolved_rows <- rbind(resolved_rows, data.frame(name = paste0(nm, "_max"), value = tri$max, kind = "sampling"))
+    resolved_parts[[length(resolved_parts) + 1]] <- data.frame(
+      name = paste0(nm, "_min"),
+      value = tri$min,
+      kind = "sampling",
+      stringsAsFactors = FALSE
+    )
+    resolved_parts[[length(resolved_parts) + 1]] <- data.frame(
+      name = paste0(nm, "_mode"),
+      value = tri$mode,
+      kind = "sampling",
+      stringsAsFactors = FALSE
+    )
+    resolved_parts[[length(resolved_parts) + 1]] <- data.frame(
+      name = paste0(nm, "_max"),
+      value = tri$max,
+      kind = "sampling",
+      stringsAsFactors = FALSE
+    )
   }
 }
+resolved_rows <- do.call(rbind, resolved_parts)
 inputs_resolved_path <- file.path(opt$outdir, "inputs_resolved.csv")
 write.csv(resolved_rows, inputs_resolved_path, row.names = FALSE)
 

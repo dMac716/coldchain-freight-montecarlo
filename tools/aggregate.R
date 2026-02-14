@@ -92,20 +92,13 @@ prob_gt_zero <- function(hist) {
   prob / n_total
 }
 
-summary_rows <- data.frame(
-  metric = character(),
-  mean = numeric(),
-  var = numeric(),
-  p05 = numeric(),
-  p50 = numeric(),
-  p95 = numeric(),
-  stringsAsFactors = FALSE
-)
+summary_parts <- vector("list", length(metric_names) + 1L)
 
-for (nm in metric_names) {
+for (i in seq_along(metric_names)) {
+  nm <- metric_names[[i]]
   s <- merged$stats[[nm]]
   hs <- hist_summary(merged$hist[[nm]])
-  summary_rows <- rbind(summary_rows, data.frame(
+  summary_parts[[i]] <- data.frame(
     metric = nm,
     mean = s$mean,
     var = s$var,
@@ -113,12 +106,12 @@ for (nm in metric_names) {
     p50 = hs$p50,
     p95 = hs$p95,
     stringsAsFactors = FALSE
-  ))
+  )
 }
 
 # Add probability diff_gco2 > 0
 p_diff_gt_zero <- prob_gt_zero(merged$hist$diff_gco2)
-summary_rows <- rbind(summary_rows, data.frame(
+summary_parts[[length(summary_parts)]] <- data.frame(
   metric = "diff_gco2_gt_zero",
   mean = p_diff_gt_zero,
   var = NA_real_,
@@ -126,7 +119,8 @@ summary_rows <- rbind(summary_rows, data.frame(
   p50 = NA_real_,
   p95 = NA_real_,
   stringsAsFactors = FALSE
-))
+)
+summary_rows <- do.call(rbind, summary_parts)
 
 outdir <- file.path("outputs", "aggregate")
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)

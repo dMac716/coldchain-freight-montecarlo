@@ -178,6 +178,14 @@ No cloud services are required.
 
 ---
 
+## Performance Tips
+
+- Use multiple chunks in parallel across machines and aggregate artifacts with `tools/aggregate.R`.
+- Keep chunk size large enough to amortize startup overhead (for local dev, `n=50k+` is typically efficient).
+- Use `SMOKE_LOCAL` for quick wiring checks and reserve `BASE` for calibrated runs once distance inputs are complete.
+
+---
+
 ## Contributing Compute
 
 Run a chunk:
@@ -204,6 +212,26 @@ Only chunks with identical:
 - metric_definitions_hash  
 
 will be merged.
+
+---
+
+## Testing
+
+Run full tests:
+
+```bash
+Rscript -e 'testthat::test_dir("tests/testthat")'
+```
+
+Run end-to-end smoke:
+
+```bash
+bash tools/smoke_test.sh
+```
+
+Notes:
+- One golden test remains intentionally skipped until deterministic golden baselines are finalized.
+- Input placeholder policy is enforced: products/factors must be sourced, scenarios/histogram may remain explicit pending rows.
 
 ---
 
