@@ -1,2 +1,5 @@
-product_name,kcal_per_kg_dry,kcal_per_kg_reefer,pkg_kg_per_kg_dry,pkg_kg_per_kg_reefer,placeholder_note
-BASE_PRODUCT,3500,1300,0.05,0.12,PLACEHOLDER_VALUES
+product_name,kcal_per_kg_dry,kcal_per_kg_reefer,pkg_kg_per_kg_dry,pkg_kg_per_kg_reefer,kcal_per_kg,kcal_per_cup,moisture_pct_as_fed,source_id,source_page,status,notes
+BASE_PRODUCT,3675,2375,,,,,,HILLS_SCIENCE_DIET_2026;FRESHPET_VITAL_2026,p5; p2-p3,PACKAGING_MASS_TBD,Dry kcal from Hill's and reefer kcal from Freshpet; packaging mass remains to be sourced.
+HILLS_SCIENCE_DIET_ADULT_LARGE_BREED,3675,,,,3675,365,,HILLS_SCIENCE_DIET_2026,p5,SOURCED_FROM_PDF,Manufacturer reported caloric density and kcal per cup.
+FRESHPET_VITAL_LARGE_BREED,,2375,,,2375,337,56.7,FRESHPET_VITAL_2026,p2-p3,SOURCED_FROM_PDF,Manufacturer reported ME kcal density and moisture from product sheet.
+SMOKE_PRODUCT,3675,2375,0.05,0.12,,,,DERIVED_SMOKE,internal,SMOKE_ONLY,Synthetic packaging values retained only for smoke/pipeline execution.

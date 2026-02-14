@@ -14,7 +14,7 @@ list(
   ),
   tar_target(
     scenario_row,
-    subset(inputs_raw$scenarios, scenario == "BASE")[1, , drop = FALSE]
+    subset(inputs_raw$scenarios, scenario == "SMOKE_LOCAL")[1, , drop = FALSE]
   ),
   tar_target(
     product_row,
@@ -24,7 +24,7 @@ list(
     inputs_list,
     {
       x <- resolve_inputs(scenario_row, product_row)
-      x$sampling <- build_sampling_from_factors(inputs_raw$factors, scenario_name = "BASE")
+      x$sampling <- build_sampling_from_factors(inputs_raw$factors, scenario_name = "SMOKE_LOCAL")
       x
     }
   ),

@@ -9,7 +9,7 @@ source_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
 for (f in source_files) source(f, local = FALSE)
 
 option_list <- list(
-  make_option(c("--scenario"), type = "character", default = "BASE", help = "Scenario name"),
+  make_option(c("--scenario"), type = "character", default = "SMOKE_LOCAL", help = "Scenario name"),
   make_option(c("--n"), type = "integer", default = 5000L, help = "Number of samples"),
   make_option(c("--seed"), type = "integer", default = 123L, help = "Seed"),
   make_option(c("--outdir"), type = "character", default = "outputs/local", help = "Output directory")

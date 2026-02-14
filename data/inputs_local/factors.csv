@@ -1,6 +1,3 @@
-name,dist,min,mode,max,scenario,placeholder_note
-distance_miles,triangular,1000,1200,1400,,PLACEHOLDER_VALUES
-truck_g_per_ton_mile,triangular,140,160,180,,PLACEHOLDER_VALUES
-reefer_extra_g_per_ton_mile,triangular,15,25,35,,PLACEHOLDER_VALUES
-util_dry,triangular,0.95,1.00,1.05,,PLACEHOLDER_VALUES
-util_reefer,triangular,1.00,1.05,1.10,,PLACEHOLDER_VALUES
+mode_category,co2_g_per_ton_mile,co2_g_per_mile,default_payload_tons,source_id,source_page,notes
+TL_Dry_Van,105,1784,16.35,SMARTWAY_OLT_2025,p13 Table 3; p14 Table 4,Non-SmartWay truck category values from 2025 OLT technical documentation (Data Year 2024).
+Refrigerated,109,2066,17.60,SMARTWAY_OLT_2025,p13 Table 3; p14 Table 4,Non-SmartWay truck category values from 2025 OLT technical documentation (Data Year 2024).
