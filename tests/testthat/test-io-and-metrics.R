@@ -20,6 +20,12 @@ test_that("scenarios marked OK have valid distance ids", {
   expect_silent(assert_scenarios_distance_linkage(scenarios, dists))
 })
 
+test_that("SMOKE_LOCAL resolves BEV variant without fallback warnings", {
+  inputs <- read_inputs_local(file.path("..", "..", "data", "inputs_local"))
+  bev <- select_variant_rows(inputs, "CENTRALIZED_BEV_DRY")[1, , drop = FALSE]
+  expect_silent(resolve_variant_inputs(inputs, bev, mode = "SMOKE_LOCAL"))
+})
+
 test_that("metric moments are internally consistent", {
   x <- fixture_inputs_small()
   h <- fixture_hist_config()

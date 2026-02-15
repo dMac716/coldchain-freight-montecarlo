@@ -107,5 +107,55 @@ sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
     }
   }
 
+  if (!is.null(inputs$intensity_context)) {
+    ctx <- inputs$intensity_context
+
+    sample_extra <- function(name, fallback = NA_real_) {
+      if (!is.null(sampling) && name %in% names(sampling)) {
+        return(draw_from_prior(n, sampling[[name]]))
+      }
+      rep(fallback, n)
+    }
+
+    payload <- sample_extra("default_payload_tons", ctx$default_payload_tons)
+    payload[!is.finite(payload) | payload <= 0] <- ctx$default_payload_tons
+
+    grid_ci <- sample_extra("grid_co2_g_per_kwh", ctx$grid_co2_g_per_kwh)
+    grid_ci[!is.finite(grid_ci)] <- ctx$grid_co2_g_per_kwh
+
+    kwh_tract <- sample_extra("kwh_per_mile_tract", ctx$kwh_per_mile_tract)
+    kwh_tru <- sample_extra("kwh_per_mile_tru", ctx$kwh_per_mile_tru)
+
+    if (all(!is.finite(kwh_tru)) && !is.null(sampling) &&
+        ("tru_power_kw" %in% names(sampling)) && ("linehaul_speed_mph" %in% names(sampling))) {
+      tru_kw <- draw_from_prior(n, sampling[["tru_power_kw"]])
+      speed <- draw_from_prior(n, sampling[["linehaul_speed_mph"]])
+      kwh_tru <- tru_kw / speed
+    }
+
+    if (isTRUE(ctx$powertrain == "bev")) {
+      kwh_tru[!is.finite(kwh_tru)] <- 0
+      if (!isTRUE(ctx$refrigeration_mode == "electric_tru")) {
+        kwh_tru[] <- 0
+      }
+
+      tractor_g <- (kwh_tract * grid_ci) / payload
+      tru_g <- (kwh_tru * grid_ci) / payload
+
+      ok <- is.finite(tractor_g) & (tractor_g >= 0)
+      out$truck_g_per_ton_mile[ok] <- tractor_g[ok]
+      ok_tru <- is.finite(tru_g) & (tru_g >= 0)
+      out$reefer_extra_g_per_ton_mile[ok_tru] <- tru_g[ok_tru]
+    }
+
+    if (isTRUE(ctx$powertrain == "diesel") && isTRUE(ctx$refrigeration_mode == "electric_tru")) {
+      kwh_tru[!is.finite(kwh_tru)] <- 0
+      tru_g <- (kwh_tru * grid_ci) / payload
+      out$truck_g_per_ton_mile <- rep(ctx$diesel_truck_g_per_ton_mile, n)
+      ok_tru <- is.finite(tru_g) & (tru_g >= 0)
+      out$reefer_extra_g_per_ton_mile[ok_tru] <- tru_g[ok_tru]
+    }
+  }
+
   as.data.frame(out, stringsAsFactors = FALSE)
 }

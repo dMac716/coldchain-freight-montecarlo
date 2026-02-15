@@ -79,7 +79,7 @@ validate_hist_config <- function(hist_config) {
 
 validate_sampling_priors <- function(priors_df) {
   if (nrow(priors_df) == 0) return(invisible(TRUE))
-  required <- c("param_id", "distribution", "p1", "p2", "p3", "units", "applies_to", "source_id", "source_page", "notes")
+  required <- c("param_id", "distribution", "p1", "p2", "p3", "units", "applies_to", "source_id", "source_page", "status", "notes")
   missing <- setdiff(required, names(priors_df))
   if (length(missing) > 0) stop("sampling_priors.csv missing columns: ", paste(missing, collapse = ", "))
 
@@ -218,24 +218,33 @@ assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scen
   }
 
   if (!is.null(variant_row)) {
-    if ("status" %in% names(variant_row) && any(grepl("MISSING", variant_row$status, fixed = TRUE))) {
-      stop("REAL_RUN gate failed: scenario_matrix variant status indicates missing data.")
+    if ("status" %in% names(variant_row) &&
+        any(variant_row$status %in% c("NEEDS_SOURCE_VALUE", "MISSING_DATA", "MISSING_BEV_INTENSITY"), na.rm = TRUE)) {
+      stop("REAL_RUN gate failed: scenario_matrix variant status indicates unresolved source values.")
     }
 
-    if (identical(variant_row$powertrain[[1]], "bev") && !is.null(inputs) && nrow(inputs$emissions_factors) > 0) {
+    if (!is.null(inputs) && nrow(inputs$emissions_factors) > 0) {
       ef <- subset(
         inputs$emissions_factors,
         powertrain == variant_row$powertrain[[1]] &
           trailer_type == variant_row$trailer_type[[1]] &
           refrigeration_mode == variant_row$refrigeration_mode[[1]]
       )
-      if (nrow(ef) == 0 || ("status" %in% names(ef) && any(ef$status == "MISSING_BEV_INTENSITY", na.rm = TRUE))) {
-        stop("REAL_RUN gate failed: BEV intensity missing for requested variant.")
+      if (nrow(ef) == 0) {
+        stop("REAL_RUN gate failed: emissions_factors row not found for requested variant.")
+      }
+      if ("status" %in% names(ef) &&
+          any(ef$status %in% c("NEEDS_SOURCE_VALUE", "MISSING_DATA", "MISSING_BEV_INTENSITY"), na.rm = TRUE)) {
+        stop("REAL_RUN gate failed: emissions_factors contains unresolved source values for requested variant.")
       }
     }
 
     if (!is.null(priors_map)) {
       assert_required_priors_present(priors_map, required_model_param_ids())
+      statuses <- vapply(priors_map, function(p) if (!is.null(p$status)) p$status else "OK", character(1))
+      if (any(statuses %in% c("NEEDS_SOURCE_VALUE", "MISSING_DATA"), na.rm = TRUE)) {
+        stop("REAL_RUN gate failed: sampling_priors contains NEEDS_SOURCE_VALUE for requested variant.")
+      }
     }
   }
 

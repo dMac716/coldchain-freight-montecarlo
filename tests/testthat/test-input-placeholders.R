@@ -4,6 +4,12 @@ test_that("products and emissions factors contain no placeholder markers", {
 
   expect_false(any(grepl("PLACEHOLDER", unlist(products), fixed = TRUE)))
   expect_false(any(grepl("PLACEHOLDER", unlist(emissions), fixed = TRUE)))
+  expect_false(any(grepl("MISSING_", emissions$status, fixed = TRUE)))
+})
+
+test_that("scenario matrix contains no MISSING statuses", {
+  matrix <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "scenario_matrix.csv"), stringsAsFactors = FALSE)
+  expect_false(any(grepl("MISSING_", matrix$status, fixed = TRUE)))
 })
 
 test_that("products schema includes required locked-scope columns", {

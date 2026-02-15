@@ -8,6 +8,8 @@ read_inputs_local <- function(dir = "data/inputs_local") {
     utils::read.csv(path, stringsAsFactors = FALSE)
   }
 
+  derived_file <- file.path(dirname(dir), "derived", "faf_distance_distributions.csv")
+
   list(
     products = read_csv_required(file.path(dir, "products.csv")),
     scenarios = read_csv_required(file.path(dir, "scenarios.csv")),
@@ -17,7 +19,7 @@ read_inputs_local <- function(dir = "data/inputs_local") {
     emissions_factors = read_csv_optional(file.path(dir, "emissions_factors.csv")),
     sampling_priors = read_csv_optional(file.path(dir, "sampling_priors.csv")),
     scenario_matrix = read_csv_optional(file.path(dir, "scenario_matrix.csv")),
-    distance_distributions = read_csv_optional(file.path("data", "derived", "faf_distance_distributions.csv"))
+    distance_distributions = read_csv_optional(derived_file)
   )
 }
 
@@ -119,6 +121,16 @@ wildcard_match <- function(value, pattern) {
   grepl(rx, value, ignore.case = TRUE)
 }
 
+prior_point_estimate <- function(spec) {
+  if (is.null(spec) || is.null(spec$distribution)) return(NA_real_)
+  dist <- tolower(spec$distribution)
+  if (dist == "fixed") return(spec$p1)
+  if (dist == "triangular") return(spec$p2)
+  if (dist == "normal") return(spec$p1)
+  if (dist == "lognormal") return(exp(spec$p1))
+  NA_real_
+}
+
 select_variant_rows <- function(inputs, selector) {
   matrix <- inputs$scenario_matrix
   if (nrow(matrix) == 0) {
@@ -150,6 +162,8 @@ resolve_sampling_priors <- function(priors_df, variant_row) {
     variant_row$variant_id,
     variant_row$scenario_id,
     toupper(variant_row$powertrain),
+    toupper(variant_row$refrigeration_mode),
+    toupper(variant_row$trailer_type),
     paste0(toupper(variant_row$powertrain), "_CASE"),
     variant_row$run_group,
     "*"
@@ -192,7 +206,8 @@ build_sampling_from_priors <- function(priors_df, variant_row = NULL) {
       p2 = suppressWarnings(as.numeric(row$p2[[1]])),
       p3 = suppressWarnings(as.numeric(row$p3[[1]])),
       source_id = if ("source_id" %in% names(row)) row$source_id[[1]] else NA_character_,
-      source_page = if ("source_page" %in% names(row)) row$source_page[[1]] else NA_character_
+      source_page = if ("source_page" %in% names(row)) row$source_page[[1]] else NA_character_,
+      status = if ("status" %in% names(row)) row$status[[1]] else "OK"
     )
   }
   sampling
@@ -234,14 +249,6 @@ resolve_variant_inputs <- function(inputs, variant_row, mode = "SMOKE_LOCAL") {
       refrigeration_mode == variant_row$refrigeration_mode
   )
   if (nrow(factor_row) > 0) factor_row <- factor_row[1, , drop = FALSE]
-  if (nrow(factor_row) == 0 && normalize_run_mode(mode) == "SMOKE_LOCAL") {
-    warning(
-      "SMOKE_LOCAL fallback: no emissions_factors row for variant ",
-      variant_row$variant_id[[1]],
-      "; using conservative defaults.",
-      call. = FALSE
-    )
-  }
 
   dry_factor_row <- subset(
     ef,
@@ -253,98 +260,132 @@ resolve_variant_inputs <- function(inputs, variant_row, mode = "SMOKE_LOCAL") {
 
   dist_row <- subset(inputs$distance_distributions, distance_distribution_id == scenario_row$distance_distribution_id)
   if (nrow(dist_row) > 0) dist_row <- dist_row[1, , drop = FALSE]
-  if (nrow(dist_row) == 0 && normalize_run_mode(mode) == "SMOKE_LOCAL") {
-    warning(
-      "SMOKE_LOCAL fallback: no derived distance row for scenario ",
-      variant_row$scenario_id[[1]],
-      "; using synthetic default distance.",
-      call. = FALSE
-    )
-  }
-
-  FU_kcal <- suppressWarnings(as.numeric(scenario_row$FU_kcal[[1]]))
-  if (!is.finite(FU_kcal)) FU_kcal <- 1000
-
-  kcal_per_kg <- suppressWarnings(as.numeric(product_row$kcal_per_kg[[1]]))
-  pkg_mass_frac <- suppressWarnings(as.numeric(product_row$packaging_mass_frac[[1]]))
-  if (!is.finite(pkg_mass_frac)) pkg_mass_frac <- 0
-
-  distance_miles <- if (nrow(dist_row) > 0) suppressWarnings(as.numeric(dist_row$p50_miles[[1]])) else NA_real_
-  if (!is.finite(distance_miles)) distance_miles <- 1200
-
-  truck_g <- NA_real_
-  reefer_extra <- 0
-
-  if (nrow(factor_row) > 0 && identical(variant_row$powertrain, "diesel")) {
-    this_total <- suppressWarnings(as.numeric(factor_row$co2_g_per_ton_mile[[1]]))
-    dry_base <- if (nrow(dry_factor_row) > 0) suppressWarnings(as.numeric(dry_factor_row$co2_g_per_ton_mile[[1]])) else NA_real_
-
-    if (variant_row$trailer_type == "dry_van") {
-      truck_g <- this_total
-      reefer_extra <- 0
-    } else {
-      truck_g <- if (is.finite(dry_base)) dry_base else this_total
-      if (is.finite(this_total) && is.finite(truck_g)) {
-        reefer_extra <- max(this_total - truck_g, 0)
-      }
-    }
-  }
-
-  if (nrow(factor_row) > 0 && identical(variant_row$powertrain, "bev")) {
-    payload <- suppressWarnings(as.numeric(factor_row$default_payload_tons[[1]]))
-    if (!is.finite(payload) || payload <= 0) payload <- 16
-
-    kwh_tract <- suppressWarnings(as.numeric(factor_row$kwh_per_mile_tract[[1]]))
-    kwh_tru <- suppressWarnings(as.numeric(factor_row$kwh_per_mile_tru[[1]]))
-
-    grid_ci <- suppressWarnings(as.numeric(scenario_row$grid_co2_g_per_kwh[[1]]))
-    if (!is.finite(grid_ci)) grid_ci <- suppressWarnings(as.numeric(factor_row$grid_co2_g_per_kwh[[1]]))
-
-    if (all(is.finite(c(kwh_tract, grid_ci)))) {
-      truck_g <- (kwh_tract * grid_ci) / payload
-    }
-    if (all(is.finite(c(kwh_tru, grid_ci)))) {
-      reefer_extra <- (kwh_tru * grid_ci) / payload
-    } else {
-      reefer_extra <- 0
-    }
-  }
-
-  used_factor_fallback <- FALSE
-  if (!is.finite(truck_g)) {
-    truck_g <- 105
-    used_factor_fallback <- TRUE
-  }
-  if (!is.finite(reefer_extra)) {
-    reefer_extra <- 4
-    used_factor_fallback <- TRUE
-  }
-  if (normalize_run_mode(mode) == "SMOKE_LOCAL" && used_factor_fallback) {
-    warning(
-      "SMOKE_LOCAL fallback: unresolved factor intensity for variant ",
-      variant_row$variant_id[[1]],
-      "; using default gCO2/ton-mile values.",
-      call. = FALSE
-    )
-  }
-
-  inputs_list <- list(
-    FU_kcal = FU_kcal,
-    kcal_per_kg_dry = kcal_per_kg,
-    kcal_per_kg_reefer = kcal_per_kg,
-    pkg_kg_per_kg_dry = pkg_mass_frac,
-    pkg_kg_per_kg_reefer = pkg_mass_frac,
-    distance_miles = distance_miles,
-    truck_g_per_ton_mile = truck_g,
-    reefer_extra_g_per_ton_mile = reefer_extra,
-    util_dry = 1,
-    util_reefer = 1
-  )
 
   priors <- build_sampling_from_priors(inputs$sampling_priors, variant_row = variant_row)
   dist_sampling <- derive_sampling_from_distance(dist_row)
   if (!is.null(dist_sampling)) priors$distance_miles <- dist_sampling
+
+  prior_value <- function(param, fallback = NA_real_) {
+    if (param %in% names(priors)) {
+      v <- prior_point_estimate(priors[[param]])
+      if (is.finite(v)) return(v)
+    }
+    fallback
+  }
+  row_value <- function(row, col, fallback = NA_real_) {
+    if (nrow(row) == 0 || !(col %in% names(row))) return(fallback)
+    v <- suppressWarnings(as.numeric(row[[col]][[1]]))
+    if (is.finite(v)) return(v)
+    fallback
+  }
+
+  FU_kcal <- prior_value("FU_kcal", suppressWarnings(as.numeric(scenario_row$FU_kcal[[1]])))
+  if (!is.finite(FU_kcal)) FU_kcal <- 1000
+
+  kcal_per_kg <- prior_value("kcal_per_kg_reefer", suppressWarnings(as.numeric(product_row$kcal_per_kg[[1]])))
+  if (!is.finite(kcal_per_kg)) kcal_per_kg <- 2000
+  pkg_mass_frac <- prior_value("pkg_kg_per_kg_reefer", suppressWarnings(as.numeric(product_row$packaging_mass_frac[[1]])))
+  if (!is.finite(pkg_mass_frac)) pkg_mass_frac <- 0
+
+  distance_miles <- prior_value("distance_miles", if (nrow(dist_row) > 0) suppressWarnings(as.numeric(dist_row$p50_miles[[1]])) else NA_real_)
+  if (!is.finite(distance_miles)) distance_miles <- 1200
+
+  util_dry <- prior_value("util_dry", 1)
+  util_reefer <- prior_value("util_reefer", 1)
+
+  payload <- prior_value("default_payload_tons", row_value(factor_row, "default_payload_tons", row_value(dry_factor_row, "default_payload_tons", 16.35)))
+  if (!is.finite(payload) || payload <= 0) payload <- 16.35
+
+  grid_ci <- prior_value("grid_co2_g_per_kwh", suppressWarnings(as.numeric(scenario_row$grid_co2_g_per_kwh[[1]])))
+  if (!is.finite(grid_ci)) grid_ci <- row_value(factor_row, "grid_co2_g_per_kwh", 380)
+
+  kwh_tract <- prior_value("kwh_per_mile_tract", row_value(factor_row, "kwh_per_mile_tract", NA_real_))
+  kwh_tru <- prior_value("kwh_per_mile_tru", row_value(factor_row, "kwh_per_mile_tru", NA_real_))
+  if (!is.finite(kwh_tru)) {
+    tru_kw <- prior_value("tru_power_kw", NA_real_)
+    speed <- prior_value("linehaul_speed_mph", NA_real_)
+    if (all(is.finite(c(tru_kw, speed))) && speed > 0) {
+      kwh_tru <- tru_kw / speed
+    }
+  }
+
+  truck_g <- prior_value("truck_g_per_ton_mile", NA_real_)
+  reefer_extra <- prior_value("reefer_extra_g_per_ton_mile", NA_real_)
+
+  if (identical(variant_row$powertrain[[1]], "diesel")) {
+    dry_base <- row_value(dry_factor_row, "co2_g_per_ton_mile", 105)
+    if (identical(variant_row$trailer_type[[1]], "dry_van")) {
+      intensity <- compute_emissions_intensity(
+        powertrain = "diesel",
+        default_payload_tons = payload,
+        co2_g_per_ton_mile = row_value(factor_row, "co2_g_per_ton_mile", dry_base),
+        co2_g_per_mile = row_value(factor_row, "co2_g_per_mile", NA_real_)
+      )
+      truck_g <- intensity$tractor_g_per_ton_mile
+      reefer_extra <- 0
+    } else if (identical(variant_row$refrigeration_mode[[1]], "diesel_tru")) {
+      total <- row_value(factor_row, "co2_g_per_ton_mile", NA_real_)
+      if (is.finite(total) && is.finite(dry_base)) {
+        truck_g <- dry_base
+        reefer_extra <- max(total - dry_base, 0)
+      }
+    } else if (identical(variant_row$refrigeration_mode[[1]], "electric_tru")) {
+      if (all(is.finite(c(kwh_tru, grid_ci, payload)))) {
+        elec <- compute_emissions_intensity(
+          powertrain = "bev",
+          default_payload_tons = payload,
+          kwh_per_mile_tract = 0,
+          kwh_per_mile_tru = kwh_tru,
+          grid_co2_g_per_kwh = grid_ci
+        )
+        truck_g <- dry_base
+        reefer_extra <- elec$tru_g_per_ton_mile
+      }
+    }
+  }
+
+  if (identical(variant_row$powertrain[[1]], "bev") &&
+      all(is.finite(c(kwh_tract, grid_ci, payload)))) {
+    kwh_tru_eff <- if (identical(variant_row$refrigeration_mode[[1]], "electric_tru")) kwh_tru else 0
+    if (!is.finite(kwh_tru_eff)) kwh_tru_eff <- 0
+    intensity <- compute_emissions_intensity(
+      powertrain = "bev",
+      default_payload_tons = payload,
+      kwh_per_mile_tract = kwh_tract,
+      kwh_per_mile_tru = kwh_tru_eff,
+      grid_co2_g_per_kwh = grid_ci
+    )
+    truck_g <- intensity$tractor_g_per_ton_mile
+    reefer_extra <- intensity$tru_g_per_ton_mile
+  }
+
+  if (!is.finite(truck_g)) truck_g <- 105
+  if (!is.finite(reefer_extra)) reefer_extra <- 0
+
+  inputs_list <- list(
+    FU_kcal = FU_kcal,
+    kcal_per_kg_dry = prior_value("kcal_per_kg_dry", kcal_per_kg),
+    kcal_per_kg_reefer = prior_value("kcal_per_kg_reefer", kcal_per_kg),
+    pkg_kg_per_kg_dry = prior_value("pkg_kg_per_kg_dry", pkg_mass_frac),
+    pkg_kg_per_kg_reefer = prior_value("pkg_kg_per_kg_reefer", pkg_mass_frac),
+    distance_miles = distance_miles,
+    truck_g_per_ton_mile = truck_g,
+    reefer_extra_g_per_ton_mile = reefer_extra,
+    util_dry = util_dry,
+    util_reefer = util_reefer
+  )
+
   inputs_list$sampling <- priors
+  inputs_list$intensity_context <- list(
+    powertrain = variant_row$powertrain[[1]],
+    trailer_type = variant_row$trailer_type[[1]],
+    refrigeration_mode = variant_row$refrigeration_mode[[1]],
+    default_payload_tons = payload,
+    diesel_truck_g_per_ton_mile = row_value(dry_factor_row, "co2_g_per_ton_mile", 105),
+    kwh_per_mile_tract = kwh_tract,
+    kwh_per_mile_tru = kwh_tru,
+    grid_co2_g_per_kwh = grid_ci
+  )
 
   list(
     inputs_list = inputs_list,
@@ -352,12 +393,12 @@ resolve_variant_inputs <- function(inputs, variant_row, mode = "SMOKE_LOCAL") {
     product_row = product_row,
     factor_row = factor_row,
     distance_row = dist_row,
-    priors = priors
+    priors = priors,
+    priors_rows = resolve_sampling_priors(inputs$sampling_priors, variant_row)
   )
 }
 
 build_sampling_from_factors <- function(factors_table, scenario_name = NULL) {
-  # Backward-compatible helper used by older tests and scripts.
   required_cols <- c("name", "dist", "min", "mode", "max")
   if (!all(required_cols %in% names(factors_table))) {
     return(list())

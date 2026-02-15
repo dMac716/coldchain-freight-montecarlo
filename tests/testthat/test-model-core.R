@@ -40,3 +40,20 @@ test_that("deterministic model: penalty zero and equal masses implies equality",
   expect_equal(out$diff_gco2, 0, tolerance = 1e-10)
   expect_equal(out$ratio, 1, tolerance = 1e-10)
 })
+
+test_that("BEV intensity derivation follows energy formula exactly", {
+  out <- compute_emissions_intensity(
+    powertrain = "bev",
+    default_payload_tons = 20,
+    kwh_per_mile_tract = 2.0,
+    kwh_per_mile_tru = 0.5,
+    grid_co2_g_per_kwh = 400
+  )
+
+  # co2_g_per_mile = (2.0 + 0.5) * 400 = 1000
+  # co2_g_per_ton_mile = 1000 / 20 = 50
+  expect_equal(out$total_g_per_mile, 1000, tolerance = 0)
+  expect_equal(out$total_g_per_ton_mile, 50, tolerance = 0)
+  expect_equal(out$tractor_g_per_ton_mile, 40, tolerance = 0)
+  expect_equal(out$tru_g_per_ton_mile, 10, tolerance = 0)
+})

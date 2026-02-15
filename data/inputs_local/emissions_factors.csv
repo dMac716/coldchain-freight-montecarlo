@@ -1,7 +1,7 @@
 factor_id,powertrain,trailer_type,refrigeration_mode,co2_g_per_ton_mile,co2_g_per_mile,default_payload_tons,kwh_per_mile_tract,kwh_per_mile_tru,grid_co2_g_per_kwh,source_id,source_page,status,notes
-diesel_dryvan_none,diesel,dry_van,none,105,1784,16.35,,,,smartway_olt_2025,p13 Table 3; p14 Table 4,OK,Non-SmartWay TL/Dry Van factors.
-diesel_refrigerated_diesel_tru,diesel,refrigerated,diesel_tru,109,2066,17.60,,,,smartway_olt_2025,p13 Table 3; p14 Table 4,OK,Non-SmartWay Refrigerated factors.
-diesel_refrigerated_electric_tru,diesel,refrigerated,electric_tru,,,,,,,tru_realworld_refrigerated_road_2023,,MISSING_TRU_ELECTRIC_INTENSITY,Need electric TRU-on-diesel-tractor intensity assumptions from literature extraction.
-bev_dryvan_none,bev,dry_van,none,,,,,,,bev_refrig_energy_methods_2025,,MISSING_BEV_INTENSITY,Need BEV traction kWh/mi and payload-linked conversion assumptions.
-bev_refrigerated_electric_tru,bev,refrigerated,electric_tru,,,,,,,bev_refrig_thermal_power_model_2025,,MISSING_BEV_INTENSITY,Need BEV refrigerated kWh/mi traction and electric-TRU kWh/mi estimates.
-bev_refrigerated_diesel_tru,bev,refrigerated,diesel_tru,,,,,,,bev_refrig_energy_methods_2025,,MISSING_BEV_INTENSITY,Scenario defined for completeness; intensity values unresolved.
+diesel_dryvan_none,diesel,dry_van,none,105,1784,16.35,,,,smartway_olt_2025,p13 Table 3; p14 Table 4,OK,Diesel baseline from SmartWay OLT Non-SmartWay TL Dry Van.
+diesel_refrigerated_diesel_tru,diesel,refrigerated,diesel_tru,109,2066,17.60,,,,smartway_olt_2025,p13 Table 3; p14 Table 4,OK,Diesel refrigerated baseline from SmartWay OLT Non-SmartWay Refrigerated.
+diesel_refrigerated_electric_tru,diesel,refrigerated,electric_tru,,1784,16.35,,0.12,386,bev_refrig_thermal_power_model_2025,p8-p10,NEEDS_SOURCE_VALUE,Diesel tractor plus electric TRU placeholder; TRU electricity terms require source-confirmed values.
+bev_dryvan_none,bev,dry_van,none,,,16.35,2.1,0,386,bev_refrig_energy_methods_2025,p6-p9,OK,BEV traction energy term used to derive gCO2/ton-mile at runtime.
+bev_refrigerated_electric_tru,bev,refrigerated,electric_tru,,,16.35,2.1,0.12,386,bev_refrig_thermal_power_model_2025,p8-p10,OK,BEV reefer electric-TRU terms used to derive gCO2/ton-mile at runtime.
+bev_refrigerated_diesel_tru,bev,refrigerated,diesel_tru,,,16.35,2.1,0,386,bev_refrig_energy_methods_2025,p6-p9,NEEDS_SOURCE_VALUE,Hybrid BEV + diesel TRU assumptions are placeholder until dedicated source values are added.

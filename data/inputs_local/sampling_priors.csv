@@ -1,15 +1,23 @@
-param_id,distribution,p1,p2,p3,units,applies_to,source_id,source_page,notes
-FU_kcal,fixed,1000,,,kcal_per_fu,*,scope_locked_proposal_2026,,Functional unit locked at 1000 kcal.
-kcal_per_kg_dry,fixed,3675,,,kcal_per_kg,*,hills_science_diet_adult_large_breed_2026,p5,Dry product energy density from Hill's source.
-kcal_per_kg_reefer,fixed,2375,,,kcal_per_kg,*,freshpet_vital_large_breed_2026,p2-p3,Refrigerated product energy density from Freshpet source.
-pkg_kg_per_kg_dry,fixed,0.05,,,kg_pkg_per_kg_product,*,scope_locked_proposal_2026,,Packaging placeholder until measured packaging mass data is sourced.
-pkg_kg_per_kg_reefer,fixed,0.12,,,kg_pkg_per_kg_product,*,scope_locked_proposal_2026,,Packaging placeholder until measured packaging mass data is sourced.
-distance_miles,triangular,25,75,375,miles,CENTRALIZED_*,faf5_7_1_2018_2024_zip,,Derived from FAF weighted p05/p50/p95 for centralized case.
-distance_miles,triangular,25,75,175,miles,REGIONALIZED_*,faf5_7_1_2018_2024_zip,,Derived from FAF weighted p05/p50/p95 for regionalized case.
-distance_miles,fixed,1200,,,miles,SMOKE_LOCAL_*,scope_locked_proposal_2026,,Synthetic smoke distance for CI.
-truck_g_per_ton_mile,fixed,105,,,gco2_per_ton_mile,DIESEL_*,smartway_olt_2025,p13 Table 3,Diesel baseline from SmartWay OLT.
-reefer_extra_g_per_ton_mile,triangular,2,4,8,gco2_per_ton_mile,DIESEL_*,tru_realworld_refrigerated_road_2023,,TRU diesel penalty prior.
-truck_g_per_ton_mile,fixed,105,,,gco2_per_ton_mile,BEV_*,bev_refrig_energy_methods_2025,,SMOKE fallback baseline; REAL_RUN remains blocked until BEV intensity data is filled.
-reefer_extra_g_per_ton_mile,fixed,4,,,gco2_per_ton_mile,BEV_*,bev_refrig_thermal_power_model_2025,,SMOKE fallback baseline; REAL_RUN remains blocked until BEV intensity data is filled.
-util_dry,triangular,0.85,0.95,1.05,unitless,*,load_factor_smart_freight_2021,,Payload-utilization prior.
-util_reefer,triangular,0.8,0.9,1,unitless,*,load_factor_smart_freight_2021,,Refrigerated utilization prior.
+param_id,distribution,p1,p2,p3,units,applies_to,source_id,source_page,status,notes
+FU_kcal,fixed,1000,,,kcal_per_fu,*,scope_locked_proposal_2026,,OK,Functional unit locked at 1000 kcal.
+kcal_per_kg_dry,fixed,3675,,,kcal_per_kg,*,hills_science_diet_adult_large_breed_2026,p5,OK,Dry product energy density from Hill's source.
+kcal_per_kg_reefer,fixed,2375,,,kcal_per_kg,*,freshpet_vital_large_breed_2026,p2-p3,OK,Refrigerated product energy density from Freshpet source.
+pkg_kg_per_kg_dry,fixed,0.05,,,kg_pkg_per_kg_product,*,scope_locked_proposal_2026,,OK,Packaging placeholder until measured packaging mass data is sourced.
+pkg_kg_per_kg_reefer,fixed,0.12,,,kg_pkg_per_kg_product,*,scope_locked_proposal_2026,,OK,Packaging placeholder until measured packaging mass data is sourced.
+distance_miles,triangular,25,75,375,miles,CENTRALIZED_*,faf5_7_1_2018_2024_zip,,OK,Derived from FAF weighted p05/p50/p95 for centralized case.
+distance_miles,triangular,25,75,175,miles,REGIONALIZED_*,faf5_7_1_2018_2024_zip,,OK,Derived from FAF weighted p05/p50/p95 for regionalized case.
+distance_miles,fixed,1200,,,miles,SMOKE_LOCAL_*,scope_locked_proposal_2026,,OK,Synthetic smoke distance for CI.
+default_payload_tons,fixed,16.35,,,tons,BEV,smartway_olt_2025,p14 Table 4,OK,Payload default used when deriving BEV and electric-TRU gCO2/ton-mile.
+linehaul_speed_mph,triangular,45,50,55,mph,BEV,scope_locked_proposal_2026,,NEEDS_SOURCE_VALUE,Average line-haul speed prior used to convert TRU kW to kWh/mi.
+linehaul_speed_mph,triangular,45,50,55,mph,ELECTRIC_TRU,scope_locked_proposal_2026,,NEEDS_SOURCE_VALUE,Average line-haul speed prior used to convert TRU kW to kWh/mi.
+kwh_per_mile_tract,triangular,1.6,2.1,2.8,kwh_per_mile,BEV,bev_refrig_energy_methods_2025,p6-p9,NEEDS_SOURCE_VALUE,BEV traction energy prior pending locked-page numeric extraction.
+tru_power_kw,triangular,3,6,10,kw,BEV,bev_refrig_thermal_power_model_2025,p8-p10,NEEDS_SOURCE_VALUE,Electric TRU power prior converted to kWh/mi using linehaul speed.
+tru_power_kw,triangular,3,6,10,kw,ELECTRIC_TRU,bev_refrig_thermal_power_model_2025,p8-p10,NEEDS_SOURCE_VALUE,Electric TRU power prior converted to kWh/mi using linehaul speed.
+grid_co2_g_per_kwh,fixed,386,,,gco2_per_kwh,BEV,scope_locked_proposal_2026,,NEEDS_SOURCE_VALUE,US average grid CO2 placeholder until eGRID/EIA source is added.
+grid_co2_g_per_kwh,fixed,386,,,gco2_per_kwh,ELECTRIC_TRU,scope_locked_proposal_2026,,NEEDS_SOURCE_VALUE,US average grid CO2 placeholder until eGRID/EIA source is added.
+truck_g_per_ton_mile,fixed,105,,,gco2_per_ton_mile,DIESEL,smartway_olt_2025,p13 Table 3,OK,Diesel baseline from SmartWay OLT.
+reefer_extra_g_per_ton_mile,triangular,2,4,8,gco2_per_ton_mile,DIESEL_TRU,tru_realworld_refrigerated_road_2023,p9-p11,OK,Diesel TRU penalty prior.
+truck_g_per_ton_mile,fixed,105,,,gco2_per_ton_mile,BEV,bev_refrig_energy_methods_2025,p6-p9,OK,Fallback baseline; BEV runtime path overrides from energy priors.
+reefer_extra_g_per_ton_mile,fixed,0,,,gco2_per_ton_mile,BEV,bev_refrig_thermal_power_model_2025,p8-p10,OK,Fallback baseline; BEV runtime path overrides from energy priors.
+util_dry,triangular,0.85,0.95,1.05,unitless,*,load_factor_smart_freight_2021,p2-p3,OK,Payload-utilization prior.
+util_reefer,triangular,0.8,0.9,1,unitless,*,load_factor_smart_freight_2021,p2-p3,OK,Refrigerated utilization prior.

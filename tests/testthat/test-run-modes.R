@@ -24,7 +24,7 @@ test_that("REAL_RUN data gates reject missing distance and uncalibrated histogra
   expect_silent(assert_mode_data_ready("SMOKE_LOCAL", scenarios, hist_cfg, scenario_name = "BASE"))
 })
 
-test_that("REAL_RUN fails when BEV variant has missing intensity", {
+test_that("REAL_RUN fails when variant or priors are NEEDS_SOURCE_VALUE", {
   scenarios <- data.frame(
     scenario_id = "CENTRALIZED",
     status = "OK",
@@ -45,7 +45,7 @@ test_that("REAL_RUN fails when BEV variant has missing intensity", {
     powertrain = "bev",
     trailer_type = "dry_van",
     refrigeration_mode = "none",
-    status = "MISSING_BEV_INTENSITY",
+    status = "NEEDS_SOURCE_VALUE",
     stringsAsFactors = FALSE
   )
   inputs <- list(
@@ -53,7 +53,7 @@ test_that("REAL_RUN fails when BEV variant has missing intensity", {
       powertrain = "bev",
       trailer_type = "dry_van",
       refrigeration_mode = "none",
-      status = "MISSING_BEV_INTENSITY",
+      status = "OK",
       stringsAsFactors = FALSE
     ),
     distance_distributions = data.frame(
@@ -64,6 +64,13 @@ test_that("REAL_RUN fails when BEV variant has missing intensity", {
   )
 
   priors <- as.list(setNames(rep(1, length(required_model_param_ids())), required_model_param_ids()))
+  priors <- lapply(priors, function(x) list(status = "OK"))
+  expect_error(assert_mode_data_ready("REAL_RUN", scenarios, hist_cfg,
+    scenario_name = "CENTRALIZED", variant_row = variant, inputs = inputs, priors_map = priors
+  ))
+
+  variant$status <- "OK"
+  priors$grid_co2_g_per_kwh <- list(status = "NEEDS_SOURCE_VALUE")
   expect_error(assert_mode_data_ready("REAL_RUN", scenarios, hist_cfg,
     scenario_name = "CENTRALIZED", variant_row = variant, inputs = inputs, priors_map = priors
   ))
