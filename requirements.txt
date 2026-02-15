@@ -1,0 +1,4 @@
+# This repository currently has no Python runtime dependencies.
+# Primary implementation and tooling are in R.
+#
+# If Python utilities are added later, pin dependencies here.

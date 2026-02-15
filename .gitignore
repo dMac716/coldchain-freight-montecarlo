@@ -58,3 +58,11 @@ _targets/
 # outputs and artifacts
 outputs/
 contrib/chunks/
+data/cache/
+
+# local ad-hoc R library (used for manual installs)
+.r_libs/
+
+# macOS filesystem metadata
+.DS_Store
+**/.DS_Store

@@ -1,328 +1,89 @@
-# Coldchain Freight Monte Carlo  
-## Distributed Simulation of Cold-Chain Freight Emissions
+# Coldchain Freight Monte Carlo
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![R >= 4.3](https://img.shields.io/badge/R-%3E%3D4.3-blue)
-![Status](https://img.shields.io/badge/Status-Research%20Grade-green)
+Distributed Monte Carlo simulation for refrigerated dog food freight impacts under a locked research scope.
 
----
+## Project Scope (locked)
+Scope definition source:
+- `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`
+- `source_id=scope_locked_proposal_2026` in `sources/sources_manifest.csv`
 
-## Overview
+Scenario dimensions:
+- Spatial: `CENTRALIZED`, `REGIONALIZED`
+- Powertrain: `diesel`, `bev`
+- Refrigeration mode: `none`, `diesel_tru`, `electric_tru`
+- Uncertainty: Monte Carlo via `data/inputs_local/sampling_priors.csv`
 
-This repository implements a **reproducible, distributed Monte Carlo simulation framework** to estimate and compare freight greenhouse gas emissions for:
+## Inputs Status
+Available now:
+- `data/inputs_local/products.csv`
+  - Hill's dry product kcal/kg and kcal/cup
+  - Freshpet refrigerated kcal/kg, kcal/cup, moisture
+  - Every numeric row includes `source_id` and `source_page`
+- `data/inputs_local/emissions_factors.csv`
+  - Diesel dry/refrigerated factors from SmartWay OLT 2025
+  - BEV rows represented explicitly with status gates
+- `data/derived/faf_distance_distributions.csv`
+  - Derived from local FAF zip sources via `tools/faf_extract_distances.R`
+- `data/inputs_local/scenario_matrix.csv`
+  - Composes spatial x powertrain x refrigeration variants
+- `sources/sources_manifest.csv`
+  - One row per PDF and FAF zip source
 
-- Dry (ambient) dog food distribution  
-- Refrigerated (cold-chain) dog food distribution  
+Still needed for REAL_RUN BEV variants:
+- BEV traction and refrigeration intensity values (`kwh_per_mile_tract`, `kwh_per_mile_tru`) for the missing BEV rows in `data/inputs_local/emissions_factors.csv`
+- Optional grid-carbon reference by grid case if not set directly in scenarios
 
-The system boundary is intentionally constrained to:
+## Provenance Rules
+- All numeric inputs used by runtime tables must be traceable to `source_id` in `sources/sources_manifest.csv`.
+- Source manifest schema:
+  - `source_id,title,filename,version_date,page_refs,notes`
+- Helpers:
+  - `source_id_from_filename()`
+  - `attach_source_ref()`
 
-**Manufacturing → Retail Transportation**
-
-The functional unit is:
-
-**1,000 kcal of product delivered to retail**
-
-This framework is designed for:
-- Mathematical correctness  
-- Distributed computation  
-- Federal data integration  
-- Academic-grade transparency  
-- Offline reproducibility  
-
----
-
-## Why This Matters
-
-Cold-chain logistics introduce additional energy use in freight systems.  
-This project isolates transportation-driven emissions and quantifies:
-
-- The marginal emissions impact of refrigerated freight  
-- Sensitivity to distance, utilization, and refrigeration penalty  
-- Uncertainty via Monte Carlo simulation  
-- Scalable aggregation across multiple machines  
-
-The architecture supports distributed computing while preserving exact statistical merging.
-
----
-
-## System Architecture
-
-### High-Level Flow
-
-```text
-Inputs (Products, Factors, Scenarios)
-            │
-            ▼
-Deterministic Core Model
-            │
-            ▼
-Monte Carlo Chunk Simulation
-            │
-     ┌──────┴────────┐
-     ▼               ▼
-Local Results   Contribution Artifact
- (tables/plots) (mergeable stats + histogram)
-     │               │
-     └──────┬────────┘
-            ▼
-Global Aggregation
- (exact moment merge + histogram merge)
-            ▼
-Aggregate Results & Report
-```
-
----
-
-## Repository Structure
-
-```text
-data/
-  inputs_local/         Manual parameters and scenario definitions
-  derived/              Derived small tables used by the model
-  snapshots/            Versioned source snapshots (optional)
-  snapshots/manifest.csv
-
-R/
-  01_validate.R         Input validation
-  02_units.R            Unit conversion helpers
-  03_model_core.R       Deterministic freight emissions equations
-  04_sampling.R         Monte Carlo sampling utilities
-  05_histogram.R        Mergeable histogram engine
-  06_analysis.R         Statistical summaries and sensitivity
-  07_plots.R            Plot generation
-  90_adapters_bigquery.R   Optional cloud ingestion
-  91_adapters_gcs.R        Optional artifact upload
-
-tools/
-  run_local.R           Local execution entry point
-  run_chunk.R           Run Monte Carlo chunk
-  aggregate.R           Merge chunk artifacts
-  refresh_snapshot.R    Refresh authoritative sources (optional)
-
-tests/
-  testthat/             Unit and regression tests
-
-report/
-  report.qmd            Quarto report template
-
-outputs/
-  local/
-  aggregate/
-```
-
----
-
-## Deterministic Model
-
-The transport emissions equation is:
-
-```text
-Emissions_gCO2 =
-  (Mass_per_FU_kg / 907.185) *
-  Distance_miles *
-  (Truck_EF_gCO2_per_ton_mile + Reefer_Penalty_gCO2_per_ton_mile) *
-  Utilization_Factor
-```
-
-Outputs:
-- gCO2 per functional unit (dry)
-- gCO2 per functional unit (refrigerated)
-- Difference (reefer − dry)
-- Ratio (reefer / dry)
-
----
-
-## Distributed Monte Carlo
-
-Each participating system runs:
-
-```
-N_chunk samples
-```
-
-Each chunk produces:
-- Local summary statistics  
-- Mergeable histogram bin counts  
-- Exact moment statistics (n, sum, sum_sq)  
-- Contribution artifact (JSON)
-
-Global aggregation merges:
-- Means and variances exactly  
-- Histograms bin-by-bin  
-- Quantiles from cumulative histogram  
-
-No raw samples are required for aggregation.
-
----
-
-## Running the Model
-
-### Requirements
-- R ≥ 4.3
-- renv
-- targets
-
-### Install and Execute
-
-```r
-install.packages("renv")
-renv::restore()
-
-install.packages("targets")
-targets::tar_make()
-```
-
-Outputs will appear in the `outputs/` directory.
-
-No cloud services are required.
-
----
-
-## Performance Tips
-
-- Use multiple chunks in parallel across machines and aggregate artifacts with `tools/aggregate.R`.
-- Keep chunk size large enough to amortize startup overhead (for local dev, `n=50k+` is typically efficient).
-- Use `SMOKE_LOCAL` for quick wiring checks and reserve `BASE` for calibrated runs once distance inputs are complete.
-
----
-
-## Contributing Compute
-
-Run a chunk:
+## Run Commands
+Smoke/local wiring:
 
 ```bash
-Rscript tools/run_chunk.R --scenario SMOKE_LOCAL --n 200000 --mode SMOKE_LOCAL
-```
-
-Aggregate chunks:
-
-```bash
+Rscript tools/run_chunk.R --scenario SMOKE_LOCAL --n 200 --seed 123 --mode SMOKE_LOCAL
 Rscript tools/aggregate.R --run_group SMOKE_LOCAL --mode SMOKE_LOCAL
-```
-
-Quick offline smoke test:
-
-```bash
 bash tools/smoke_test.sh
 ```
 
-Real run (gated):
+Run all variants under a spatial scenario selector:
 
 ```bash
-Rscript tools/run_chunk.R --scenario BASE --n 200000 --seed 123 --mode REAL_RUN
+Rscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOKE_LOCAL
+```
+
+REAL_RUN (gated):
+
+```bash
+Rscript tools/run_chunk.R --scenario CENTRALIZED --n 200000 --seed 123 --mode REAL_RUN
 Rscript tools/aggregate.R --run_group BASE --mode REAL_RUN
 ```
 
-Only chunks with identical:
-- model_version  
-- inputs_hash  
-- metric_definitions_hash  
+REAL_RUN fails when:
+- distance distributions are missing/not `OK`
+- histogram config is still `TO_CALIBRATE_AFTER_FIRST_REAL_RUN`
+- BEV variant data is missing but BEV is requested
+- required sampling priors are missing
 
-will be merged.
-
----
+## Data Pipeline
+1. Maintain source inventory: `sources/sources_manifest.csv`
+2. Build FAF distance distributions:
+   - `Rscript tools/faf_extract_distances.R`
+3. Maintain scenario composition:
+   - `data/inputs_local/scenario_matrix.csv`
+4. Run chunks:
+   - `tools/run_chunk.R`
+5. Validate artifacts:
+   - `tools/validate_artifact.R`
+6. Aggregate compatible chunks:
+   - `tools/aggregate.R`
 
 ## Testing
-
-Run full tests:
-
 ```bash
 Rscript -e 'testthat::test_dir("tests/testthat")'
-```
-
-Run end-to-end smoke:
-
-```bash
 bash tools/smoke_test.sh
 ```
-
-Notes:
-- One golden test remains intentionally skipped until deterministic golden baselines are finalized.
-- Input placeholder policy is enforced: products/factors must be sourced, scenarios/histogram may remain explicit pending rows.
-- `REAL_RUN` enforces data completeness gates and histogram coverage threshold (default 0.1%).
-
-Calibrate histogram bins from a pilot:
-
-```bash
-Rscript tools/calibrate_bins.R --run_group SMOKE_LOCAL
-```
-
----
-
-## Inputs Status
-
-Available now:
-- `data/inputs_local/products.csv` populated from:
-  - Hill's Science Diet PDF (`3675 kcal/kg`, `365 kcal/cup`)
-  - Freshpet Vital PDF (`2375 kcal/kg`, `337 kcal/cup`, `56.7%` moisture)
-- `data/inputs_local/factors.csv` populated from SmartWay OLT 2025:
-  - `TL_Dry_Van` and `Refrigerated` `CO2 g/tmi`
-  - Optional `CO2 g/mi` and default payload values
-- Source traceability is recorded in `sources/sources_manifest.csv`.
-
-Still needed:
-- `data/inputs_local/scenarios.csv` `BASE` lane distance data remains missing and marked `MISSING_DISTANCE_DATA`.
-- `data/inputs_local/histogram_config.csv` remains `TO_CALIBRATE_AFTER_FIRST_REAL_RUN`.
-- Product packaging mass values for real products remain TBD.
-
-Citation policy:
-- Every ingested numeric input must include a `source_id` plus page/table reference.
-- Keep source metadata synchronized in `sources/sources_manifest.csv`.
-
----
-
-## Federal Data Integration
-
-This framework supports integration with:
-
-- FHWA Freight Analysis Framework  
-- Transportation Energy Data Book (ORNL)  
-- DOE GREET emission factors  
-- NREL FleetDNA operational data  
-
-All authoritative inputs are snapshoted and hash-verified for reproducibility.
-
----
-
-## Testing & Regression Protection
-
-The repository enforces:
-
-- Deterministic correctness tests  
-- Linearity and zero-distance tests  
-- Histogram merge invariance tests  
-- Seed reproducibility tests  
-- Input validation checks  
-
-All changes must pass CI before merging.
-
----
-
-## Outputs
-
-Typical outputs include:
-
-- `results_summary.csv`  
-- `assumptions_used.csv`  
-- `run_metadata.json`  
-- Distribution plots  
-- Aggregate summary tables  
-
----
-
-## Reproducibility Guarantee
-
-Each run records:
-
-- Code version  
-- Input hash  
-- Random seed  
-- Timestamp  
-
-This ensures full traceability and auditability.
-
----
-
-## License
-
-MIT License.
