@@ -63,6 +63,10 @@ data/cache/
 # local ad-hoc R library (used for manual installs)
 .r_libs/
 
+# local Python virtual environments
+venv/
+.venv/
+
 # local GCP runtime env
 config/gcp.env
 
