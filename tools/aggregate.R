@@ -9,7 +9,7 @@ source_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
 for (f in source_files) source(f, local = FALSE)
 
 option_list <- list(
-  make_option(c("--run_group"), type = "character", help = "Run group id or scenario name"),
+  make_option(c("--run_group"), type = "character", help = "Run group id"),
   make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
@@ -17,11 +17,14 @@ if (is.null(opt$run_group)) stop("--run_group is required.")
 mode <- normalize_run_mode(opt$mode)
 
 inputs <- read_inputs_local()
-scenario_name <- NULL
-if ("scenario" %in% names(inputs$scenarios) && opt$run_group %in% inputs$scenarios$scenario) {
-  scenario_name <- opt$run_group
+assert_mode_data_ready(mode, inputs$scenarios, inputs$histogram_config)
+
+if (mode == "REAL_RUN" && nrow(inputs$scenario_matrix) > 0) {
+  rg_rows <- subset(inputs$scenario_matrix, run_group == opt$run_group)
+  if (nrow(rg_rows) > 0 && "status" %in% names(rg_rows) && any(grepl("MISSING", rg_rows$status, fixed = TRUE))) {
+    stop("REAL_RUN gate failed: run_group contains variants with missing status.")
+  }
 }
-assert_mode_data_ready(mode, inputs$scenarios, inputs$histogram_config, scenario_name = scenario_name)
 
 files <- list.files("contrib/chunks", pattern = paste0("chunk_", opt$run_group), full.names = TRUE)
 if (length(files) == 0) stop("No chunk artifacts found for run_group.")
@@ -125,7 +128,6 @@ for (i in seq_along(metric_names)) {
   )
 }
 
-# Add probability diff_gco2 > 0
 p_diff_gt_zero <- prob_gt_zero(merged$hist$diff_gco2)
 summary_parts[[length(summary_parts)]] <- data.frame(
   metric = "diff_gco2_gt_zero",

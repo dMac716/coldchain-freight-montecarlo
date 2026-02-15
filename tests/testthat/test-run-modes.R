@@ -7,8 +7,9 @@ test_that("normalize_run_mode enforces allowed values", {
 
 test_that("REAL_RUN data gates reject missing distance and uncalibrated histograms", {
   scenarios <- data.frame(
-    scenario = "BASE",
+    scenario_id = "BASE",
     status = "MISSING_DISTANCE_DATA",
+    distance_distribution_id = "dist_base",
     stringsAsFactors = FALSE
   )
   hist_cfg <- data.frame(
@@ -21,6 +22,51 @@ test_that("REAL_RUN data gates reject missing distance and uncalibrated histogra
   )
   expect_error(assert_mode_data_ready("REAL_RUN", scenarios, hist_cfg, scenario_name = "BASE"))
   expect_silent(assert_mode_data_ready("SMOKE_LOCAL", scenarios, hist_cfg, scenario_name = "BASE"))
+})
+
+test_that("REAL_RUN fails when BEV variant has missing intensity", {
+  scenarios <- data.frame(
+    scenario_id = "CENTRALIZED",
+    status = "OK",
+    distance_distribution_id = "dist_ok",
+    stringsAsFactors = FALSE
+  )
+  hist_cfg <- data.frame(
+    metric = c("gco2_dry"),
+    min = 0,
+    max = 1,
+    bins = 10,
+    status = "CALIBRATED_FROM_PILOT",
+    stringsAsFactors = FALSE
+  )
+  variant <- data.frame(
+    variant_id = "CENTRALIZED_BEV_DRY",
+    scenario_id = "CENTRALIZED",
+    powertrain = "bev",
+    trailer_type = "dry_van",
+    refrigeration_mode = "none",
+    status = "MISSING_BEV_INTENSITY",
+    stringsAsFactors = FALSE
+  )
+  inputs <- list(
+    emissions_factors = data.frame(
+      powertrain = "bev",
+      trailer_type = "dry_van",
+      refrigeration_mode = "none",
+      status = "MISSING_BEV_INTENSITY",
+      stringsAsFactors = FALSE
+    ),
+    distance_distributions = data.frame(
+      distance_distribution_id = "dist_ok",
+      status = "OK",
+      stringsAsFactors = FALSE
+    )
+  )
+
+  priors <- as.list(setNames(rep(1, length(required_model_param_ids())), required_model_param_ids()))
+  expect_error(assert_mode_data_ready("REAL_RUN", scenarios, hist_cfg,
+    scenario_name = "CENTRALIZED", variant_row = variant, inputs = inputs, priors_map = priors
+  ))
 })
 
 test_that("hist coverage enforcement warns in smoke and fails in real", {

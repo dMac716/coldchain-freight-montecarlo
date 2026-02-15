@@ -1,18 +1,26 @@
-test_that("products and factors contain no placeholder markers", {
+test_that("products and emissions factors contain no placeholder markers", {
   products <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "products.csv"), stringsAsFactors = FALSE)
-  factors <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "factors.csv"), stringsAsFactors = FALSE)
+  emissions <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "emissions_factors.csv"), stringsAsFactors = FALSE)
 
   expect_false(any(grepl("PLACEHOLDER", unlist(products), fixed = TRUE)))
-  expect_false(any(grepl("PLACEHOLDER", unlist(factors), fixed = TRUE)))
+  expect_false(any(grepl("PLACEHOLDER", unlist(emissions), fixed = TRUE)))
 })
 
-test_that("scenarios and histogram remain explicitly pending where expected", {
+test_that("products schema includes required locked-scope columns", {
+  products <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "products.csv"), stringsAsFactors = FALSE)
+  req <- c(
+    "product_id", "preservation", "kcal_per_kg", "kcal_per_cup",
+    "moisture_pct_as_fed", "packaging_mass_frac", "source_id", "source_page"
+  )
+  expect_true(all(req %in% names(products)))
+})
+
+test_that("scenarios have explicit statuses and histogram remains pending calibration", {
   scenarios <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "scenarios.csv"), stringsAsFactors = FALSE)
   hist_cfg <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "histogram_config.csv"), stringsAsFactors = FALSE)
 
-  base_row <- subset(scenarios, scenario == "BASE")
-  expect_equal(nrow(base_row), 1)
-  expect_identical(base_row$status[[1]], "MISSING_DISTANCE_DATA")
+  expect_true(all(c("CENTRALIZED", "REGIONALIZED", "SMOKE_LOCAL") %in% scenarios$scenario_id))
+  expect_true(all(!is.na(scenarios$status) & nzchar(scenarios$status)))
 
   expect_true(all(hist_cfg$status == "TO_CALIBRATE_AFTER_FIRST_REAL_RUN"))
 })
