@@ -99,3 +99,4 @@ Notes:
 - The load step overwrites `BQ_DATASET.BQ_TABLE`.
 - The script validates BigQuery dataset location against GCS bucket location and fails with a clear error if they differ.
 - CI does not require GCP environment variables.
+- BigQuery reference: Google Cloud docs, "Loading CSV data from Cloud Storage".
