@@ -3,11 +3,12 @@ test_that("sources manifest has unique source_id values", {
   expect_equal(length(unique(manifest$source_id)), nrow(manifest))
 })
 
-test_that("every source PDF and FAF zip has a manifest entry", {
+test_that("every source PDF, FAF zip, and data workbook has a manifest entry", {
   manifest <- read_sources_manifest(file.path("..", "..", "sources", "sources_manifest.csv"))
   expected <- c(
     list.files(file.path("..", "..", "sources", "pdfs"), pattern = "\\.pdf$", full.names = FALSE),
-    list.files(file.path("..", "..", "sources", "FAF5.7.1"), pattern = "\\.zip$", full.names = FALSE)
+    list.files(file.path("..", "..", "sources", "FAF5.7.1"), pattern = "\\.zip$", full.names = FALSE),
+    list.files(file.path("..", "..", "sources", "data"), pattern = "\\.xlsx$", recursive = TRUE, full.names = FALSE)
   )
   expected <- sort(expected)
   in_manifest <- sort(unique(manifest$filename))
