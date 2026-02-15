@@ -10,6 +10,43 @@ rtri <- function(n, min, mode, max) {
   out
 }
 
+draw_from_prior <- function(n, spec) {
+  if (is.null(spec$distribution)) {
+    # Backward compatibility for legacy triangular specs.
+    return(rtri(n, spec$min, spec$mode, spec$max))
+  }
+
+  dist <- tolower(spec$distribution)
+  p1 <- spec$p1
+  p2 <- spec$p2
+  p3 <- spec$p3
+
+  if (dist == "fixed") {
+    if (!is.finite(p1)) stop("Fixed prior requires finite p1.")
+    return(rep(p1, n))
+  }
+
+  if (dist == "triangular") {
+    return(rtri(n, p1, p2, p3))
+  }
+
+  if (dist == "normal") {
+    if (!is.finite(p1) || !is.finite(p2) || p2 <= 0) {
+      stop("Normal prior requires finite p1(mean), p2(sd>0).")
+    }
+    return(stats::rnorm(n, mean = p1, sd = p2))
+  }
+
+  if (dist == "lognormal") {
+    if (!is.finite(p1) || !is.finite(p2) || p2 <= 0) {
+      stop("Lognormal prior requires finite p1(meanlog), p2(sdlog>0).")
+    }
+    return(stats::rlnorm(n, meanlog = p1, sdlog = p2))
+  }
+
+  stop("Unsupported prior distribution: ", dist)
+}
+
 sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
   if (!is.numeric(n) || length(n) != 1 || !is.finite(n) || n < 1) {
     stop("n must be a finite numeric scalar >= 1.")
@@ -62,8 +99,7 @@ sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
       }
     }
     if (!sampled && nm %in% sampling_names) {
-      tri <- sampling[[nm]]
-      out[[i]] <- rtri(n, tri$min, tri$mode, tri$max)
+      out[[i]] <- draw_from_prior(n, sampling[[nm]])
       sampled <- TRUE
     }
     if (!sampled) {

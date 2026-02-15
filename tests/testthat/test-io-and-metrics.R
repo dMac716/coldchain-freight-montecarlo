@@ -5,6 +5,21 @@ test_that("build_sampling_from_factors returns empty for sourced factor schema",
   expect_length(sampling, 0)
 })
 
+test_that("sampling priors are valid and cover required params for smoke variant", {
+  inputs <- read_inputs_local(file.path("..", "..", "data", "inputs_local"))
+  expect_silent(validate_sampling_priors(inputs$sampling_priors))
+
+  smoke <- select_variant_rows(inputs, "SMOKE_LOCAL")[1, , drop = FALSE]
+  priors <- build_sampling_from_priors(inputs$sampling_priors, variant_row = smoke)
+  expect_silent(assert_required_priors_present(priors, required_model_param_ids()))
+})
+
+test_that("scenarios marked OK have valid distance ids", {
+  scenarios <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "scenarios.csv"), stringsAsFactors = FALSE)
+  dists <- utils::read.csv(file.path("..", "..", "data", "derived", "faf_distance_distributions.csv"), stringsAsFactors = FALSE)
+  expect_silent(assert_scenarios_distance_linkage(scenarios, dists))
+})
+
 test_that("metric moments are internally consistent", {
   x <- fixture_inputs_small()
   h <- fixture_hist_config()

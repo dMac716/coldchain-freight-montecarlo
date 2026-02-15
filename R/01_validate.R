@@ -17,16 +17,19 @@ validate_triangular_params <- function(min, mode, max) {
   invisible(TRUE)
 }
 
-validate_inputs <- function(inputs_list) {
-  required <- c(
+required_model_param_ids <- function() {
+  c(
     "FU_kcal",
     "kcal_per_kg_dry", "kcal_per_kg_reefer",
     "pkg_kg_per_kg_dry", "pkg_kg_per_kg_reefer",
     "distance_miles",
-    "truck_g_per_ton_mile",
-    "reefer_extra_g_per_ton_mile",
+    "truck_g_per_ton_mile", "reefer_extra_g_per_ton_mile",
     "util_dry", "util_reefer"
   )
+}
+
+validate_inputs <- function(inputs_list) {
+  required <- required_model_param_ids()
   missing <- setdiff(required, names(inputs_list))
   if (length(missing) > 0) {
     stop(paste0("Missing required inputs: ", paste(missing, collapse = ", ")))
@@ -71,6 +74,50 @@ validate_hist_config <- function(hist_config) {
   }
   if (any(hist_config$max <= hist_config$min)) stop("hist_config max must be > min.")
   if (any(hist_config$bins < 1)) stop("hist_config bins must be >= 1.")
+  invisible(TRUE)
+}
+
+validate_sampling_priors <- function(priors_df) {
+  if (nrow(priors_df) == 0) return(invisible(TRUE))
+  required <- c("param_id", "distribution", "p1", "p2", "p3", "units", "applies_to", "source_id", "source_page", "notes")
+  missing <- setdiff(required, names(priors_df))
+  if (length(missing) > 0) stop("sampling_priors.csv missing columns: ", paste(missing, collapse = ", "))
+
+  allowed <- c("triangular", "lognormal", "normal", "fixed")
+  d <- tolower(trimws(priors_df$distribution))
+  if (any(!d %in% allowed)) {
+    bad <- unique(priors_df$distribution[!d %in% allowed])
+    stop("sampling_priors.csv contains unsupported distributions: ", paste(bad, collapse = ", "))
+  }
+
+  for (i in seq_len(nrow(priors_df))) {
+    dist <- d[[i]]
+    p1 <- suppressWarnings(as.numeric(priors_df$p1[[i]]))
+    p2 <- suppressWarnings(as.numeric(priors_df$p2[[i]]))
+    p3 <- suppressWarnings(as.numeric(priors_df$p3[[i]]))
+
+    if (dist == "fixed" && !is.finite(p1)) {
+      stop("sampling_priors row ", i, " fixed distribution requires finite p1.")
+    }
+    if (dist == "triangular") {
+      validate_triangular_params(p1, p2, p3)
+    }
+    if (dist == "normal" && (!is.finite(p1) || !is.finite(p2) || p2 <= 0)) {
+      stop("sampling_priors row ", i, " normal requires finite p1 and p2>0.")
+    }
+    if (dist == "lognormal" && (!is.finite(p1) || !is.finite(p2) || p2 <= 0)) {
+      stop("sampling_priors row ", i, " lognormal requires finite p1 and p2>0.")
+    }
+  }
+
+  invisible(TRUE)
+}
+
+assert_required_priors_present <- function(sampling_map, required_params = required_model_param_ids()) {
+  missing <- setdiff(required_params, names(sampling_map))
+  if (length(missing) > 0) {
+    stop("Required sampling priors missing for params: ", paste(missing, collapse = ", "))
+  }
   invisible(TRUE)
 }
 
@@ -137,18 +184,31 @@ normalize_run_mode <- function(mode) {
   out
 }
 
-assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scenario_name = NULL) {
+assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scenario_name = NULL,
+                                   variant_row = NULL, inputs = NULL, priors_map = NULL) {
   mode <- normalize_run_mode(mode)
   if (mode != "REAL_RUN") return(invisible(TRUE))
 
-  if (!is.null(scenario_name) && "scenario" %in% names(scenarios_df)) {
-    scenario_row <- subset(scenarios_df, scenario == scenario_name)
+  id_col <- if ("scenario_id" %in% names(scenarios_df)) "scenario_id" else if ("scenario" %in% names(scenarios_df)) "scenario" else NULL
+  if (!is.null(scenario_name) && !is.null(id_col)) {
+    scenario_row <- scenarios_df[scenarios_df[[id_col]] == scenario_name, , drop = FALSE]
     if (nrow(scenario_row) == 0) {
       stop("REAL_RUN gate failed: scenario not found in scenarios.csv.")
     }
     if ("status" %in% names(scenario_row) &&
         any(scenario_row$status == "MISSING_DISTANCE_DATA", na.rm = TRUE)) {
       stop("REAL_RUN gate failed: scenarios.csv still marked MISSING_DISTANCE_DATA.")
+    }
+
+    if ("distance_distribution_id" %in% names(scenario_row) && !is.null(inputs) && nrow(inputs$distance_distributions) > 0) {
+      dd_id <- scenario_row$distance_distribution_id[[1]]
+      dd <- subset(inputs$distance_distributions, distance_distribution_id == dd_id)
+      if (nrow(dd) == 0) {
+        stop("REAL_RUN gate failed: distance_distribution_id not found in data/derived/faf_distance_distributions.csv.")
+      }
+      if ("status" %in% names(dd) && !identical(dd$status[[1]], "OK")) {
+        stop("REAL_RUN gate failed: distance distribution is not OK for REAL_RUN.")
+      }
     }
   }
 
@@ -157,6 +217,45 @@ assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scen
     stop("REAL_RUN gate failed: histogram_config.csv still marked TO_CALIBRATE_AFTER_FIRST_REAL_RUN.")
   }
 
+  if (!is.null(variant_row)) {
+    if ("status" %in% names(variant_row) && any(grepl("MISSING", variant_row$status, fixed = TRUE))) {
+      stop("REAL_RUN gate failed: scenario_matrix variant status indicates missing data.")
+    }
+
+    if (identical(variant_row$powertrain[[1]], "bev") && !is.null(inputs) && nrow(inputs$emissions_factors) > 0) {
+      ef <- subset(
+        inputs$emissions_factors,
+        powertrain == variant_row$powertrain[[1]] &
+          trailer_type == variant_row$trailer_type[[1]] &
+          refrigeration_mode == variant_row$refrigeration_mode[[1]]
+      )
+      if (nrow(ef) == 0 || ("status" %in% names(ef) && any(ef$status == "MISSING_BEV_INTENSITY", na.rm = TRUE))) {
+        stop("REAL_RUN gate failed: BEV intensity missing for requested variant.")
+      }
+    }
+
+    if (!is.null(priors_map)) {
+      assert_required_priors_present(priors_map, required_model_param_ids())
+    }
+  }
+
+  invisible(TRUE)
+}
+
+assert_scenarios_distance_linkage <- function(scenarios_df, distance_df) {
+  if (!all(c("scenario_id", "distance_distribution_id") %in% names(scenarios_df))) {
+    stop("scenarios.csv missing scenario_id or distance_distribution_id columns.")
+  }
+  ok_rows <- scenarios_df
+  if ("status" %in% names(ok_rows)) {
+    ok_rows <- subset(ok_rows, status == "OK")
+  }
+  if (nrow(ok_rows) == 0) return(invisible(TRUE))
+
+  missing <- setdiff(ok_rows$distance_distribution_id, distance_df$distance_distribution_id)
+  if (length(missing) > 0) {
+    stop("Scenarios marked OK reference missing distance_distribution_id: ", paste(missing, collapse = ", "))
+  }
   invisible(TRUE)
 }
 

@@ -13,20 +13,12 @@ list(
     read_inputs_local()
   ),
   tar_target(
-    scenario_row,
-    subset(inputs_raw$scenarios, scenario == "SMOKE_LOCAL")[1, , drop = FALSE]
+    smoke_variant,
+    select_variant_rows(inputs_raw, "SMOKE_LOCAL")[1, , drop = FALSE]
   ),
   tar_target(
-    product_row,
-    subset(inputs_raw$products, product_name == scenario_row$product_name)[1, , drop = FALSE]
-  ),
-  tar_target(
-    inputs_list,
-    {
-      x <- resolve_inputs(scenario_row, product_row)
-      x$sampling <- build_sampling_from_factors(inputs_raw$factors, scenario_name = "SMOKE_LOCAL")
-      x
-    }
+    resolved_smoke,
+    resolve_variant_inputs(inputs_raw, smoke_variant, mode = "SMOKE_LOCAL")
   ),
   tar_target(
     hist_config,
@@ -39,7 +31,7 @@ list(
   ),
   tar_target(
     chunk_results,
-    run_monte_carlo_chunk(inputs_list, hist_config, n = 5000, seed = 123)
+    run_monte_carlo_chunk(resolved_smoke$inputs_list, hist_config, n = 5000, seed = 123)
   ),
   tar_target(
     write_local_outputs,

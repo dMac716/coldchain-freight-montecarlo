@@ -9,7 +9,7 @@ source_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
 for (f in source_files) source(f, local = FALSE)
 
 option_list <- list(
-  make_option(c("--scenario"), type = "character", default = "SMOKE_LOCAL", help = "Scenario name"),
+  make_option(c("--scenario"), type = "character", default = "SMOKE_LOCAL", help = "Scenario selector (scenario_id or variant_id)"),
   make_option(c("--n"), type = "integer", default = 5000L, help = "Number of samples"),
   make_option(c("--seed"), type = "integer", default = 123L, help = "Seed"),
   make_option(c("--outdir"), type = "character", default = "outputs/local", help = "Output directory"),
@@ -20,17 +20,10 @@ opt <- parse_args(OptionParser(option_list = option_list))
 mode <- normalize_run_mode(opt$mode)
 
 inputs <- read_inputs_local()
-scenario_row <- subset(inputs$scenarios, scenario == opt$scenario)
-if (nrow(scenario_row) == 0) stop("Scenario not found.")
-scenario_row <- scenario_row[1, , drop = FALSE]
+validate_sampling_priors(inputs$sampling_priors)
+assert_scenarios_distance_linkage(inputs$scenarios, inputs$distance_distributions)
 
-product_row <- subset(inputs$products, product_name == scenario_row$product_name)
-if (nrow(product_row) == 0) stop("Product not found for scenario.")
-product_row <- product_row[1, , drop = FALSE]
-
-inputs_list <- resolve_inputs(scenario_row, product_row)
-inputs_list$sampling <- build_sampling_from_factors(inputs$factors, scenario_name = opt$scenario)
-
+variant_rows <- select_variant_rows(inputs, opt$scenario)
 hist_config <- list(
   metric = inputs$histogram_config$metric,
   min = inputs$histogram_config$min,
@@ -38,38 +31,58 @@ hist_config <- list(
   bins = inputs$histogram_config$bins
 )
 validate_hist_config(hist_config)
-assert_mode_data_ready(mode, inputs$scenarios, inputs$histogram_config, scenario_name = opt$scenario)
-validate_inputs(inputs_list)
-
-chunk <- run_monte_carlo_chunk(
-  inputs = inputs_list,
-  hist_config = hist_config,
-  n = as.integer(opt$n),
-  seed = as.integer(opt$seed)
-)
-enforce_hist_coverage(
-  hist_list = chunk$hist,
-  n_list = lapply(chunk$stats, function(s) s$n),
-  mode = mode,
-  threshold = 0.001,
-  context = paste0("run_local scenario=", opt$scenario)
-)
 
 if (!dir.exists(opt$outdir)) dir.create(opt$outdir, recursive = TRUE)
-write_results_summary(chunk$stats, file.path(opt$outdir, "results_summary.csv"))
 
-metadata <- list(
-  scenario = opt$scenario,
-  mode = mode,
-  n = as.integer(opt$n),
-  seed = as.integer(opt$seed),
-  rng_kind = chunk$metadata$rng_kind,
-  sampled_variables = names(inputs_list$sampling),
-  timestamp_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
-)
-writeLines(
-  jsonlite::toJSON(metadata, auto_unbox = TRUE, pretty = TRUE),
-  file.path(opt$outdir, "run_metadata.json")
-)
+for (i in seq_len(nrow(variant_rows))) {
+  variant_row <- variant_rows[i, , drop = FALSE]
+  resolved <- resolve_variant_inputs(inputs, variant_row, mode = mode)
+
+  assert_mode_data_ready(
+    mode,
+    inputs$scenarios,
+    inputs$histogram_config,
+    scenario_name = variant_row$scenario_id[[1]],
+    variant_row = variant_row,
+    inputs = inputs,
+    priors_map = resolved$priors
+  )
+  validate_inputs(resolved$inputs_list)
+
+  seed_used <- as.integer(opt$seed + i - 1L)
+  chunk <- run_monte_carlo_chunk(
+    inputs = resolved$inputs_list,
+    hist_config = hist_config,
+    n = as.integer(opt$n),
+    seed = seed_used
+  )
+  enforce_hist_coverage(
+    hist_list = chunk$hist,
+    n_list = lapply(chunk$stats, function(s) s$n),
+    mode = mode,
+    threshold = 0.001,
+    context = paste0("run_local variant=", variant_row$variant_id[[1]])
+  )
+
+  outdir_variant <- if (nrow(variant_rows) == 1) opt$outdir else file.path(opt$outdir, variant_row$variant_id[[1]])
+  if (!dir.exists(outdir_variant)) dir.create(outdir_variant, recursive = TRUE)
+  write_results_summary(chunk$stats, file.path(outdir_variant, "results_summary.csv"))
+
+  metadata <- list(
+    selector = opt$scenario,
+    variant_id = variant_row$variant_id[[1]],
+    scenario_id = variant_row$scenario_id[[1]],
+    mode = mode,
+    n = as.integer(opt$n),
+    seed = seed_used,
+    rng_kind = chunk$metadata$rng_kind,
+    sampled_variables = names(resolved$inputs_list$sampling),
+    timestamp_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+  )
+  writeLines(
+    jsonlite::toJSON(metadata, auto_unbox = TRUE, pretty = TRUE),
+    file.path(outdir_variant, "run_metadata.json")
+  )
+}
 
 message("Local run complete: ", opt$outdir)
