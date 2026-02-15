@@ -27,3 +27,8 @@ test_that("source lookup helper resolves by filename", {
   )
   expect_identical(sid, "smartway_olt_2025")
 })
+
+test_that("manifest allows non-local cloud source references", {
+  manifest <- read_sources_manifest(file.path("..", "..", "sources", "sources_manifest.csv"))
+  expect_true(any(manifest$filename == "gs://coldchain-freight-sources/FAF5.7.1_2018-2024.csv"))
+})

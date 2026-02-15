@@ -1,0 +1,23 @@
+project:
+  type: website
+  output-dir: ../docs
+
+website:
+  title: "Cold-Chain Freight Monte Carlo"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: viz/flow_map.qmd
+        text: Flow Map
+      - href: viz/scenario_explorer.qmd
+        text: Scenario Explorer
+
+format:
+  html:
+    theme: cosmo
+    css: assets/styles.css
+    toc: true
+
+execute:
+  freeze: auto

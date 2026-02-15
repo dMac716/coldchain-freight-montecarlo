@@ -1,0 +1,23 @@
+---
+title: "Cold-Chain Freight Monte Carlo"
+---
+
+This visualization layer is static-first and artifact-driven.
+
+- No live services are queried at page render time.
+- Map and scenario views read committed/generated CSVs from `data/derived/` and `outputs/`.
+- Works with local `quarto render site/` and GitHub Pages deployment.
+
+## Data Inputs
+
+- `data/derived/faf_top_od_flows.csv`
+- `data/derived/faf_zone_centroids.csv`
+- `data/derived/scenario_summary.csv` (generated from available run outputs)
+- `outputs/aggregate/results_summary.csv`
+
+## Refresh UI Artifacts
+
+```bash
+Rscript tools/derive_ui_artifacts.R --top_n 200
+quarto render site/
+```

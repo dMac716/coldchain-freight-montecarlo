@@ -1,13 +1,16 @@
 {
-  "generated_at_utc": "2026-02-15T05:48:00Z",
+  "generated_at_utc": "2026-02-15T06:52:36Z",
   "pipeline": "optional_bigquery",
   "project_id": "coldchain-freight-ttp211",
   "dataset": "coldchain_faf",
   "table": "faf_od_2018_2024",
   "location": "US",
   "gcs_uri": "gs://coldchain-freight-sources/FAF5.7.1_2018-2024.csv",
-  "source_id": "faf5_7_1_2018_2024_zip",
-  "sql_sha256": "15d91739b1017c72522f9a7777062e41c92d701666ece0bc04894f84e6755ae9",
-  "commodity_filter": "sctg2 in [01-08]",
-  "mode_filter": "dms_mode==1"
+  "source_id": "faf5_7_1_2018_2024_gcs_csv",
+  "distance_query_sha256": "af159ef5f70d3bcf1ea7c08dcc474e9884814dbc736136d747ec48e7d1616b3d",
+  "top_flows_query_sha256": "e34a42a6bd4aedb5d120e4c4b68c54d35ab867f90a48d0dc2e2895e9709587c8",
+  "top_n": 200,
+  "weighting": "tons_2024",
+  "table_ref": "coldchain-freight-ttp211.coldchain_faf.faf_od_2018_2024",
+  "notes": "job_id values are omitted when using bq CLI CSV output mode."
 }

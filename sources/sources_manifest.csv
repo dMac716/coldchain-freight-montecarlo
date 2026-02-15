@@ -12,6 +12,7 @@ epri_etru_market_tech_assessment,Market and Technology Assessment of Electric Tr
 epri_tru_tech_assessment,Transport Refrigeration Units: A Technical Assessment,Transport Refrigeration Units_ A Technical Assessment.pdf,2005-01-01,p4-1 Table 4-1; p7-2 Table 7-2,Provides TRU electric power ranges and operating assumptions.
 eu_refrigerated_footprint_2026,The EU road refrigerated transport current GHG footprint,The-EU-road-refrigerated-transport--current-GHG-footpri_2026_International-J.pdf,2026-01-01,,Supports refrigerated bounds-check ranges and comparative context.
 faf5_7_1_2018_2024_zip,FAF5.7.1 2018-2024,FAF5.7.1_2018-2024.zip,2025-01-01,,Primary FAF OD source zip for truck-distance extraction.
+faf5_7_1_2018_2024_gcs_csv,FAF5.7.1 2018-2024 (GCS CSV),gs://coldchain-freight-sources/FAF5.7.1_2018-2024.csv,2025-01-01,,Uploaded copy of FAF 5.7.1 OD CSV for BigQuery ingestion.
 faf5_7_1_hilo_forecasts_zip,FAF5.7.1 HiLo Forecasts,FAF5.7.1_HiLoForecasts.zip,2025-01-01,,Optional FAF sensitivity source for low/high forecast checks.
 faf5_7_1_state_2018_2024_zip,FAF5.7.1 State 2018-2024,FAF5.7.1_State_2018-2024.zip,2025-01-01,,State-level FAF OD source zip for fallback extraction.
 faf5_7_1_state_hilo_forecasts_zip,FAF5.7.1 State HiLo Forecasts,FAF5.7.1_State_HiLoForecasts.zip,2025-01-01,,Optional state-level FAF sensitivity source.

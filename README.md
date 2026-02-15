@@ -32,6 +32,9 @@ Available now:
 - `data/inputs_local/grid_ci.csv`
 - `data/inputs_local/scenario_matrix.csv`
 - `data/derived/faf_distance_distributions.csv`
+- `data/derived/faf_top_od_flows.csv`
+- `data/derived/faf_zone_centroids.csv`
+- `data/derived/scenario_summary.csv`
 - `sources/sources_manifest.csv`
 
 ## Run Modes
@@ -56,6 +59,49 @@ Current placeholders intentionally gated behind `NEEDS_SOURCE_VALUE`:
 - Helpers:
   - `source_id_from_filename()`
   - `attach_source_ref()`
+
+## Quickstart (5 min)
+```bash
+make setup
+make test
+make smoke
+```
+
+Run a real scenario locally:
+```bash
+make clean-chunks
+make preflight MODE=REAL_RUN SCENARIO=CENTRALIZED RUN_GROUP=BASE
+make real SCENARIO=CENTRALIZED N=5000 SEED=123 RUN_GROUP=BASE
+```
+
+Main automation targets:
+- `make setup`: install required R packages, prepare optional GCP env, run SMOKE preflight.
+- `make preflight`: validate inputs, mode gates, and chunk compatibility before runs.
+- `make test`: run `testthat`.
+- `make smoke`: offline end-to-end smoke test.
+- `make real`: run chunk + aggregate in `REAL_RUN`.
+- `make bq`: optional GCS→BigQuery FAF pipeline.
+- `make derive-ui`: generate static UI artifacts from local FAF sources.
+- `make ui`: derive UI artifacts then render Quarto site (`site/` -> `docs/`).
+- `make clean-chunks`: remove stale chunk artifacts from `contrib/chunks`.
+
+## Visualization UI (Quarto + Leaflet)
+- Source: `site/`
+- Output: `docs/` (GitHub Pages friendly)
+- Pages:
+  - Home: `site/index.qmd`
+  - Flow map: `site/viz/flow_map.qmd`
+  - Scenario explorer: `site/viz/scenario_explorer.qmd`
+
+Render locally:
+```bash
+make derive-ui
+quarto render site/
+```
+
+Data-driven map uses:
+- `data/derived/faf_top_od_flows.csv`
+- `data/derived/faf_zone_centroids.csv`
 
 ## Run Commands
 ```bash
@@ -93,10 +139,22 @@ bash tools/faf_bq/run_faf_bq.sh
 
 Outputs:
 - `data/derived/faf_distance_distributions.csv`
+- `data/derived/faf_top_od_flows.csv`
 - `data/derived/faf_distance_distributions_bq_metadata.json`
 
 Notes:
 - The load step overwrites `BQ_DATASET.BQ_TABLE`.
 - The script validates BigQuery dataset location against GCS bucket location and fails with a clear error if they differ.
+- If required env vars are missing, the script exits as a no-op with a clear message.
 - CI does not require GCP environment variables.
 - BigQuery reference: Google Cloud docs, "Loading CSV data from Cloud Storage".
+
+Optional local cloud sync:
+```bash
+Rscript tools/gcs_sync_sources.R
+```
+
+Troubleshooting:
+- `docs/Troubleshooting.md`
+- `docs/Pages.md`
+- `docs/CLI.md`

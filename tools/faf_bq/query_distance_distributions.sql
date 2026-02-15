@@ -1,21 +1,22 @@
 -- Computes FAF-based weighted distance distributions for truck food commodities.
--- Assumes FAF columns include: dms_mode, sctg2, dist_band, tons_2024.
+-- Food commodity set: SCTG2 01-08.
+-- Weighting defaults to tons_2024; can be switched to tmiles_2024 via {{WEIGHT_COL}}.
 
 WITH base AS (
   SELECT
     CAST(dms_mode AS STRING) AS dms_mode,
     LPAD(CAST(sctg2 AS STRING), 2, '0') AS sctg2,
     CAST(dist_band AS INT64) AS dist_band,
-    CAST(tons_2024 AS FLOAT64) AS tons
+    CAST({{WEIGHT_COL}} AS FLOAT64) AS weight
   FROM `{{TABLE_FQN}}`
-  WHERE tons_2024 IS NOT NULL
-    AND tons_2024 > 0
+  WHERE {{WEIGHT_COL}} IS NOT NULL
+    AND {{WEIGHT_COL}} > 0
 ),
 filtered AS (
   SELECT
     sctg2,
     dist_band,
-    tons,
+    weight,
     CASE dist_band
       WHEN 1 THEN 25
       WHEN 2 THEN 75
@@ -34,20 +35,20 @@ filtered AS (
     AND dist_band BETWEEN 1 AND 9
 ),
 scenario_rows AS (
-  SELECT 'CENTRALIZED' AS scenario_id, distance_miles, tons FROM filtered
+  SELECT 'CENTRALIZED' AS scenario_id, distance_miles, weight FROM filtered
   UNION ALL
-  SELECT 'REGIONALIZED' AS scenario_id, distance_miles, tons FROM filtered WHERE dist_band <= 4
+  SELECT 'REGIONALIZED' AS scenario_id, distance_miles, weight FROM filtered WHERE dist_band <= 4
 ),
 ordered AS (
   SELECT
     scenario_id,
     distance_miles,
-    tons,
-    SUM(tons) OVER (
+    weight,
+    SUM(weight) OVER (
       PARTITION BY scenario_id
       ORDER BY distance_miles
       ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-    ) / SUM(tons) OVER (PARTITION BY scenario_id) AS cum_w
+    ) / SUM(weight) OVER (PARTITION BY scenario_id) AS cum_w
   FROM scenario_rows
 ),
 quantiles AS (
@@ -62,11 +63,11 @@ quantiles AS (
 moments AS (
   SELECT
     scenario_id,
-    SUM(distance_miles * tons) / SUM(tons) AS mean_miles,
+    SUM(distance_miles * weight) / SUM(weight) AS mean_miles,
     MIN(distance_miles) AS min_miles,
     MAX(distance_miles) AS max_miles,
     COUNT(*) AS n_records,
-    SUM(tons) AS tons_total
+    SUM(weight) AS weight_total
   FROM scenario_rows
   GROUP BY scenario_id
 )
@@ -79,7 +80,7 @@ SELECT
   m.min_miles,
   m.max_miles,
   m.n_records,
-  m.tons_total
+  m.weight_total
 FROM moments m
 JOIN quantiles q USING (scenario_id)
 ORDER BY scenario_id;
