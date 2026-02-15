@@ -17,5 +17,7 @@ truck_g_per_ton_mile,fixed,105,,,gco2_per_ton_mile,DIESEL,smartway_olt_2025,p13 
 reefer_extra_g_per_ton_mile,triangular,2,4,8,gco2_per_ton_mile,DIESEL_TRU,tru_realworld_refrigerated_road_2023,p9-p11,OK,Diesel TRU penalty prior.
 truck_g_per_ton_mile,fixed,105,,,gco2_per_ton_mile,BEV,nacfe_rol_electric_2024,p57 Figure 34,OK,Fallback only; runtime recomputes BEV intensity from energy terms.
 reefer_extra_g_per_ton_mile,fixed,0,,,gco2_per_ton_mile,BEV,epri_etru_market_tech_assessment,p2-28,OK,Fallback only; runtime recomputes BEV electric TRU increment.
+reefer_extra_g_per_ton_mile,fixed,0,,,gco2_per_ton_mile,ELECTRIC_TRU,epri_etru_market_tech_assessment,p2-28,OK,Fallback only; runtime derives electric TRU increment from eTRU energy and grid CI.
+reefer_extra_g_per_ton_mile,fixed,0,,,gco2_per_ton_mile,*,scope_locked_proposal_2026,,OK,Global fallback for non-refrigerated variants; overridden by TRU-specific priors.
 util_dry,triangular,0.85,0.95,1.05,unitless,*,load_factor_smart_freight_2021,p2-p3,OK,Payload-utilization prior.
 util_reefer,triangular,0.8,0.9,1,unitless,*,load_factor_smart_freight_2021,p2-p3,OK,Refrigerated utilization prior.
