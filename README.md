@@ -78,3 +78,24 @@ Rscript tools/aggregate.R --run_group BASE --mode REAL_RUN
 Rscript -e 'testthat::test_dir("tests/testthat")'
 bash tools/smoke_test.sh
 ```
+
+## Optional BigQuery Pipeline
+This repository includes an optional GCS→BigQuery FAF ingestion path. It is not required for CI or local offline runs.
+
+1. Copy and edit config:
+```bash
+cp config/gcp.example.env config/gcp.env
+```
+2. Run pipeline:
+```bash
+bash tools/faf_bq/run_faf_bq.sh
+```
+
+Outputs:
+- `data/derived/faf_distance_distributions.csv`
+- `data/derived/faf_distance_distributions_bq_metadata.json`
+
+Notes:
+- The load step overwrites `BQ_DATASET.BQ_TABLE`.
+- The script validates BigQuery dataset location against GCS bucket location and fails with a clear error if they differ.
+- CI does not require GCP environment variables.

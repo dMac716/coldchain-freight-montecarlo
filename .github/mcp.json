@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "ghcr.io/github/github-mcp-server:latest"
+      ],
+      "tools": [
+        "search_repositories",
+        "search_code",
+        "get_file_contents",
+        "list_issues",
+        "get_issue",
+        "create_issue",
+        "list_pull_requests",
+        "get_pull_request",
+        "create_pull_request",
+        "create_comment"
+      ]
+    }
+  }
+}

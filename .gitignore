@@ -39,8 +39,8 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-docs/
+# pkgdown site output
+docs/site/
 
 # translation temp files
 po/*~
@@ -62,6 +62,15 @@ data/cache/
 
 # local ad-hoc R library (used for manual installs)
 .r_libs/
+
+# local GCP runtime env
+config/gcp.env
+
+# local unzip scratch under source archives
+sources/FAF5.7.1/FAF5.7.1_2018-2024/
+sources/FAF5.7.1/FAF5.7.1_HiLoForecasts/
+sources/FAF5.7.1/FAF5.7.1_State_2018-2024/
+sources/FAF5.7.1/FAF5.7.1_State_HiLoForecasts/
 
 # macOS filesystem metadata
 .DS_Store
