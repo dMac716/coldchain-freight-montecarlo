@@ -1,10 +1,51 @@
 read_inputs_local <- function(dir = "data/inputs_local") {
+  read_csv_required <- function(path) {
+    if (!file.exists(path)) stop("Missing required input file: ", path)
+    utils::read.csv(path, stringsAsFactors = FALSE)
+  }
+  read_csv_optional <- function(path) {
+    if (!file.exists(path)) return(data.frame(stringsAsFactors = FALSE))
+    utils::read.csv(path, stringsAsFactors = FALSE)
+  }
+
   list(
-    products = utils::read.csv(file.path(dir, "products.csv"), stringsAsFactors = FALSE),
-    scenarios = utils::read.csv(file.path(dir, "scenarios.csv"), stringsAsFactors = FALSE),
-    factors = utils::read.csv(file.path(dir, "factors.csv"), stringsAsFactors = FALSE),
-    histogram_config = utils::read.csv(file.path(dir, "histogram_config.csv"), stringsAsFactors = FALSE),
-    assumptions = utils::read.csv(file.path(dir, "assumptions_used.csv"), stringsAsFactors = FALSE)
+    products = read_csv_required(file.path(dir, "products.csv")),
+    scenarios = read_csv_required(file.path(dir, "scenarios.csv")),
+    histogram_config = read_csv_required(file.path(dir, "histogram_config.csv")),
+    assumptions = read_csv_required(file.path(dir, "assumptions_used.csv")),
+    factors = read_csv_optional(file.path(dir, "factors.csv")),
+    emissions_factors = read_csv_optional(file.path(dir, "emissions_factors.csv")),
+    sampling_priors = read_csv_optional(file.path(dir, "sampling_priors.csv")),
+    scenario_matrix = read_csv_optional(file.path(dir, "scenario_matrix.csv")),
+    distance_distributions = read_csv_optional(file.path("data", "derived", "faf_distance_distributions.csv"))
+  )
+}
+
+read_sources_manifest <- function(path = "sources/sources_manifest.csv") {
+  if (!file.exists(path)) stop("Sources manifest not found: ", path)
+  utils::read.csv(path, stringsAsFactors = FALSE)
+}
+
+source_id_from_filename <- function(filename, manifest_df = NULL) {
+  if (is.null(manifest_df)) manifest_df <- read_sources_manifest()
+  hits <- manifest_df$source_id[manifest_df$filename == filename]
+  if (length(hits) == 0) {
+    stop("No source_id found for filename: ", filename)
+  }
+  if (length(hits) > 1) {
+    stop("Multiple source_id entries found for filename: ", filename)
+  }
+  hits[[1]]
+}
+
+attach_source_ref <- function(value, filename, source_page, manifest_df = NULL, notes = NA_character_) {
+  sid <- source_id_from_filename(filename, manifest_df = manifest_df)
+  data.frame(
+    value = value,
+    source_id = sid,
+    source_page = source_page,
+    notes = notes,
+    stringsAsFactors = FALSE
   )
 }
 
@@ -70,8 +111,253 @@ resolve_inputs <- function(scenario_row, product_row) {
   )
 }
 
+wildcard_match <- function(value, pattern) {
+  if (is.na(pattern) || !nzchar(pattern)) return(FALSE)
+  if (pattern == "*") return(TRUE)
+  esc <- gsub("([][{}()+?.^$|\\\\])", "\\\\\\\\1", pattern)
+  rx <- paste0("^", gsub("\\*", ".*", esc), "$")
+  grepl(rx, value, ignore.case = TRUE)
+}
+
+select_variant_rows <- function(inputs, selector) {
+  matrix <- inputs$scenario_matrix
+  if (nrow(matrix) == 0) {
+    stop("scenario_matrix.csv is required for locked-scope runs.")
+  }
+
+  if (selector %in% matrix$variant_id) {
+    out <- subset(matrix, variant_id == selector)
+    return(out[order(out$variant_id), , drop = FALSE])
+  }
+
+  if (selector %in% matrix$scenario_id) {
+    out <- subset(matrix, scenario_id == selector)
+    if (nrow(out) == 0) stop("No variants found for scenario_id: ", selector)
+    return(out[order(out$variant_id), , drop = FALSE])
+  }
+
+  stop("Selector not found as variant_id or scenario_id: ", selector)
+}
+
+resolve_sampling_priors <- function(priors_df, variant_row) {
+  if (nrow(priors_df) == 0) return(data.frame(stringsAsFactors = FALSE))
+  required <- c("param_id", "distribution", "p1", "p2", "p3", "applies_to")
+  if (!all(required %in% names(priors_df))) {
+    stop("sampling_priors.csv missing required columns: ", paste(setdiff(required, names(priors_df)), collapse = ", "))
+  }
+
+  keys <- unique(c(
+    variant_row$variant_id,
+    variant_row$scenario_id,
+    toupper(variant_row$powertrain),
+    paste0(toupper(variant_row$powertrain), "_CASE"),
+    variant_row$run_group,
+    "*"
+  ))
+
+  hit <- vapply(priors_df$applies_to, function(pat) any(vapply(keys, wildcard_match, logical(1), pattern = pat)), logical(1))
+  priors <- priors_df[hit, , drop = FALSE]
+  if (nrow(priors) == 0) return(priors)
+
+  priors$.priority <- vapply(priors$applies_to, function(pat) {
+    if (identical(pat, variant_row$variant_id)) return(5)
+    if (wildcard_match(variant_row$variant_id, pat)) return(4)
+    if (wildcard_match(variant_row$scenario_id, pat)) return(3)
+    if (wildcard_match(toupper(variant_row$powertrain), pat) || wildcard_match(paste0(toupper(variant_row$powertrain), "_CASE"), pat)) return(2)
+    if (pat == "*") return(1)
+    0
+  }, numeric(1))
+  priors <- priors[order(priors$param_id, -priors$.priority), , drop = FALSE]
+  priors <- priors[!duplicated(priors$param_id), , drop = FALSE]
+  priors$.priority <- NULL
+  priors
+}
+
+build_sampling_from_priors <- function(priors_df, variant_row = NULL) {
+  if (nrow(priors_df) == 0) return(list())
+  if (!is.null(variant_row)) {
+    priors_df <- resolve_sampling_priors(priors_df, variant_row)
+  }
+  if (nrow(priors_df) == 0) return(list())
+
+  sampling <- list()
+  for (i in seq_len(nrow(priors_df))) {
+    row <- priors_df[i, , drop = FALSE]
+    dist <- tolower(trimws(row$distribution[[1]]))
+    if (!dist %in% c("triangular", "fixed", "normal", "lognormal")) next
+
+    sampling[[row$param_id[[1]]]] <- list(
+      distribution = dist,
+      p1 = as.numeric(row$p1[[1]]),
+      p2 = suppressWarnings(as.numeric(row$p2[[1]])),
+      p3 = suppressWarnings(as.numeric(row$p3[[1]])),
+      source_id = if ("source_id" %in% names(row)) row$source_id[[1]] else NA_character_,
+      source_page = if ("source_page" %in% names(row)) row$source_page[[1]] else NA_character_
+    )
+  }
+  sampling
+}
+
+derive_sampling_from_distance <- function(distance_row) {
+  if (nrow(distance_row) == 0) return(NULL)
+  if (!"distance_model" %in% names(distance_row)) return(NULL)
+  model <- distance_row$distance_model[[1]]
+  p05 <- suppressWarnings(as.numeric(distance_row$p05_miles[[1]]))
+  p50 <- suppressWarnings(as.numeric(distance_row$p50_miles[[1]]))
+  p95 <- suppressWarnings(as.numeric(distance_row$p95_miles[[1]]))
+  if (!is.finite(p50)) return(NULL)
+
+  if (identical(model, "triangular_fit") && all(is.finite(c(p05, p50, p95))) && p05 < p95) {
+    return(list(distribution = "triangular", p1 = p05, p2 = p50, p3 = p95))
+  }
+  list(distribution = "fixed", p1 = p50, p2 = NA_real_, p3 = NA_real_)
+}
+
+resolve_variant_inputs <- function(inputs, variant_row, mode = "SMOKE_LOCAL") {
+  scenarios <- inputs$scenarios
+  products <- inputs$products
+  ef <- inputs$emissions_factors
+
+  scenario_row <- subset(scenarios, scenario_id == variant_row$scenario_id)
+  if (nrow(scenario_row) == 0) stop("scenario_id missing in scenarios.csv: ", variant_row$scenario_id)
+  scenario_row <- scenario_row[1, , drop = FALSE]
+
+  preservation_needed <- if (variant_row$trailer_type == "refrigerated") "refrigerated" else "dry"
+  product_row <- subset(products, preservation == preservation_needed)
+  if (nrow(product_row) == 0) stop("No product row found for preservation=", preservation_needed)
+  product_row <- product_row[order(product_row$product_id), , drop = FALSE][1, , drop = FALSE]
+
+  factor_row <- subset(
+    ef,
+    powertrain == variant_row$powertrain &
+      trailer_type == variant_row$trailer_type &
+      refrigeration_mode == variant_row$refrigeration_mode
+  )
+  if (nrow(factor_row) > 0) factor_row <- factor_row[1, , drop = FALSE]
+  if (nrow(factor_row) == 0 && normalize_run_mode(mode) == "SMOKE_LOCAL") {
+    warning(
+      "SMOKE_LOCAL fallback: no emissions_factors row for variant ",
+      variant_row$variant_id[[1]],
+      "; using conservative defaults.",
+      call. = FALSE
+    )
+  }
+
+  dry_factor_row <- subset(
+    ef,
+    powertrain == variant_row$powertrain &
+      trailer_type == "dry_van" &
+      refrigeration_mode == "none"
+  )
+  if (nrow(dry_factor_row) > 0) dry_factor_row <- dry_factor_row[1, , drop = FALSE]
+
+  dist_row <- subset(inputs$distance_distributions, distance_distribution_id == scenario_row$distance_distribution_id)
+  if (nrow(dist_row) > 0) dist_row <- dist_row[1, , drop = FALSE]
+  if (nrow(dist_row) == 0 && normalize_run_mode(mode) == "SMOKE_LOCAL") {
+    warning(
+      "SMOKE_LOCAL fallback: no derived distance row for scenario ",
+      variant_row$scenario_id[[1]],
+      "; using synthetic default distance.",
+      call. = FALSE
+    )
+  }
+
+  FU_kcal <- suppressWarnings(as.numeric(scenario_row$FU_kcal[[1]]))
+  if (!is.finite(FU_kcal)) FU_kcal <- 1000
+
+  kcal_per_kg <- suppressWarnings(as.numeric(product_row$kcal_per_kg[[1]]))
+  pkg_mass_frac <- suppressWarnings(as.numeric(product_row$packaging_mass_frac[[1]]))
+  if (!is.finite(pkg_mass_frac)) pkg_mass_frac <- 0
+
+  distance_miles <- if (nrow(dist_row) > 0) suppressWarnings(as.numeric(dist_row$p50_miles[[1]])) else NA_real_
+  if (!is.finite(distance_miles)) distance_miles <- 1200
+
+  truck_g <- NA_real_
+  reefer_extra <- 0
+
+  if (nrow(factor_row) > 0 && identical(variant_row$powertrain, "diesel")) {
+    this_total <- suppressWarnings(as.numeric(factor_row$co2_g_per_ton_mile[[1]]))
+    dry_base <- if (nrow(dry_factor_row) > 0) suppressWarnings(as.numeric(dry_factor_row$co2_g_per_ton_mile[[1]])) else NA_real_
+
+    if (variant_row$trailer_type == "dry_van") {
+      truck_g <- this_total
+      reefer_extra <- 0
+    } else {
+      truck_g <- if (is.finite(dry_base)) dry_base else this_total
+      if (is.finite(this_total) && is.finite(truck_g)) {
+        reefer_extra <- max(this_total - truck_g, 0)
+      }
+    }
+  }
+
+  if (nrow(factor_row) > 0 && identical(variant_row$powertrain, "bev")) {
+    payload <- suppressWarnings(as.numeric(factor_row$default_payload_tons[[1]]))
+    if (!is.finite(payload) || payload <= 0) payload <- 16
+
+    kwh_tract <- suppressWarnings(as.numeric(factor_row$kwh_per_mile_tract[[1]]))
+    kwh_tru <- suppressWarnings(as.numeric(factor_row$kwh_per_mile_tru[[1]]))
+
+    grid_ci <- suppressWarnings(as.numeric(scenario_row$grid_co2_g_per_kwh[[1]]))
+    if (!is.finite(grid_ci)) grid_ci <- suppressWarnings(as.numeric(factor_row$grid_co2_g_per_kwh[[1]]))
+
+    if (all(is.finite(c(kwh_tract, grid_ci)))) {
+      truck_g <- (kwh_tract * grid_ci) / payload
+    }
+    if (all(is.finite(c(kwh_tru, grid_ci)))) {
+      reefer_extra <- (kwh_tru * grid_ci) / payload
+    } else {
+      reefer_extra <- 0
+    }
+  }
+
+  used_factor_fallback <- FALSE
+  if (!is.finite(truck_g)) {
+    truck_g <- 105
+    used_factor_fallback <- TRUE
+  }
+  if (!is.finite(reefer_extra)) {
+    reefer_extra <- 4
+    used_factor_fallback <- TRUE
+  }
+  if (normalize_run_mode(mode) == "SMOKE_LOCAL" && used_factor_fallback) {
+    warning(
+      "SMOKE_LOCAL fallback: unresolved factor intensity for variant ",
+      variant_row$variant_id[[1]],
+      "; using default gCO2/ton-mile values.",
+      call. = FALSE
+    )
+  }
+
+  inputs_list <- list(
+    FU_kcal = FU_kcal,
+    kcal_per_kg_dry = kcal_per_kg,
+    kcal_per_kg_reefer = kcal_per_kg,
+    pkg_kg_per_kg_dry = pkg_mass_frac,
+    pkg_kg_per_kg_reefer = pkg_mass_frac,
+    distance_miles = distance_miles,
+    truck_g_per_ton_mile = truck_g,
+    reefer_extra_g_per_ton_mile = reefer_extra,
+    util_dry = 1,
+    util_reefer = 1
+  )
+
+  priors <- build_sampling_from_priors(inputs$sampling_priors, variant_row = variant_row)
+  dist_sampling <- derive_sampling_from_distance(dist_row)
+  if (!is.null(dist_sampling)) priors$distance_miles <- dist_sampling
+  inputs_list$sampling <- priors
+
+  list(
+    inputs_list = inputs_list,
+    scenario_row = scenario_row,
+    product_row = product_row,
+    factor_row = factor_row,
+    distance_row = dist_row,
+    priors = priors
+  )
+}
+
 build_sampling_from_factors <- function(factors_table, scenario_name = NULL) {
-  # Current factor tables may be direct sourced values (no triangular ranges).
+  # Backward-compatible helper used by older tests and scripts.
   required_cols <- c("name", "dist", "min", "mode", "max")
   if (!all(required_cols %in% names(factors_table))) {
     return(list())
@@ -86,9 +372,10 @@ build_sampling_from_factors <- function(factors_table, scenario_name = NULL) {
     row <- factors_table[i, ]
     if (!isTRUE(row$dist == "triangular")) next
     sampling[[row$name]] <- list(
-      min = row$min,
-      mode = row$mode,
-      max = row$max
+      distribution = "triangular",
+      p1 = row$min,
+      p2 = row$mode,
+      p3 = row$max
     )
   }
   sampling
