@@ -1,5 +1,5 @@
-metric,min,max,bins,status,notes
-gco2_dry,0,50000,200,TO_CALIBRATE_AFTER_FIRST_REAL_RUN,Set bin ranges after pilot run; enforce overflow/underflow threshold.
-gco2_reefer,0,50000,200,TO_CALIBRATE_AFTER_FIRST_REAL_RUN,Set bin ranges after pilot run; enforce overflow/underflow threshold.
-diff_gco2,-10000,50000,200,TO_CALIBRATE_AFTER_FIRST_REAL_RUN,Set bin ranges after pilot run; enforce overflow/underflow threshold.
-ratio,0,5,200,TO_CALIBRATE_AFTER_FIRST_REAL_RUN,Set bin ranges after pilot run; enforce overflow/underflow threshold.
+"metric","min","max","bins","status","notes","calibration_run_group","calibrated_at_utc","calibration_method"
+"gco2_dry",-62.3125,312.3125,200,"CALIBRATED_FROM_PILOT","Calibrated from merged pilot artifacts for run_group=BASE at 2026-02-15T03:25:12Z","BASE","2026-02-15T03:25:12Z","quantiles[5e-04,0.9995] pad_frac=0.25"
+"gco2_reefer",-62.3125,312.3125,200,"CALIBRATED_FROM_PILOT","Calibrated from merged pilot artifacts for run_group=BASE at 2026-02-15T03:25:12Z","BASE","2026-02-15T03:25:12Z","quantiles[5e-04,0.9995] pad_frac=0.25"
+"diff_gco2",-174.775,274.775,200,"CALIBRATED_FROM_PILOT","Calibrated from merged pilot artifacts for run_group=BASE at 2026-02-15T03:25:12Z","BASE","2026-02-15T03:25:12Z","quantiles[5e-04,0.9995] pad_frac=0.25"
+"ratio",1.245625,2.029375,200,"CALIBRATED_FROM_PILOT","Calibrated from merged pilot artifacts for run_group=BASE at 2026-02-15T03:25:12Z","BASE","2026-02-15T03:25:12Z","quantiles[5e-04,0.9995] pad_frac=0.25"

@@ -21,12 +21,12 @@ test_that("products schema includes required locked-scope columns", {
   expect_true(all(req %in% names(products)))
 })
 
-test_that("scenarios have explicit statuses and histogram remains pending calibration", {
+test_that("scenarios have explicit statuses and histogram status is explicit", {
   scenarios <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "scenarios.csv"), stringsAsFactors = FALSE)
   hist_cfg <- utils::read.csv(file.path("..", "..", "data", "inputs_local", "histogram_config.csv"), stringsAsFactors = FALSE)
 
   expect_true(all(c("CENTRALIZED", "REGIONALIZED", "SMOKE_LOCAL") %in% scenarios$scenario_id))
   expect_true(all(!is.na(scenarios$status) & nzchar(scenarios$status)))
 
-  expect_true(all(hist_cfg$status == "TO_CALIBRATE_AFTER_FIRST_REAL_RUN"))
+  expect_true(all(hist_cfg$status %in% c("TO_CALIBRATE_AFTER_FIRST_REAL_RUN", "CALIBRATED_FROM_PILOT")))
 })
