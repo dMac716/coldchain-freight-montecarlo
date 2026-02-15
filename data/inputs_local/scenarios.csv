@@ -1,3 +1,4 @@
-scenario,product_name,FU_kcal,distance_miles,truck_g_per_ton_mile,reefer_extra_g_per_ton_mile,util_dry,util_reefer,status,needed,source_plan,notes
-BASE,BASE_PRODUCT,1000,,105,4,1.00,1.00,MISSING_DISTANCE_DATA,FAF lane distances or justified distribution assumptions,FHWA FAF + optional retailer/manufacturer locations,Distance remains intentionally blank pending lane data.
-SMOKE_LOCAL,SMOKE_PRODUCT,1000,1200,105,4,1.00,1.00,SMOKE_READY,,,Synthetic local scenario for smoke and wiring checks only.
+scenario_id,scenario,description,FU_kcal,distance_distribution_id,distance_model,grid_case,grid_co2_g_per_kwh,status,needed,source_plan,notes
+CENTRALIZED,CENTRALIZED,Centralized production and distribution network,1000,dist_centralized_food_truck_2024,triangular_fit,US_AVG,,OK,,FAF5.7.1 OD truck food commodity flows,Locked-scope spatial case with FAF-derived truck-distance distribution.
+REGIONALIZED,REGIONALIZED,Regionalized production and distribution network,1000,dist_regionalized_food_truck_2024,triangular_fit,US_AVG,,OK,,FAF5.7.1 OD truck food commodity flows,Locked-scope spatial case with FAF-derived truck-distance distribution.
+SMOKE_LOCAL,SMOKE_LOCAL,Synthetic local smoke scenario,1000,dist_smoke_local,fixed,NA,,SMOKE_READY,,,For wiring and CI smoke only.

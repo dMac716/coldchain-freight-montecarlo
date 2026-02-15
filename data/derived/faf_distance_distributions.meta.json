@@ -1,0 +1,10 @@
+{
+  "generated_at_utc": "2026-02-15T02:10:57Z",
+  "source_zip": "FAF5.7.1_2018-2024.zip",
+  "csv_entry": "FAF5.7.1_2018-2024.csv",
+  "source_id": "faf5_7_1_2018_2024_zip",
+  "input_hash": "7d3e10ebb9e05560adebb7a533d011d1c2108bf0cf4d277d36e714140c8219c7",
+  "sctg_filter": ["01", "02", "03", "04", "05", "06", "07", "08"],
+  "mode_filter": "dms_mode==1",
+  "dist_band_midpoint_assumption": "1:25,2:75,3:175,4:375,5:625,6:875,7:1250,8:1750,9:2250"
+}
