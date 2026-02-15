@@ -19,7 +19,8 @@ read_inputs_local <- function(dir = "data/inputs_local") {
     emissions_factors = read_csv_optional(file.path(dir, "emissions_factors.csv")),
     sampling_priors = read_csv_optional(file.path(dir, "sampling_priors.csv")),
     scenario_matrix = read_csv_optional(file.path(dir, "scenario_matrix.csv")),
-    distance_distributions = read_csv_optional(derived_file)
+    distance_distributions = read_csv_optional(derived_file),
+    grid_ci = read_csv_optional(file.path(dir, "grid_ci.csv"))
   )
 }
 
@@ -272,6 +273,13 @@ resolve_variant_inputs <- function(inputs, variant_row, mode = "SMOKE_LOCAL") {
     }
     fallback
   }
+  prior_value_any <- function(params, fallback = NA_real_) {
+    for (p in params) {
+      v <- prior_value(p, NA_real_)
+      if (is.finite(v)) return(v)
+    }
+    fallback
+  }
   row_value <- function(row, col, fallback = NA_real_) {
     if (nrow(row) == 0 || !(col %in% names(row))) return(fallback)
     v <- suppressWarnings(as.numeric(row[[col]][[1]]))
@@ -296,14 +304,23 @@ resolve_variant_inputs <- function(inputs, variant_row, mode = "SMOKE_LOCAL") {
   payload <- prior_value("default_payload_tons", row_value(factor_row, "default_payload_tons", row_value(dry_factor_row, "default_payload_tons", 16.35)))
   if (!is.finite(payload) || payload <= 0) payload <- 16.35
 
-  grid_ci <- prior_value("grid_co2_g_per_kwh", suppressWarnings(as.numeric(scenario_row$grid_co2_g_per_kwh[[1]])))
+  grid_case <- if ("grid_case" %in% names(variant_row)) variant_row$grid_case[[1]] else scenario_row$grid_case[[1]]
+  grid_ci_row <- data.frame(stringsAsFactors = FALSE)
+  if (nrow(inputs$grid_ci) > 0 && !is.null(grid_case) && !is.na(grid_case) && nzchar(grid_case) && grid_case != "NA") {
+    grid_ci_row <- inputs$grid_ci[inputs$grid_ci$grid_case == grid_case, , drop = FALSE]
+    if (nrow(grid_ci_row) > 0) grid_ci_row <- grid_ci_row[1, , drop = FALSE]
+  }
+  grid_ci <- prior_value_any(
+    c("grid_co2_g_per_kwh"),
+    if (nrow(grid_ci_row) > 0) suppressWarnings(as.numeric(grid_ci_row$co2_g_per_kwh[[1]])) else suppressWarnings(as.numeric(scenario_row$grid_co2_g_per_kwh[[1]]))
+  )
   if (!is.finite(grid_ci)) grid_ci <- row_value(factor_row, "grid_co2_g_per_kwh", 380)
 
-  kwh_tract <- prior_value("kwh_per_mile_tract", row_value(factor_row, "kwh_per_mile_tract", NA_real_))
-  kwh_tru <- prior_value("kwh_per_mile_tru", row_value(factor_row, "kwh_per_mile_tru", NA_real_))
+  kwh_tract <- prior_value_any(c("bev_kwh_per_mile_tract", "kwh_per_mile_tract"), row_value(factor_row, "kwh_per_mile_tract", NA_real_))
+  kwh_tru <- prior_value_any(c("etru_kwh_per_mile", "kwh_per_mile_tru"), row_value(factor_row, "kwh_per_mile_tru", NA_real_))
   if (!is.finite(kwh_tru)) {
-    tru_kw <- prior_value("tru_power_kw", NA_real_)
-    speed <- prior_value("linehaul_speed_mph", NA_real_)
+    tru_kw <- prior_value_any(c("etru_kw_draw", "tru_power_kw"), NA_real_)
+    speed <- prior_value_any(c("linehaul_avg_speed_mph", "linehaul_speed_mph"), NA_real_)
     if (all(is.finite(c(tru_kw, speed))) && speed > 0) {
       kwh_tru <- tru_kw / speed
     }

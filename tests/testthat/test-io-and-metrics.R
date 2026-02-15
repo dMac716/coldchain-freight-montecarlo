@@ -26,6 +26,18 @@ test_that("SMOKE_LOCAL resolves BEV variant without fallback warnings", {
   expect_silent(resolve_variant_inputs(inputs, bev, mode = "SMOKE_LOCAL"))
 })
 
+test_that("all BEV scenario matrix rows resolve to non-NA runtime intensity", {
+  inputs <- read_inputs_local(file.path("..", "..", "data", "inputs_local"))
+  bev_rows <- subset(inputs$scenario_matrix, powertrain == "bev")
+  expect_true(nrow(bev_rows) > 0)
+  for (i in seq_len(nrow(bev_rows))) {
+    v <- bev_rows[i, , drop = FALSE]
+    r <- resolve_variant_inputs(inputs, v, mode = "SMOKE_LOCAL")
+    expect_true(is.finite(r$inputs_list$truck_g_per_ton_mile), info = v$variant_id[[1]])
+    expect_true(is.finite(r$inputs_list$reefer_extra_g_per_ton_mile), info = v$variant_id[[1]])
+  }
+})
+
 test_that("metric moments are internally consistent", {
   x <- fixture_inputs_small()
   h <- fixture_hist_config()

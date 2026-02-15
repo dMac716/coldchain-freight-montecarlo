@@ -29,6 +29,7 @@ Available now:
 - `data/inputs_local/products.csv`
 - `data/inputs_local/emissions_factors.csv`
 - `data/inputs_local/sampling_priors.csv`
+- `data/inputs_local/grid_ci.csv`
 - `data/inputs_local/scenario_matrix.csv`
 - `data/derived/faf_distance_distributions.csv`
 - `sources/sources_manifest.csv`
@@ -46,10 +47,7 @@ Available now:
 
 ## Data Needs Remaining
 Current placeholders intentionally gated behind `NEEDS_SOURCE_VALUE`:
-- `kwh_per_mile_tract` prior for BEV traction
-- `tru_power_kw` and speed-derived electric TRU energy prior
-- `grid_co2_g_per_kwh` default pending an explicit grid source (e.g., eGRID/EIA)
-- Hybrid BEV + diesel-TRU emissions factor row
+- Hybrid BEV + diesel-TRU emissions factor row (`bev_refrigerated_diesel_tru`)
 
 ## Provenance Rules
 - All numeric inputs used by runtime tables are tied to `source_id` in `sources/sources_manifest.csv`.

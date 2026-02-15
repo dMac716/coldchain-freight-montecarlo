@@ -116,20 +116,29 @@ sample_inputs <- function(inputs, scenario_row, factors_table, n, seed = NULL) {
       }
       rep(fallback, n)
     }
+    sample_extra_any <- function(names_vec, fallback = NA_real_) {
+      for (nm in names_vec) {
+        if (!is.null(sampling) && nm %in% names(sampling)) {
+          return(draw_from_prior(n, sampling[[nm]]))
+        }
+      }
+      rep(fallback, n)
+    }
 
-    payload <- sample_extra("default_payload_tons", ctx$default_payload_tons)
+    payload <- sample_extra_any(c("default_payload_tons"), ctx$default_payload_tons)
     payload[!is.finite(payload) | payload <= 0] <- ctx$default_payload_tons
 
-    grid_ci <- sample_extra("grid_co2_g_per_kwh", ctx$grid_co2_g_per_kwh)
+    grid_ci <- sample_extra_any(c("grid_co2_g_per_kwh"), ctx$grid_co2_g_per_kwh)
     grid_ci[!is.finite(grid_ci)] <- ctx$grid_co2_g_per_kwh
 
-    kwh_tract <- sample_extra("kwh_per_mile_tract", ctx$kwh_per_mile_tract)
-    kwh_tru <- sample_extra("kwh_per_mile_tru", ctx$kwh_per_mile_tru)
+    kwh_tract <- sample_extra_any(c("bev_kwh_per_mile_tract", "kwh_per_mile_tract"), ctx$kwh_per_mile_tract)
+    kwh_tru <- sample_extra_any(c("etru_kwh_per_mile", "kwh_per_mile_tru"), ctx$kwh_per_mile_tru)
 
     if (all(!is.finite(kwh_tru)) && !is.null(sampling) &&
-        ("tru_power_kw" %in% names(sampling)) && ("linehaul_speed_mph" %in% names(sampling))) {
-      tru_kw <- draw_from_prior(n, sampling[["tru_power_kw"]])
-      speed <- draw_from_prior(n, sampling[["linehaul_speed_mph"]])
+        (("etru_kw_draw" %in% names(sampling)) || ("tru_power_kw" %in% names(sampling))) &&
+        (("linehaul_avg_speed_mph" %in% names(sampling)) || ("linehaul_speed_mph" %in% names(sampling)))) {
+      tru_kw <- if ("etru_kw_draw" %in% names(sampling)) draw_from_prior(n, sampling[["etru_kw_draw"]]) else draw_from_prior(n, sampling[["tru_power_kw"]])
+      speed <- if ("linehaul_avg_speed_mph" %in% names(sampling)) draw_from_prior(n, sampling[["linehaul_avg_speed_mph"]]) else draw_from_prior(n, sampling[["linehaul_speed_mph"]])
       kwh_tru <- tru_kw / speed
     }
 

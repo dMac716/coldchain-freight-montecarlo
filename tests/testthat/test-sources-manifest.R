@@ -8,7 +8,7 @@ test_that("every source PDF, FAF zip, and data workbook has a manifest entry", {
   expected <- c(
     list.files(file.path("..", "..", "sources", "pdfs"), pattern = "\\.pdf$", full.names = FALSE),
     list.files(file.path("..", "..", "sources", "FAF5.7.1"), pattern = "\\.zip$", full.names = FALSE),
-    list.files(file.path("..", "..", "sources", "data"), pattern = "\\.xlsx$", recursive = TRUE, full.names = FALSE)
+    basename(list.files(file.path("..", "..", "sources", "data"), pattern = "\\.xlsx$", recursive = TRUE, full.names = FALSE))
   )
   expected <- sort(expected)
   in_manifest <- sort(unique(manifest$filename))
