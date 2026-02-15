@@ -9,10 +9,19 @@ source_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
 for (f in source_files) source(f, local = FALSE)
 
 option_list <- list(
-  make_option(c("--run_group"), type = "character", help = "Run group id or scenario name")
+  make_option(c("--run_group"), type = "character", help = "Run group id or scenario name"),
+  make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
 if (is.null(opt$run_group)) stop("--run_group is required.")
+mode <- normalize_run_mode(opt$mode)
+
+inputs <- read_inputs_local()
+scenario_name <- NULL
+if ("scenario" %in% names(inputs$scenarios) && opt$run_group %in% inputs$scenarios$scenario) {
+  scenario_name <- opt$run_group
+}
+assert_mode_data_ready(mode, inputs$scenarios, inputs$histogram_config, scenario_name = scenario_name)
 
 files <- list.files("contrib/chunks", pattern = paste0("chunk_", opt$run_group), full.names = TRUE)
 if (length(files) == 0) stop("No chunk artifacts found for run_group.")
@@ -65,6 +74,13 @@ for (a in keep) {
 }
 
 merged <- merge_chunk_results(chunk_results)
+enforce_hist_coverage(
+  hist_list = merged$hist,
+  n_list = lapply(merged$stats, function(s) s$n),
+  mode = mode,
+  threshold = 0.001,
+  context = paste0("aggregate run_group=", opt$run_group)
+)
 
 prob_gt_zero <- function(hist) {
   edges <- hist$bin_edges
@@ -139,6 +155,7 @@ for (nm in metric_names) {
 
 metadata <- list(
   run_group_id = opt$run_group,
+  mode = mode,
   model_version = ref$model_version,
   inputs_hash = ref$inputs_hash,
   metric_definitions_hash = ref$metric_definitions_hash,

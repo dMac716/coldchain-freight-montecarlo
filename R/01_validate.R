@@ -124,3 +124,71 @@ validate_artifact_schema_local <- function(path_json) {
   }
   invisible(TRUE)
 }
+
+normalize_run_mode <- function(mode) {
+  if (is.null(mode) || !is.character(mode) || length(mode) != 1 || !nzchar(mode)) {
+    return("SMOKE_LOCAL")
+  }
+  out <- toupper(mode)
+  allowed <- c("SMOKE_LOCAL", "REAL_RUN")
+  if (!out %in% allowed) {
+    stop("Invalid mode. Allowed values: SMOKE_LOCAL, REAL_RUN.")
+  }
+  out
+}
+
+assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scenario_name = NULL) {
+  mode <- normalize_run_mode(mode)
+  if (mode != "REAL_RUN") return(invisible(TRUE))
+
+  if (!is.null(scenario_name) && "scenario" %in% names(scenarios_df)) {
+    scenario_row <- subset(scenarios_df, scenario == scenario_name)
+    if (nrow(scenario_row) == 0) {
+      stop("REAL_RUN gate failed: scenario not found in scenarios.csv.")
+    }
+    if ("status" %in% names(scenario_row) &&
+        any(scenario_row$status == "MISSING_DISTANCE_DATA", na.rm = TRUE)) {
+      stop("REAL_RUN gate failed: scenarios.csv still marked MISSING_DISTANCE_DATA.")
+    }
+  }
+
+  if ("status" %in% names(histogram_config_df) &&
+      any(histogram_config_df$status == "TO_CALIBRATE_AFTER_FIRST_REAL_RUN", na.rm = TRUE)) {
+    stop("REAL_RUN gate failed: histogram_config.csv still marked TO_CALIBRATE_AFTER_FIRST_REAL_RUN.")
+  }
+
+  invisible(TRUE)
+}
+
+hist_coverage_ratio <- function(hist, n_total = NULL) {
+  if (is.null(n_total)) {
+    n_total <- sum(hist$counts) + hist$underflow + hist$overflow
+  }
+  if (!is.finite(n_total) || n_total <= 0) return(0)
+  (hist$underflow + hist$overflow) / n_total
+}
+
+enforce_hist_coverage <- function(hist_list, n_list = NULL, mode = "SMOKE_LOCAL",
+                                  threshold = 0.001, context = "run") {
+  mode <- normalize_run_mode(mode)
+  for (nm in names(hist_list)) {
+    n_total <- NULL
+    if (!is.null(n_list) && nm %in% names(n_list)) {
+      n_total <- n_list[[nm]]
+    }
+    ratio <- hist_coverage_ratio(hist_list[[nm]], n_total)
+    if (ratio > threshold) {
+      msg <- paste0(
+        "Histogram coverage threshold exceeded for metric ", nm,
+        " in ", context, ": ratio=",
+        format(ratio, digits = 6), " > ", format(threshold, digits = 6)
+      )
+      if (mode == "REAL_RUN") {
+        stop(msg)
+      } else {
+        warning(msg, call. = FALSE)
+      }
+    }
+  }
+  invisible(TRUE)
+}

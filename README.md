@@ -191,19 +191,26 @@ No cloud services are required.
 Run a chunk:
 
 ```bash
-Rscript tools/run_chunk.R --scenario SMOKE_LOCAL --n 200000
+Rscript tools/run_chunk.R --scenario SMOKE_LOCAL --n 200000 --mode SMOKE_LOCAL
 ```
 
 Aggregate chunks:
 
 ```bash
-Rscript tools/aggregate.R --run_group SMOKE_LOCAL
+Rscript tools/aggregate.R --run_group SMOKE_LOCAL --mode SMOKE_LOCAL
 ```
 
 Quick offline smoke test:
 
 ```bash
 bash tools/smoke_test.sh
+```
+
+Real run (gated):
+
+```bash
+Rscript tools/run_chunk.R --scenario BASE --n 200000 --seed 123 --mode REAL_RUN
+Rscript tools/aggregate.R --run_group BASE --mode REAL_RUN
 ```
 
 Only chunks with identical:
@@ -232,6 +239,13 @@ bash tools/smoke_test.sh
 Notes:
 - One golden test remains intentionally skipped until deterministic golden baselines are finalized.
 - Input placeholder policy is enforced: products/factors must be sourced, scenarios/histogram may remain explicit pending rows.
+- `REAL_RUN` enforces data completeness gates and histogram coverage threshold (default 0.1%).
+
+Calibrate histogram bins from a pilot:
+
+```bash
+Rscript tools/calibrate_bins.R --run_group SMOKE_LOCAL
+```
 
 ---
 

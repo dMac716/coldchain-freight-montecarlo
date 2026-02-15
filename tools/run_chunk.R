@@ -13,13 +13,15 @@ option_list <- list(
   make_option(c("--scenario"), type = "character", help = "Scenario name"),
   make_option(c("--n"), type = "integer", help = "Number of samples"),
   make_option(c("--seed"), type = "integer", default = NA_integer_, help = "Seed (optional)"),
-  make_option(c("--outdir"), type = "character", default = "outputs/local", help = "Output directory")
+  make_option(c("--outdir"), type = "character", default = "outputs/local", help = "Output directory"),
+  make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN")
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
 if (is.null(opt$scenario) || is.null(opt$n)) {
   stop("--scenario and --n are required.")
 }
+mode <- normalize_run_mode(opt$mode)
 
 inputs <- read_inputs_local()
 scenarios <- inputs$scenarios
@@ -37,7 +39,6 @@ product_row <- product_row[1, , drop = FALSE]
 
 inputs_list <- resolve_inputs(scenario_row, product_row)
 inputs_list$sampling <- build_sampling_from_factors(factors, scenario_name = opt$scenario)
-validate_inputs(inputs_list)
 
 hist_config <- list(
   metric = hist_config_df$metric,
@@ -46,10 +47,19 @@ hist_config <- list(
   bins = hist_config_df$bins
 )
 validate_hist_config(hist_config)
+assert_mode_data_ready(mode, scenarios, hist_config_df, scenario_name = opt$scenario)
+validate_inputs(inputs_list)
 
 seed_used <- if (is.na(opt$seed)) sample.int(.Machine$integer.max, 1) else opt$seed
 
 chunk <- run_monte_carlo_chunk(inputs = inputs_list, hist_config = hist_config, n = opt$n, seed = seed_used)
+enforce_hist_coverage(
+  hist_list = chunk$hist,
+  n_list = lapply(chunk$stats, function(s) s$n),
+  mode = mode,
+  threshold = 0.001,
+  context = paste0("run_chunk scenario=", opt$scenario)
+)
 
 # Write local outputs
 if (!dir.exists(opt$outdir)) dir.create(opt$outdir, recursive = TRUE)
@@ -57,9 +67,11 @@ write_results_summary(chunk$stats, file.path(opt$outdir, "results_summary.csv"))
 
 run_metadata <- list(
   scenario = opt$scenario,
+  mode = mode,
   n = opt$n,
   seed = seed_used,
   rng_kind = chunk$metadata$rng_kind,
+  sampled_variables = names(inputs_list$sampling),
   timestamp_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 )
 writeLines(jsonlite::toJSON(run_metadata, auto_unbox = TRUE, pretty = TRUE),
