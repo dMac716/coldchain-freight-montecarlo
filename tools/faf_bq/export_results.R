@@ -43,9 +43,9 @@ query <- run_cmd(
     paste0("--location=", toupper(opt$location)),
     "query",
     "--use_legacy_sql=false",
-    "--format=csv",
-    sql
-  )
+    "--format=csv"
+  ),
+  stdin = sql
 )
 if (query$status != 0L) {
   stop("bq query failed:\n", paste(query$out, collapse = "\n"))
