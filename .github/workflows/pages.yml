@@ -46,6 +46,7 @@ jobs:
       - name: Render Quarto site
         shell: bash
         run: |
+          rm -rf site/_freeze
           quarto render site/
 
       - name: Upload Pages artifact

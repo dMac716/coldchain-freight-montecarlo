@@ -12,8 +12,8 @@ This visualization layer is static-first and artifact-driven.
 
 - `data/derived/faf_top_od_flows.csv`
 - `data/derived/faf_zone_centroids.csv`
-- `data/derived/scenario_summary.csv` (generated from available run outputs)
-- `outputs/aggregate/results_summary.csv`
+- `data/derived/scenario_summary.csv` (preferred; generated from available run outputs)
+- `outputs/aggregate/results_summary.csv` (fallback if `scenario_summary.csv` is not available)
 
 ## Refresh UI Artifacts
 

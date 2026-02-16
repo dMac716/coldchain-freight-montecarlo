@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library(leaflet))
 
 pick_path <- function(paths) {
   for (p in paths) if (file.exists(p)) return(p)
-  stop("File not found in expected locations: ", paste(paths, collapse = ", "))
+  ""
 }
 
 flows_path <- pick_path(c(
@@ -21,13 +21,25 @@ zones_path <- pick_path(c(
   "data/derived/faf_zone_centroids.csv"
 ))
 
-flows <- utils::read.csv(flows_path, stringsAsFactors = FALSE)
-zones <- utils::read.csv(zones_path, stringsAsFactors = FALSE)
+if (!nzchar(flows_path) || !nzchar(zones_path)) {
+  cat("<p><em>Flow map data not yet generated. Run <code>tools/derive_ui_artifacts.R</code> before rendering.</em></p>")
+  knitr::knit_exit()
+}
+
+flows <- if (nzchar(flows_path)) utils::read.csv(flows_path, stringsAsFactors = FALSE) else data.frame()
+zones <- if (nzchar(zones_path)) utils::read.csv(zones_path, stringsAsFactors = FALSE) else data.frame()
+
+if (nrow(flows) == 0 || nrow(zones) == 0) {
+  cat("<p><em>Flow map data not yet generated. Run <code>tools/derive_ui_artifacts.R</code> before rendering.</em></p>")
+  knitr::knit_exit()
+}
 
 required_flows <- c("origin_id", "dest_id", "tons", "ton_miles", "distance_miles", "commodity_group", "scenario_id")
 required_zones <- c("zone_id", "name", "lat", "lon")
-stopifnot(all(required_flows %in% names(flows)))
-stopifnot(all(required_zones %in% names(zones)))
+missing_flows <- setdiff(required_flows, names(flows))
+missing_zones <- setdiff(required_zones, names(zones))
+if (length(missing_flows) > 0) stop("faf_top_od_flows.csv missing required columns: ", paste(missing_flows, collapse = ", "))
+if (length(missing_zones) > 0) stop("faf_zone_centroids.csv missing required columns: ", paste(missing_zones, collapse = ", "))
 
 zones$zone_id <- as.character(zones$zone_id)
 flows$origin_id <- as.character(flows$origin_id)
@@ -40,7 +52,10 @@ names(dest) <- c("dest_id_ref", "dest_name", "lat2", "lon2")
 edges <- cbind(flows, orig, dest)
 edges <- edges[is.finite(edges$lat1) & is.finite(edges$lon1) & is.finite(edges$lat2) & is.finite(edges$lon2), , drop = FALSE]
 
-if (nrow(edges) == 0) stop("No mappable edges found in UI artifacts.")
+if (nrow(edges) == 0) {
+  cat("<p><em>No mappable edges found in UI artifacts.</em></p>")
+  knitr::knit_exit()
+}
 
 rank_desc <- function(x) rank(-x, ties.method = "first")
 edges$rank_tons <- ave(edges$tons, edges$scenario_id, FUN = rank_desc)
@@ -85,7 +100,7 @@ map <- leaflet(edges) |>
         var scen = document.getElementById('flow-scenario').value;
         var paths = el.querySelectorAll('.flow-edge');
         paths.forEach(function(p) {
-          var classes = (p.getAttribute('class') || '').split(/\\s+/);
+          var classes = (p.getAttribute('class') || '').trim().split(/\\s+/);
           var rank = null;
           var scenarioToken = null;
           classes.forEach(function(c) {
@@ -93,7 +108,7 @@ map <- leaflet(edges) |>
             if (c.indexOf('rm-') === 0 && metric === 'ton_miles') rank = parseInt(c.slice(3), 10);
             if (c.indexOf('scen-') === 0) scenarioToken = c.replace('scen-', '');
           });
-          var keepScenario = (scen === 'ALL') || (scenarioToken === scen.toUpperCase());
+          var keepScenario = (scen === 'ALL') || ((scenarioToken || '').toUpperCase() === scen.toUpperCase());
           var keepRank = (rank !== null && rank <= topN);
           var keep = keepScenario && keepRank;
           p.style.opacity = keep ? '0.62' : '0';

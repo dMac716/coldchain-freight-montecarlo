@@ -60,10 +60,6 @@ Rscript "$ROOT_DIR/tools/faf_bq/load_faf_from_gcs.R" \
   --gcs_uri "$FAF_OD_GCS_URI" \
   --table "$BQ_TABLE"
 
-log "[2/3] Running distance distribution query."
-# SQL file is used by export step; this message is for traceability.
-
-
 log "[3/3] Exporting derived distributions + metadata."
 Rscript "$ROOT_DIR/tools/faf_bq/export_results.R" \
   --project "$GCP_PROJECT_ID" \

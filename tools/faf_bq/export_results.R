@@ -55,6 +55,12 @@ opt <- parse_args(OptionParser(
   option_list = option_list
 ))
 
+validate_identifier <- function(name, value) {
+  if (!grepl("^[A-Za-z0-9_]+$", value)) {
+    stop(sprintf("Invalid %s '%s'; must match ^[A-Za-z0-9_]+$", name, value))
+  }
+}
+
 required <- c("project", "dataset", "location", "table")
 missing <- required[vapply(required, function(x) is.null(opt[[x]]) || !nzchar(opt[[x]]), logical(1))]
 if (length(missing) > 0) stop("Missing required args: ", paste(missing, collapse = ", "))
@@ -63,6 +69,9 @@ if (!file.exists(opt$sql_top_flows)) stop("SQL file not found: ", opt$sql_top_fl
 if (Sys.which("bq") == "") stop("bq CLI not found in PATH.")
 
 table_fqn <- paste0(opt$project, ".", opt$dataset, ".", opt$table)
+validate_identifier("project", opt$project)
+validate_identifier("dataset", opt$dataset)
+validate_identifier("table", opt$table)
 
 sql_dist <- paste(readLines(opt$sql_distance, warn = FALSE), collapse = "\n")
 sql_dist <- gsub("\\{\\{TABLE_FQN\\}\\}", table_fqn, sql_dist)
@@ -97,7 +106,7 @@ dist_out <- data.frame(
   n_records = dist$n_records,
   status = "OK",
   source_id = "faf5_7_1_2018_2024_gcs_csv",
-  notes = "Computed in BigQuery from GCS-loaded FAF OD with tons_2024 weighting.",
+  notes = paste0("Computed in BigQuery from GCS-loaded FAF OD with ", weight_col, " weighting."),
   stringsAsFactors = FALSE
 )
 

@@ -2,7 +2,6 @@
 
 suppressPackageStartupMessages({
   library(optparse)
-  library(digest)
 })
 
 log_info <- function(...) message("[gcs_sync] ", paste0(..., collapse = ""))
@@ -73,13 +72,17 @@ if (nrow(manifest) > 0 && all(c("filename", "notes") %in% names(manifest))) {
 }
 
 if (is.finite(file.info(dest)$size) && file.info(dest)$size > 0) {
-  got_sha <- digest::digest(file = dest, algo = "sha256")
-  if (is.na(expected_sha)) {
-    log_info("Downloaded ", dest, " (sha256=", got_sha, "). No expected checksum found in sources_manifest notes; skipping strict verification.")
-  } else if (!identical(tolower(got_sha), expected_sha)) {
-    stop("Checksum mismatch for ", dest, ". expected=", expected_sha, " got=", got_sha)
+  if (requireNamespace("digest", quietly = TRUE)) {
+    got_sha <- digest::digest(file = dest, algo = "sha256")
+    if (is.na(expected_sha)) {
+      log_info("Downloaded ", dest, " (sha256=", got_sha, "). No expected checksum found in sources_manifest notes; skipping strict verification.")
+    } else if (!identical(tolower(got_sha), expected_sha)) {
+      stop("Checksum mismatch for ", dest, ". expected=", expected_sha, " got=", got_sha)
+    } else {
+      log_info("Checksum verified for ", dest)
+    }
   } else {
-    log_info("Checksum verified for ", dest)
+    log_info("R package 'digest' not installed; skipping sha256 verification for ", dest)
   }
 }
 

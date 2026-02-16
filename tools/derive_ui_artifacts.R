@@ -36,6 +36,10 @@ read_faf_zone_lookup <- function(meta_xlsx) {
   if (!nzchar(meta_xlsx) || !file.exists(meta_xlsx)) {
     return(data.frame(zone_id = character(), name = character(), stringsAsFactors = FALSE))
   }
+  if (Sys.which("python3") == "") {
+    log_info("python3 not found; skipping FAF zone lookup from metadata workbook.")
+    return(data.frame(zone_id = character(), name = character(), stringsAsFactors = FALSE))
+  }
 
   py <- paste(
     "import csv, re, sys, zipfile, xml.etree.ElementTree as ET",
@@ -139,6 +143,11 @@ distance_midpoint_miles <- function(dist_band) {
 }
 
 build_scenario_summary <- function(out_path = "data/derived/scenario_summary.csv") {
+  has_jsonlite <- requireNamespace("jsonlite", quietly = TRUE)
+  if (!has_jsonlite) {
+    log_info("R package 'jsonlite' not available; run_metadata.json will not be parsed while building scenario_summary.csv.")
+  }
+
   files <- list.files("outputs", pattern = "results_summary\\.csv$", recursive = TRUE, full.names = TRUE)
   if (length(files) == 0) {
     log_info("No outputs/*/results_summary.csv files found; skipping scenario_summary.csv generation.")
@@ -158,9 +167,11 @@ build_scenario_summary <- function(out_path = "data/derived/scenario_summary.csv
     refrigeration_mode <- NA_character_
 
     if (file.exists(run_meta_path)) {
-      meta <- tryCatch(jsonlite::fromJSON(run_meta_path), error = function(e) list())
-      if (!is.null(meta$scenario_id) && nzchar(meta$scenario_id)) scenario_id <- meta$scenario_id
-      if (!is.null(meta$variant_id) && nzchar(meta$variant_id)) variant_id <- meta$variant_id
+      if (has_jsonlite) {
+        meta <- tryCatch(jsonlite::fromJSON(run_meta_path), error = function(e) list())
+        if (!is.null(meta$scenario_id) && nzchar(meta$scenario_id)) scenario_id <- meta$scenario_id
+        if (!is.null(meta$variant_id) && nzchar(meta$variant_id)) variant_id <- meta$variant_id
+      }
     }
     if (identical(scenario_id, "aggregate")) scenario_id <- "AGGREGATE"
 

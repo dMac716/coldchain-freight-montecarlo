@@ -22,6 +22,7 @@ Core commands for contributors.
 
 - `make derive-ui`  
   Build `data/derived/faf_top_od_flows.csv`, `faf_zone_centroids.csv`, `scenario_summary.csv`.
+  Notes: zone name extraction from the FAF metadata workbook uses `python3` if available; otherwise the script falls back to IDs-only names.
 - `make ui`  
   Derive artifacts and render Quarto site (`site/` -> `docs/`).
 

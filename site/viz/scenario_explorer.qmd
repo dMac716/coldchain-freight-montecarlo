@@ -22,11 +22,26 @@ if (!nzchar(summary_path)) {
   ))
 }
 
-if (!nzchar(summary_path)) stop("No scenario summary or aggregate summary CSV available.")
+if (!nzchar(summary_path)) {
+  cat("<p><em>Scenario summary not yet generated. Run <code>Rscript tools/derive_ui_artifacts.R</code> (or generate <code>outputs/aggregate/results_summary.csv</code>).</em></p>")
+  knitr::knit_exit()
+}
 
 df <- utils::read.csv(summary_path, stringsAsFactors = FALSE)
 if (!("scenario_id" %in% names(df))) df$scenario_id <- "AGGREGATE"
-if (!("metric" %in% names(df))) stop("Summary CSV missing metric column.")
+if (nrow(df) == 0) {
+  cat("<p><em>Scenario summary is empty.</em></p>")
+  knitr::knit_exit()
+}
+if (!("metric" %in% names(df))) {
+  cat("<p><em>Scenario summary is missing required column <code>metric</code>. Regenerate artifacts via <code>Rscript tools/derive_ui_artifacts.R</code>.</em></p>")
+  knitr::knit_exit()
+}
+metric_vals <- trimws(as.character(df$metric))
+if (all(!nzchar(metric_vals))) {
+  cat("<p><em>Scenario summary has an empty/invalid <code>metric</code> column. Regenerate artifacts via <code>Rscript tools/derive_ui_artifacts.R</code>.</em></p>")
+  knitr::knit_exit()
+}
 if (!("powertrain" %in% names(df))) df$powertrain <- "unknown"
 if (!("trailer_type" %in% names(df))) df$trailer_type <- "unknown"
 if (!("variant_id" %in% names(df))) df$variant_id <- df$scenario_id
@@ -46,7 +61,7 @@ trailer_options <- paste(sprintf("<option value='%s'>%s</option>", trailer_vals,
 row_html <- apply(df, 1, function(r) {
   sprintf(
     "<tr data-scenario='%s' data-power='%s' data-trailer='%s'><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%.6g</td><td>%.6g</td><td>%.6g</td><td>%.6g</td><td>%.6g</td></tr>",
-    r[["scenario_id"]], r[["powertrain"]], r[["trailer_type"]],
+    toupper(r[["scenario_id"]]), toupper(r[["powertrain"]]), toupper(r[["trailer_type"]]),
     r[["scenario_id"]], r[["variant_id"]], r[["powertrain"]], r[["metric"]],
     as.numeric(r[["mean"]]), as.numeric(r[["var"]]),
     as.numeric(r[["p05"]]), as.numeric(r[["p50"]]), as.numeric(r[["p95"]])
@@ -71,7 +86,7 @@ cat(
   "const tSel=document.getElementById('trailer-filter');",
   "const rows=[...document.querySelectorAll('#scenario-table tbody tr')];",
   "function applyFilters(){",
-  " const s=sSel.value, p=pSel.value, t=tSel.value;",
+  " const s=sSel.value.toUpperCase(), p=pSel.value.toUpperCase(), t=tSel.value.toUpperCase();",
   " rows.forEach(r=>{",
   "   const keepS=(s==='ALL'||r.dataset.scenario===s);",
   "   const keepP=(p==='ALL'||r.dataset.power===p);",

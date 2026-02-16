@@ -24,6 +24,12 @@ option_list <- list(
   make_option(c("--gcs_uri"), type = "character"),
   make_option(c("--table"), type = "character")
 )
+validate_identifier <- function(name, value) {
+  if (!grepl("^[A-Za-z0-9_]+$", value)) {
+    stop(sprintf("Invalid %s '%s'; must match ^[A-Za-z0-9_]+$", name, value))
+  }
+}
+
 opt <- parse_args(OptionParser(
   usage = "%prog [options]",
   description = "Load FAF OD CSV from GCS into BigQuery table with location validation.",
@@ -82,6 +88,9 @@ if (bucket_loc == "US" && requested_loc == "US") {
 }
 
 table_fqn <- paste0(opt$project, ":", opt$dataset, ".", opt$table)
+validate_identifier("project", opt$project)
+validate_identifier("dataset", opt$dataset)
+validate_identifier("table", opt$table)
 load <- run_cmd(
   "bq",
   c(
