@@ -22,8 +22,8 @@ quarto render site/
 - The UI reads local/committed artifacts only:
   - `data/derived/faf_top_od_flows.csv`
   - `data/derived/faf_zone_centroids.csv`
-- `data/derived/scenario_summary.csv` (preferred; generated from `outputs/**/results_summary.csv` when present)
-- `outputs/aggregate/results_summary.csv` (fallback if `scenario_summary.csv` is not available)
+  - `data/derived/scenario_summary.csv` (preferred; generated from `outputs/**/results_summary.csv` when present)
+  - `outputs/aggregate/results_summary.csv` (fallback if `scenario_summary.csv` is not available)
 - No live BigQuery or GCS calls occur during page render.
 - Optional cloud refresh can be run beforehand via:
   - `Rscript tools/gcs_sync_sources.R`

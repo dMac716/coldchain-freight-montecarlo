@@ -25,9 +25,14 @@ option_list <- list(
   make_option(c("--table"), type = "character")
 )
 validate_identifier <- function(name, value) {
-  if (!grepl("^[A-Za-z0-9_]+$", value)) {
-    stop(sprintf("Invalid %s '%s'; must match ^[A-Za-z0-9_]+$", name, value))
-  }
+  ok <- switch(
+    name,
+    project = grepl("^[A-Za-z0-9-]+$", value),
+    dataset = grepl("^[A-Za-z0-9_]+$", value),
+    table = grepl("^[A-Za-z0-9_]+$", value),
+    FALSE
+  )
+  if (!isTRUE(ok)) stop(sprintf("Invalid %s '%s'", name, value))
 }
 
 opt <- parse_args(OptionParser(
