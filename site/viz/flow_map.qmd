@@ -100,7 +100,9 @@ map <- leaflet(edges) |>
         var scen = document.getElementById('flow-scenario').value;
         var paths = el.querySelectorAll('.flow-edge');
         paths.forEach(function(p) {
-          var classes = (p.getAttribute('class') || '').trim().split(/\\s+/);
+          // Avoid regex/backslash escaping pitfalls by using DOMTokenList.
+          // Fallback to attribute split for older SVG implementations.
+          var classes = p.classList ? Array.from(p.classList) : (p.getAttribute('class') || '').trim().split(' ').filter(Boolean);
           var rank = null;
           var scenarioToken = null;
           classes.forEach(function(c) {
