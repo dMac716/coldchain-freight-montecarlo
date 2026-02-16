@@ -21,6 +21,7 @@ Optional env overrides:
   TOP_N_FLOWS=200
   MAX_BAD_ROWS=0
   BQ_SCHEMA=/path/to/schema.json
+  EXPECTED_FAF_OD_GCS_URI=gs://coldchain-freight-sources/FAF5.7.1_2018-2024.csv
 EOF
   exit 0
 fi
@@ -57,6 +58,11 @@ uri_bucket="${FAF_OD_GCS_URI#gs://}"
 uri_bucket="${uri_bucket%%/*}"
 if [[ -n "${GCS_BUCKET:-}" && "$uri_bucket" != "$GCS_BUCKET" ]]; then
   log "Config mismatch: GCS_BUCKET='$GCS_BUCKET' but FAF_OD_GCS_URI bucket='$uri_bucket'"
+  exit 1
+fi
+
+if [[ -n "${EXPECTED_FAF_OD_GCS_URI:-}" && "$FAF_OD_GCS_URI" != "$EXPECTED_FAF_OD_GCS_URI" ]]; then
+  log "Config mismatch: FAF_OD_GCS_URI='$FAF_OD_GCS_URI' does not match EXPECTED_FAF_OD_GCS_URI='$EXPECTED_FAF_OD_GCS_URI'"
   exit 1
 fi
 
