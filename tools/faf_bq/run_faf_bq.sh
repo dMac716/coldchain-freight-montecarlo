@@ -14,12 +14,13 @@ Optional pipeline:
   3) Export derived CSVs/metadata to data/derived/.
 
 Environment variables expected in config file:
-  GCP_PROJECT_ID, BQ_DATASET, BQ_LOCATION, GCS_BUCKET,
-  FAF_OD_GCS_URI, BQ_TABLE
+  GCP_PROJECT_ID, BQ_DATASET, BQ_LOCATION, GCS_BUCKET, FAF_OD_GCS_URI, BQ_TABLE
 
 Optional env overrides:
   DIST_WEIGHT_COL=tons_2024|tmiles_2024
   TOP_N_FLOWS=200
+  MAX_BAD_ROWS=0
+  BQ_SCHEMA=/path/to/schema.json
 EOF
   exit 0
 fi
@@ -52,13 +53,31 @@ if [[ "$FAF_OD_GCS_URI" != gs://* ]]; then
   exit 0
 fi
 
+uri_bucket="${FAF_OD_GCS_URI#gs://}"
+uri_bucket="${uri_bucket%%/*}"
+if [[ -n "${GCS_BUCKET:-}" && "$uri_bucket" != "$GCS_BUCKET" ]]; then
+  log "Config mismatch: GCS_BUCKET='$GCS_BUCKET' but FAF_OD_GCS_URI bucket='$uri_bucket'"
+  exit 1
+fi
+
+log "Using GCP_PROJECT_ID=$GCP_PROJECT_ID"
+log "Using BQ: $GCP_PROJECT_ID:$BQ_DATASET.$BQ_TABLE (location=$BQ_LOCATION)"
+log "Using GCS: $FAF_OD_GCS_URI"
+
 log "[1/3] Loading FAF CSV from GCS into BigQuery (overwrite)."
+schema_args=()
+if [[ -n "${BQ_SCHEMA:-}" ]]; then
+  schema_args=(--schema "$BQ_SCHEMA")
+fi
+
 Rscript "$ROOT_DIR/tools/faf_bq/load_faf_from_gcs.R" \
   --project "$GCP_PROJECT_ID" \
   --dataset "$BQ_DATASET" \
   --location "$BQ_LOCATION" \
   --gcs_uri "$FAF_OD_GCS_URI" \
-  --table "$BQ_TABLE"
+  --table "$BQ_TABLE" \
+  --max_bad_rows "${MAX_BAD_ROWS:-0}" \
+  "${schema_args[@]}"
 
 log "[3/3] Exporting derived distributions + metadata."
 Rscript "$ROOT_DIR/tools/faf_bq/export_results.R" \

@@ -20,6 +20,9 @@
 - Cause: `config/gcp.env` has blank values.
 - Fix: fill required keys in `config/gcp.env`:
   - `GCP_PROJECT_ID`, `BQ_DATASET`, `BQ_LOCATION`, `GCS_BUCKET`, `FAF_OD_GCS_URI`, `BQ_TABLE`
+  Notes:
+  - This repo assumes a multi-project host; all `bq`/`gsutil` commands are invoked with explicit project context (for example `bq --project_id=...`, `gsutil -u ...`).
+  - `GCS_BUCKET` must match the bucket prefix of `FAF_OD_GCS_URI`.
 
 ## Git push errors after history rewrite
 - `stale info`: run `git fetch origin` then push again.
