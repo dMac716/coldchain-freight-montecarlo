@@ -6,6 +6,12 @@ suppressPackageStartupMessages({
   library(digest)
 })
 
+args0 <- commandArgs(trailingOnly = FALSE)
+hit0 <- args0[grepl("^--file=", args0)]
+this_file <- if (length(hit0) > 0) sub("^--file=", "", hit0[[1]]) else ""
+if (!nzchar(this_file)) stop("Unable to resolve script path for sourcing bq_utils.R")
+source(file.path(dirname(normalizePath(this_file)), "bq_utils.R"))
+
 log_info <- function(...) cat("[faf_bq] ", paste0(..., collapse = ""), "\n", sep = "")
 
 run_cmd <- function(cmd, args, stdin = NULL) {
@@ -17,12 +23,14 @@ run_cmd <- function(cmd, args, stdin = NULL) {
   list(status = if (is.null(status)) 0L else as.integer(status), out = out)
 }
 
-run_bq_query_csv <- function(location, sql_text) {
+run_bq_query_csv <- function(bq_bin, project_id, location, sql_text) {
   query <- run_cmd(
-    "bq",
+    bq_bin,
     c(
+      paste0("--project_id=", project_id),
       paste0("--location=", toupper(location)),
       "query",
+      "--quiet",
       "--use_legacy_sql=false",
       "--format=csv"
     ),
@@ -55,28 +63,17 @@ opt <- parse_args(OptionParser(
   option_list = option_list
 ))
 
-validate_identifier <- function(name, value) {
-  ok <- switch(
-    name,
-    project = grepl("^[A-Za-z0-9-]+$", value),
-    dataset = grepl("^[A-Za-z0-9_]+$", value),
-    table = grepl("^[A-Za-z0-9_]+$", value),
-    FALSE
-  )
-  if (!isTRUE(ok)) stop(sprintf("Invalid %s '%s'", name, value))
-}
-
 required <- c("project", "dataset", "location", "table")
 missing <- required[vapply(required, function(x) is.null(opt[[x]]) || !nzchar(opt[[x]]), logical(1))]
 if (length(missing) > 0) stop("Missing required args: ", paste(missing, collapse = ", "))
 if (!file.exists(opt$sql_distance)) stop("SQL file not found: ", opt$sql_distance)
 if (!file.exists(opt$sql_top_flows)) stop("SQL file not found: ", opt$sql_top_flows)
-if (Sys.which("bq") == "") stop("bq CLI not found in PATH.")
+bq_bin <- must_bin("bq")
 
 table_fqn <- paste0(opt$project, ".", opt$dataset, ".", opt$table)
-validate_identifier("project", opt$project)
-validate_identifier("dataset", opt$dataset)
-validate_identifier("table", opt$table)
+validate_bq_identifier("project", opt$project)
+validate_bq_identifier("dataset", opt$dataset)
+validate_bq_identifier("table", opt$table)
 
 sql_dist <- paste(readLines(opt$sql_distance, warn = FALSE), collapse = "\n")
 sql_dist <- gsub("\\{\\{TABLE_FQN\\}\\}", table_fqn, sql_dist)
@@ -90,7 +87,7 @@ sql_flows <- paste(readLines(opt$sql_top_flows, warn = FALSE), collapse = "\n")
 sql_flows <- gsub("\\{\\{TABLE_FQN\\}\\}", table_fqn, sql_flows)
 sql_flows <- gsub("\\{\\{TOP_N\\}\\}", as.character(as.integer(opt$top_n)), sql_flows)
 
-dist <- run_bq_query_csv(opt$location, sql_dist)
+dist <- run_bq_query_csv(bq_bin, opt$project, opt$location, sql_dist)
 for (nm in c("p05_miles", "p50_miles", "p95_miles", "mean_miles", "min_miles", "max_miles", "n_records")) {
   if (nm %in% names(dist)) dist[[nm]] <- as.numeric(dist[[nm]])
 }
@@ -137,7 +134,7 @@ smoke <- data.frame(
 dist_out <- rbind(dist_out, smoke)
 dist_out <- dist_out[order(dist_out$scenario_id), , drop = FALSE]
 
-flows <- run_bq_query_csv(opt$location, sql_flows)
+flows <- run_bq_query_csv(bq_bin, opt$project, opt$location, sql_flows)
 for (nm in c("tons", "ton_miles", "distance_miles")) if (nm %in% names(flows)) flows[[nm]] <- as.numeric(flows[[nm]])
 
 dir.create(dirname(opt$out_distance_csv), recursive = TRUE, showWarnings = FALSE)

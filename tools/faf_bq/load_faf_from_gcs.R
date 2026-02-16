@@ -5,6 +5,12 @@ suppressPackageStartupMessages({
   library(jsonlite)
 })
 
+args0 <- commandArgs(trailingOnly = FALSE)
+hit0 <- args0[grepl("^--file=", args0)]
+this_file <- if (length(hit0) > 0) sub("^--file=", "", hit0[[1]]) else ""
+if (!nzchar(this_file)) stop("Unable to resolve script path for sourcing bq_utils.R")
+source(file.path(dirname(normalizePath(this_file)), "bq_utils.R"))
+
 log_info <- function(...) cat("[faf_bq] ", paste0(..., collapse = ""), "\n", sep = "")
 
 run_cmd <- function(cmd, args) {
@@ -22,18 +28,10 @@ option_list <- list(
   make_option(c("--dataset"), type = "character"),
   make_option(c("--location"), type = "character"),
   make_option(c("--gcs_uri"), type = "character"),
-  make_option(c("--table"), type = "character")
+  make_option(c("--table"), type = "character"),
+  make_option(c("--max_bad_rows"), type = "integer", default = 0L, help = "Max allowed rows failing numeric casts in post-load validation."),
+  make_option(c("--schema"), type = "character", default = "", help = "Optional BigQuery schema file path. If provided, disables --autodetect.")
 )
-validate_identifier <- function(name, value) {
-  ok <- switch(
-    name,
-    project = grepl("^[A-Za-z0-9-]+$", value),
-    dataset = grepl("^[A-Za-z0-9_]+$", value),
-    table = grepl("^[A-Za-z0-9_]+$", value),
-    FALSE
-  )
-  if (!isTRUE(ok)) stop(sprintf("Invalid %s '%s'", name, value))
-}
 
 opt <- parse_args(OptionParser(
   usage = "%prog [options]",
@@ -50,10 +48,22 @@ if (!nzchar(bucket) || identical(bucket, opt$gcs_uri)) {
   stop("Invalid --gcs_uri. Expected gs://bucket/path.csv")
 }
 
-if (Sys.which("bq") == "") stop("bq CLI not found in PATH.")
-if (Sys.which("gsutil") == "") stop("gsutil not found in PATH.")
+bq_bin <- must_bin("bq")
+gsutil_bin <- must_bin("gsutil")
 
-bq_show <- run_cmd("bq", c("--format=prettyjson", "show", paste0(opt$project, ":", opt$dataset)))
+validate_bq_identifier("project", opt$project)
+validate_bq_identifier("dataset", opt$dataset)
+validate_bq_identifier("table", opt$table)
+
+bq_show <- run_cmd(
+  bq_bin,
+  c(
+    paste0("--project_id=", opt$project),
+    "--format=prettyjson",
+    "show",
+    paste0(opt$project, ":", opt$dataset)
+  )
+)
 if (bq_show$status != 0L) {
   stop(
     "Unable to show dataset ", opt$project, ":", opt$dataset,
@@ -73,7 +83,7 @@ if (!identical(dataset_loc, requested_loc)) {
   )
 }
 
-gs_loc <- run_cmd("gsutil", c("ls", "-Lb", paste0("gs://", bucket)))
+gs_loc <- run_cmd(gsutil_bin, c("-u", opt$project, "ls", "-Lb", paste0("gs://", bucket)))
 if (gs_loc$status != 0L) {
   stop("Unable to inspect bucket location for gs://", bucket, "\n", paste(gs_loc$out, collapse = "\n"))
 }
@@ -93,24 +103,70 @@ if (bucket_loc == "US" && requested_loc == "US") {
 }
 
 table_fqn <- paste0(opt$project, ":", opt$dataset, ".", opt$table)
-validate_identifier("project", opt$project)
-validate_identifier("dataset", opt$dataset)
-validate_identifier("table", opt$table)
+schema_arg <- character()
+if (nzchar(opt$schema)) {
+  if (!file.exists(opt$schema)) stop("Schema file not found: ", opt$schema)
+  schema_arg <- opt$schema
+}
+
+load_args <- c(
+  paste0("--project_id=", opt$project),
+  paste0("--location=", requested_loc),
+  "load",
+  "--replace",
+  "--source_format=CSV",
+  "--skip_leading_rows=1"
+)
+if (nzchar(opt$schema)) {
+  load_args <- c(load_args, table_fqn, opt$gcs_uri, schema_arg)
+} else {
+  load_args <- c(load_args, "--autodetect", table_fqn, opt$gcs_uri)
+}
 load <- run_cmd(
-  "bq",
-  c(
-    paste0("--location=", requested_loc),
-    "load",
-    "--replace",
-    "--source_format=CSV",
-    "--skip_leading_rows=1",
-    "--autodetect",
-    table_fqn,
-    opt$gcs_uri
-  )
+  bq_bin,
+  load_args
 )
 if (load$status != 0L) {
   stop("bq load failed:\n", paste(load$out, collapse = "\n"))
+}
+
+table_sql_fqn <- paste0("`", opt$project, ".", opt$dataset, ".", opt$table, "`")
+sql_validate <- paste(
+  "SELECT",
+  "  COUNTIF(SAFE_CAST(dist_band AS INT64) IS NULL AND dist_band IS NOT NULL) AS bad_dist_band,",
+  "  COUNTIF(SAFE_CAST(tons_2024 AS FLOAT64) IS NULL AND tons_2024 IS NOT NULL) AS bad_tons_2024,",
+  "  COUNTIF(SAFE_CAST(tmiles_2024 AS FLOAT64) IS NULL AND tmiles_2024 IS NOT NULL) AS bad_tmiles_2024",
+  "FROM", table_sql_fqn,
+  sep = "\n"
+)
+v <- run_cmd(
+  bq_bin,
+  c(
+    paste0("--project_id=", opt$project),
+    paste0("--location=", requested_loc),
+    "query",
+    "--quiet",
+    "--use_legacy_sql=false",
+    "--format=csv",
+    sql_validate
+  )
+)
+if (v$status != 0L) stop("Post-load validation query failed:\n", paste(v$out, collapse = "\n"))
+v_txt <- paste(v$out, collapse = "\n")
+tmp <- tempfile(fileext = ".csv")
+writeLines(v_txt, tmp)
+v_df <- utils::read.csv(tmp, stringsAsFactors = FALSE)
+bad_counts <- c(bad_dist_band = NA_integer_, bad_tons_2024 = NA_integer_, bad_tmiles_2024 = NA_integer_)
+for (nm in names(bad_counts)) {
+  if (nm %in% names(v_df)) bad_counts[[nm]] <- as.integer(v_df[[nm]][[1]])
+}
+max_bad <- as.integer(opt$max_bad_rows)
+if (is.finite(max_bad) && any(is.finite(bad_counts) & bad_counts > max_bad)) {
+  stop(
+    "Post-load validation failed (max_bad_rows=", max_bad, "): ",
+    paste(names(bad_counts), bad_counts, sep = "=", collapse = ", "),
+    ". Consider reloading with an explicit --schema and/or inspect the CSV formatting."
+  )
 }
 
 log_info("Loaded table: ", table_fqn, " from ", opt$gcs_uri)

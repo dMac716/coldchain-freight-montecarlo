@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
 log_info <- function(...) message("[gcs_sync] ", paste0(..., collapse = ""))
 
 option_list <- list(
+  make_option(c("--project"), type = "character", default = "", help = "GCP project ID for gsutil billing context (-u)."),
   make_option(c("--env_file"), type = "character", default = "config/gcp.env", help = "Path to env file (default: config/gcp.env)."),
   make_option(c("--outdir"), type = "character", default = "data/cache/faf", help = "Destination directory for downloaded FAF files.")
 )
@@ -36,6 +37,10 @@ env <- parse_env_file(opt$env_file)
 gcs_uri <- Sys.getenv("FAF_OD_GCS_URI", unset = "")
 if (!nzchar(gcs_uri) && !is.null(env$FAF_OD_GCS_URI)) gcs_uri <- env$FAF_OD_GCS_URI
 
+project_id <- opt$project
+if (!nzchar(project_id)) project_id <- Sys.getenv("GCP_PROJECT_ID", unset = "")
+if (!nzchar(project_id) && !is.null(env$GCP_PROJECT_ID)) project_id <- env$GCP_PROJECT_ID
+
 if (!nzchar(gcs_uri) || !startsWith(gcs_uri, "gs://")) {
   log_info("No FAF_OD_GCS_URI configured. No-op.")
   quit(save = "no", status = 0)
@@ -48,7 +53,9 @@ if (Sys.which("gsutil") == "") {
 
 dir.create(opt$outdir, recursive = TRUE, showWarnings = FALSE)
 dest <- file.path(opt$outdir, basename(gcs_uri))
-cmd <- system2("gsutil", c("cp", gcs_uri, dest), stdout = TRUE, stderr = TRUE)
+gsutil_args <- c("cp", gcs_uri, dest)
+if (nzchar(project_id)) gsutil_args <- c("-u", project_id, gsutil_args)
+cmd <- system2("gsutil", gsutil_args, stdout = TRUE, stderr = TRUE)
 st <- attr(cmd, "status")
 if (!is.null(st) && st != 0) {
   stop("gsutil cp failed:\n", paste(cmd, collapse = "\n"))
