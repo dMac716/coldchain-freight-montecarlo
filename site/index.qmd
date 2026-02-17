@@ -8,6 +8,25 @@ This visualization layer is static-first and artifact-driven.
 - Map and scenario views read committed/generated CSVs from `data/derived/` and `outputs/`.
 - Works with local `quarto render site/` and GitHub Pages deployment.
 
+## Host Setup (Basics)
+
+Minimum setup for a contributor host (macOS/Linux/Windows with R + terminal):
+
+```bash
+git clone https://github.com/dMac716/coldchain-freight-montecarlo.git
+cd coldchain-freight-montecarlo
+cp config/gcp.example.env config/gcp.env
+Rscript -e 'pkgs <- c("optparse","jsonlite","digest","testthat","leaflet"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org")'
+Rscript -e 'testthat::test_dir("tests/testthat")'
+bash tools/smoke_test.sh
+```
+
+Notes:
+- `quarto` is required only to render the static site locally.
+- `python3` is optional (used for FAF zone-name extraction when available).
+- `bq`/`gsutil` are optional (only for the BigQuery FAF pipeline).
+- Team viewing is browser-based, so PC users can use GitHub Pages output directly.
+
 ## Data Inputs
 
 - `data/derived/faf_top_od_flows.csv`
@@ -20,4 +39,24 @@ This visualization layer is static-first and artifact-driven.
 ```bash
 Rscript tools/derive_ui_artifacts.R --top_n 200
 quarto render site/
+```
+
+## Calculation Spec (What Feeds What)
+
+```{mermaid}
+flowchart LR
+  A[data/inputs_local/*.csv] --> B[R/01_validate.R]
+  B --> C[R/03_model_core.R deterministic equations]
+  C --> D[R/04_sampling.R Monte Carlo draws]
+  D --> E[R/05_histogram.R]
+  E --> F[R/06_analysis.R summary stats/quantiles]
+  F --> G[outputs/* results_summary.csv + metadata]
+  G --> H[tools/derive_ui_artifacts.R]
+  H --> I[data/derived/faf_top_od_flows.csv]
+  H --> J[data/derived/faf_zone_centroids.csv]
+  H --> K[data/derived/scenario_summary.csv]
+  I --> L[site/viz/flow_map.qmd]
+  J --> L
+  K --> M[site/viz/scenario_explorer.qmd]
+  G --> M
 ```
