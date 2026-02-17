@@ -21,6 +21,8 @@ concurrency:
 jobs:
   render-and-commit-docs:
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,4 +71,3 @@ jobs:
           else
             echo "No docs changes to commit."
           fi
-
