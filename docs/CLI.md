@@ -32,5 +32,11 @@ Core commands for contributors.
   Optional GCS→BigQuery ingestion + exports (no-op if env not configured).
 - `Rscript tools/gcs_sync_sources.R`  
   Optional local cache sync from `FAF_OD_GCS_URI`.
+- `Rscript tools/build_google_routes_cache.R --max_pairs 400`  
+  Optional Google Routes API OD cache + distance-distribution overlay for simulation realism.
+  Uses `GOOGLE_MAPS_API_KEY` (or `--api_key`) and writes:
+  - `data/derived/google_routes_od_cache.csv`
+  - `data/derived/google_routes_distance_distributions.csv`
+  - `data/derived/google_routes_metadata.json`
 
 Use `--help` on R scripts and `-h`/`--help` on shell entrypoints for options.

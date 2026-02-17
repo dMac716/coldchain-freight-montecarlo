@@ -9,6 +9,10 @@ read_inputs_local <- function(dir = "data/inputs_local") {
   }
 
   derived_file <- file.path(dirname(dir), "derived", "faf_distance_distributions.csv")
+  routes_file <- file.path(dirname(dir), "derived", "google_routes_distance_distributions.csv")
+  dist_base <- read_csv_optional(derived_file)
+  dist_routes <- read_csv_optional(routes_file)
+  dist_all <- merge_distance_distributions(dist_base, dist_routes)
 
   list(
     products = read_csv_required(file.path(dir, "products.csv")),
@@ -19,9 +23,30 @@ read_inputs_local <- function(dir = "data/inputs_local") {
     emissions_factors = read_csv_optional(file.path(dir, "emissions_factors.csv")),
     sampling_priors = read_csv_optional(file.path(dir, "sampling_priors.csv")),
     scenario_matrix = read_csv_optional(file.path(dir, "scenario_matrix.csv")),
-    distance_distributions = read_csv_optional(derived_file),
+    distance_distributions = dist_all,
     grid_ci = read_csv_optional(file.path(dir, "grid_ci.csv"))
   )
+}
+
+merge_distance_distributions <- function(base_df, routes_df) {
+  if (nrow(base_df) == 0) return(base_df)
+  if (nrow(routes_df) == 0) return(base_df)
+  if (!all(c("distance_distribution_id", "status") %in% names(routes_df))) return(base_df)
+
+  routes_ok <- subset(routes_df, status == "OK")
+  if (nrow(routes_ok) == 0) return(base_df)
+  keys <- intersect(routes_ok$distance_distribution_id, base_df$distance_distribution_id)
+  if (length(keys) == 0) return(base_df)
+
+  out <- base_df
+  for (id in keys) {
+    src <- routes_ok[routes_ok$distance_distribution_id == id, , drop = FALSE][1, , drop = FALSE]
+    dst_idx <- which(out$distance_distribution_id == id)
+    for (nm in intersect(names(out), names(src))) {
+      out[dst_idx, nm] <- src[[nm]][[1]]
+    }
+  }
+  out
 }
 
 read_sources_manifest <- function(path = "sources/sources_manifest.csv") {

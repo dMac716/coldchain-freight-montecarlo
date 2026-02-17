@@ -29,6 +29,13 @@ Uses GCS→BigQuery ingestion and SQL-derived distributions:
   - `data/derived/faf_distance_distributions.csv`
   - `data/derived/faf_distance_distributions_bq_metadata.json`
 
+## Optional Google Routes realism overlay
+For improved road-distance realism while keeping offline simulation execution:
+- set `GOOGLE_MAPS_API_KEY` locally (do not commit secrets)
+- run `Rscript tools/build_google_routes_cache.R --max_pairs 400`
+- this writes `data/derived/google_routes_distance_distributions.csv`
+- input resolution overlays rows with matching `distance_distribution_id` and `status == "OK"` onto base distance distributions
+
 ## Integrity and provenance guarantees
 - Source inventory is tracked in `sources/sources_manifest.csv`.
 - Artifact integrity uses canonical JSON checksum semantics.
