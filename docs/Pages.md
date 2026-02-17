@@ -6,9 +6,10 @@ This repository publishes a static Quarto site from `site/` to `docs/`.
 
 1. Open repository settings in GitHub.
 2. Go to `Pages`.
-3. Choose one deployment mode:
-   - Action-based (recommended): use `.github/workflows/pages.yml`.
+3. Current operational mode:
    - Branch/folder mode: `main` branch, `/docs` folder.
+4. Keep only one deployment mechanism active at a time to avoid conflicting publishes.
+   - The workflow `.github/workflows/pages.yml` is manual-only (`workflow_dispatch`) while branch deploy is active.
 
 ## Local Render
 
