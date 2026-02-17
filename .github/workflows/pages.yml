@@ -32,6 +32,22 @@ jobs:
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
+      - name: Cache renv packages
+        uses: actions/cache@v4
+        with:
+          path: renv/library
+          key: ${{ runner.os }}-pages-renv-${{ hashFiles('renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pages-renv-
+
+      - name: Cache renv downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/R/renv
+          key: ${{ runner.os }}-pages-renv-downloads-${{ hashFiles('renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pages-renv-downloads-
+
       - name: Restore renv + install UI deps
         shell: bash
         run: |
