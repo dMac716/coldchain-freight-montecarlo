@@ -85,6 +85,7 @@ jobs:
         run: |
           rm -rf site/_freeze
           quarto render site/ --no-clean
+          touch docs/.nojekyll
 
       - name: Commit rendered docs (if changed)
         shell: bash
