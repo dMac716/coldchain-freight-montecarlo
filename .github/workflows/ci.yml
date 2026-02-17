@@ -3,7 +3,23 @@ name: CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - 'site/**'
+      - '.github/workflows/pages.yml'
+      - 'README.md'
+      - 'AGENTS.md'
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'site/**'
+      - '.github/workflows/pages.yml'
+      - 'README.md'
+      - 'AGENTS.md'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   r-ci:
