@@ -50,6 +50,7 @@ dest <- zones[match(flows$dest_id, zones$zone_id), c("zone_id", "name", "lat", "
 names(orig) <- c("origin_id_ref", "origin_name", "lat1", "lon1")
 names(dest) <- c("dest_id_ref", "dest_name", "lat2", "lon2")
 edges <- cbind(flows, orig, dest)
+for (nm in c("lat1", "lon1", "lat2", "lon2")) edges[[nm]] <- suppressWarnings(as.numeric(edges[[nm]]))
 edges <- edges[is.finite(edges$lat1) & is.finite(edges$lon1) & is.finite(edges$lat2) & is.finite(edges$lon2), , drop = FALSE]
 
 if (nrow(edges) == 0) {
@@ -80,18 +81,29 @@ cat(
   sep = ""
 )
 
-map <- leaflet(edges) |>
-  addProviderTiles("OpenStreetMap.Mapnik") |>
-  addPolylines(
-    lng1 = ~lon1, lat1 = ~lat1, lng2 = ~lon2, lat2 = ~lat2,
-    color = ~pal(scenario_id), weight = ~w, opacity = 0.55,
-    options = pathOptions(className = ~class_name),
-    popup = ~sprintf(
-      "<b>%s → %s</b><br/>Scenario: %s<br/>Tons: %.2f<br/>Ton-miles: %.2f<br/>Distance: %.1f mi",
-      origin_name, dest_name, scenario_id, tons, ton_miles, distance_miles
+map <- leaflet() |>
+  addProviderTiles("OpenStreetMap.Mapnik")
+
+for (i in seq_len(nrow(edges))) {
+  e <- edges[i, , drop = FALSE]
+  popup_txt <- sprintf(
+    "<b>%s → %s</b><br/>Scenario: %s<br/>Tons: %.2f<br/>Ton-miles: %.2f<br/>Distance: %.1f mi",
+    e$origin_name, e$dest_name, e$scenario_id, e$tons, e$ton_miles, e$distance_miles
+  )
+  map <- map |>
+    addPolylines(
+      lng = c(e$lon1, e$lon2),
+      lat = c(e$lat1, e$lat2),
+      color = pal(e$scenario_id),
+      weight = e$w,
+      opacity = 0.55,
+      options = pathOptions(className = e$class_name),
+      popup = popup_txt
     )
-  ) |>
-  addLegend("bottomright", pal = pal, values = ~scenario_id, title = "Scenario", opacity = 1) |>
+}
+
+map <- map |>
+  addLegend("bottomright", pal = pal, values = unique(edges$scenario_id), title = "Scenario", opacity = 1) |>
   htmlwidgets::onRender(
     "function(el, x) {
       function applyFilters() {
