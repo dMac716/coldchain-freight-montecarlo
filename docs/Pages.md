@@ -16,7 +16,7 @@ This repository publishes a static Quarto site from `site/` to `docs/`.
 
 ```bash
 Rscript tools/derive_ui_artifacts.R --top_n 200
-quarto render site/
+quarto render site/ --no-clean
 ```
 
 ## Notes

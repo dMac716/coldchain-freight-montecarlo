@@ -38,7 +38,7 @@ Notes:
 
 ```bash
 Rscript tools/derive_ui_artifacts.R --top_n 200
-quarto render site/
+quarto render site/ --no-clean
 ```
 
 ## Calculation Spec (What Feeds What)

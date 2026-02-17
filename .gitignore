@@ -71,6 +71,10 @@ venv/
 # local GCP runtime env
 config/gcp.env
 
+# local Quarto render cache/output scratch inside site project
+site/_freeze/
+site/.gitignore
+
 # local unzip scratch under source archives
 sources/FAF5.7.1/FAF5.7.1_2018-2024/
 sources/FAF5.7.1/FAF5.7.1_HiLoForecasts/
