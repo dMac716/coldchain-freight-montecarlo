@@ -39,6 +39,28 @@ distance_id_for_scenario <- function(s) {
   paste0("dist_", tolower(gsub("[^A-Za-z0-9]+", "_", s)), "_google_routes")
 }
 
+empty_dist_schema <- function() {
+  data.frame(
+    distance_distribution_id = character(),
+    scenario_id = character(),
+    source_zip = character(),
+    commodity_filter = character(),
+    mode_filter = character(),
+    distance_model = character(),
+    p05_miles = numeric(),
+    p50_miles = numeric(),
+    p95_miles = numeric(),
+    mean_miles = numeric(),
+    min_miles = numeric(),
+    max_miles = numeric(),
+    n_records = integer(),
+    status = character(),
+    source_id = character(),
+    notes = character(),
+    stringsAsFactors = FALSE
+  )
+}
+
 get_api_key <- function() {
   key <- trimws(opt$api_key)
   if (nzchar(key)) return(key)
@@ -175,7 +197,7 @@ for (s in unique(as.character(flows$scenario_id))) {
     stringsAsFactors = FALSE
   )
 }
-dist_df <- if (length(dist_rows) > 0) do.call(rbind, dist_rows) else data.frame(stringsAsFactors = FALSE)
+dist_df <- if (length(dist_rows) > 0) do.call(rbind, dist_rows) else empty_dist_schema()
 
 dir.create(dirname(opt$out_cache_csv), recursive = TRUE, showWarnings = FALSE)
 utils::write.csv(cache, opt$out_cache_csv, row.names = FALSE)

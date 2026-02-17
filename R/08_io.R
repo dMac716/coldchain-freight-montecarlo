@@ -5,7 +5,13 @@ read_inputs_local <- function(dir = "data/inputs_local") {
   }
   read_csv_optional <- function(path) {
     if (!file.exists(path)) return(data.frame(stringsAsFactors = FALSE))
-    utils::read.csv(path, stringsAsFactors = FALSE)
+    info <- file.info(path)
+    if (!is.finite(info$size) || info$size <= 1) return(data.frame(stringsAsFactors = FALSE))
+    out <- tryCatch(
+      utils::read.csv(path, stringsAsFactors = FALSE),
+      error = function(e) data.frame(stringsAsFactors = FALSE)
+    )
+    out
   }
 
   derived_file <- file.path(dirname(dir), "derived", "faf_distance_distributions.csv")
