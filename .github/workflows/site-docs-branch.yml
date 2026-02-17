@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: site-docs-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   render-and-commit-docs:
