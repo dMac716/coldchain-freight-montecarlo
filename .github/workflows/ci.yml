@@ -86,7 +86,7 @@ jobs:
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: "4.3"
+          r-version: "4.5"
 
       - name: Setup Pandoc
         uses: r-lib/actions/setup-pandoc@v2
