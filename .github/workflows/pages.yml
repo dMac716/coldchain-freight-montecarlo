@@ -32,41 +32,21 @@ jobs:
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Cache renv packages
-        uses: actions/cache@v4
-        with:
-          path: renv/library
-          key: ${{ runner.os }}-pages-renv-${{ hashFiles('renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pages-renv-
-
-      - name: Cache renv downloads
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/R/renv
-          key: ${{ runner.os }}-pages-renv-downloads-${{ hashFiles('renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pages-renv-downloads-
-
-      - name: Build site (cached path)
-        id: build_cached
-        continue-on-error: true
+      - name: Restore renv + install UI deps
         shell: bash
         run: |
           Rscript -e 'install.packages("renv", repos="https://cloud.r-project.org"); renv::restore(prompt = FALSE)'
           Rscript -e 'pkgs <- c("leaflet","optparse","digest","jsonlite"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org")'
+
+      - name: Build UI artifacts (best-effort offline)
+        shell: bash
+        run: |
           Rscript tools/derive_ui_artifacts.R --top_n 200 || true
+
+      - name: Render Quarto site
+        shell: bash
+        run: |
           rm -rf site/_freeze
-          quarto render site/
-
-      - name: Fallback clean build (no cache)
-        if: steps.build_cached.outcome == 'failure'
-        shell: bash
-        run: |
-          rm -rf renv/library ~/.cache/R/renv site/_freeze
-          Rscript -e 'install.packages("renv", repos="https://cloud.r-project.org"); renv::restore(prompt = FALSE)'
-          Rscript -e 'pkgs <- c("leaflet","optparse","digest","jsonlite"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org")'
-          Rscript tools/derive_ui_artifacts.R --top_n 200 || true
           quarto render site/
 
       - name: Upload Pages artifact
