@@ -35,6 +35,17 @@ jobs:
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
+      - name: Install system dependencies for spatial R packages
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libudunits2-dev \
+            libgdal-dev \
+            libgeos-dev \
+            libproj-dev \
+            libpng-dev
+
       - name: Restore renv + install UI deps
         shell: bash
         run: |
