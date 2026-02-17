@@ -10,6 +10,7 @@ This repository publishes a static Quarto site from `site/` to `docs/`.
    - Branch/folder mode: `main` branch, `/docs` folder.
 4. Keep only one deployment mechanism active at a time to avoid conflicting publishes.
    - The workflow `.github/workflows/pages.yml` is manual-only (`workflow_dispatch`) while branch deploy is active.
+5. The workflow `.github/workflows/site-docs-branch.yml` renders `site/` and commits generated files into `docs/` on `main`.
 
 ## Local Render
 
