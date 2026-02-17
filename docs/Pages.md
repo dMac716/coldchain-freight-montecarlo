@@ -11,6 +11,8 @@ This repository publishes a static Quarto site from `site/` to `docs/`.
 4. Keep only one deployment mechanism active at a time to avoid conflicting publishes.
    - The workflow `.github/workflows/pages.yml` is manual-only (`workflow_dispatch`) while branch deploy is active.
 5. The workflow `.github/workflows/site-docs-branch.yml` renders `site/` and commits generated files into `docs/` on `main`.
+6. The workflow `.github/workflows/site-preflight.yml` performs a full render smoke test with system dependencies before/alongside deploy changes.
+   - Recommended: mark `Site Preflight / render-smoke` as a required status check in branch protection.
 
 ## Local Render
 

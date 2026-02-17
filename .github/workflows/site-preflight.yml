@@ -1,33 +1,43 @@
-name: Site Docs Branch Publish
+name: Site Preflight
 
 on:
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'tools/derive_ui_artifacts.R'
+      - 'tools/build_google_routes_cache.R'
+      - 'R/08_io.R'
+      - 'data/inputs_local/**'
+      - 'data/derived/**'
+      - 'renv.lock'
+      - '.github/workflows/site-docs-branch.yml'
+      - '.github/workflows/pages.yml'
+      - '.github/workflows/site-preflight.yml'
   push:
     branches: [ main ]
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'AGENTS.md'
-      - '.github/workflows/ci.yml'
+    paths:
+      - 'site/**'
+      - 'tools/derive_ui_artifacts.R'
+      - 'tools/build_google_routes_cache.R'
+      - 'R/08_io.R'
+      - 'data/inputs_local/**'
+      - 'data/derived/**'
+      - 'renv.lock'
+      - '.github/workflows/site-docs-branch.yml'
       - '.github/workflows/pages.yml'
+      - '.github/workflows/site-preflight.yml'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 concurrency:
-  group: site-docs-${{ github.ref }}
+  group: site-preflight-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  render-and-commit-docs:
+  render-smoke:
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -57,17 +67,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: renv/library
-          key: ${{ runner.os }}-site-docs-renv-${{ hashFiles('renv.lock') }}
+          key: ${{ runner.os }}-site-preflight-renv-${{ hashFiles('renv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-site-docs-renv-
+            ${{ runner.os }}-site-preflight-renv-
 
       - name: Cache renv downloads
         uses: actions/cache@v4
         with:
           path: ~/.cache/R/renv
-          key: ${{ runner.os }}-site-docs-renv-downloads-${{ hashFiles('renv.lock') }}
+          key: ${{ runner.os }}-site-preflight-renv-downloads-${{ hashFiles('renv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-site-docs-renv-downloads-
+            ${{ runner.os }}-site-preflight-renv-downloads-
 
       - name: Restore renv + install UI deps
         shell: bash
@@ -80,21 +90,16 @@ jobs:
         run: |
           Rscript tools/derive_ui_artifacts.R --top_n 200 || true
 
-      - name: Render Quarto site into docs
+      - name: Render Quarto site smoke
         shell: bash
         run: |
           rm -rf site/_freeze
           quarto render site/ --no-clean
 
-      - name: Commit rendered docs (if changed)
+      - name: Validate rendered outputs exist
         shell: bash
         run: |
-          if [[ -n "$(git status --porcelain docs)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add docs
-            git commit -m "chore: update rendered docs site [skip ci]"
-            git push
-          else
-            echo "No docs changes to commit."
-          fi
+          test -f docs/index.html
+          test -f docs/viz/flow_map.html
+          test -f docs/viz/scenario_explorer.html
+
