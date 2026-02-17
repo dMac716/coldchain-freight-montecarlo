@@ -2,8 +2,12 @@
 title: "FAF OD Flow Map"
 ---
 
-```{r}
-suppressPackageStartupMessages(library(leaflet))
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+suppressPackageStartupMessages({
+  library(leaflet)
+  library(htmlwidgets)
+  library(htmltools)
+})
 
 pick_path <- function(paths) {
   for (p in paths) if (file.exists(p)) return(p)
@@ -70,16 +74,33 @@ edges$class_name <- paste0(
 )
 pal <- colorFactor(c("#1b9e77", "#d95f02"), domain = unique(edges$scenario_id))
 
-cat(
-  "<div style='display:flex; gap:16px; align-items:center; margin-bottom:10px;'>",
-  "<label>Top N <select id='flow-topn'><option>10</option><option>25</option><option selected>50</option></select></label>",
-  "<label>Weight <select id='flow-weight'><option value='tons' selected>tons</option><option value='ton_miles'>ton_miles</option></select></label>",
-  "<label>Scenario <select id='flow-scenario'><option value='ALL' selected>ALL</option>",
-  paste(sprintf("<option value='%s'>%s</option>", unique(edges$scenario_id), unique(edges$scenario_id)), collapse = ""),
-  "</select></label>",
-  "</div>",
-  sep = ""
-)
+# Approximate great-circle arc between OD centroids for geographic-looking paths.
+great_circle_points <- function(lat1, lon1, lat2, lon2, n = 24L) {
+  to_rad <- function(x) x * pi / 180
+  to_deg <- function(x) x * 180 / pi
+  lat1r <- to_rad(lat1); lon1r <- to_rad(lon1)
+  lat2r <- to_rad(lat2); lon2r <- to_rad(lon2)
+
+  p1 <- c(cos(lat1r) * cos(lon1r), cos(lat1r) * sin(lon1r), sin(lat1r))
+  p2 <- c(cos(lat2r) * cos(lon2r), cos(lat2r) * sin(lon2r), sin(lat2r))
+  omega <- acos(max(-1, min(1, sum(p1 * p2))))
+  if (!is.finite(omega) || abs(omega) < 1e-10) {
+    return(data.frame(lat = c(lat1, lat2), lon = c(lon1, lon2)))
+  }
+
+  t <- seq(0, 1, length.out = max(2L, as.integer(n)))
+  so <- sin(omega)
+  xyz <- vapply(t, function(tt) {
+    a <- sin((1 - tt) * omega) / so
+    b <- sin(tt * omega) / so
+    v <- a * p1 + b * p2
+    v / sqrt(sum(v * v))
+  }, numeric(3))
+  xyz <- t(xyz)
+  lat <- to_deg(asin(xyz[, 3]))
+  lon <- to_deg(atan2(xyz[, 2], xyz[, 1]))
+  data.frame(lat = lat, lon = lon)
+}
 
 map <- leaflet() |>
   addProviderTiles("OpenStreetMap.Mapnik")
@@ -90,10 +111,11 @@ for (i in seq_len(nrow(edges))) {
     "<b>%s → %s</b><br/>Scenario: %s<br/>Tons: %.2f<br/>Ton-miles: %.2f<br/>Distance: %.1f mi",
     e$origin_name, e$dest_name, e$scenario_id, e$tons, e$ton_miles, e$distance_miles
   )
+  arc <- great_circle_points(e$lat1, e$lon1, e$lat2, e$lon2, n = 24L)
   map <- map |>
     addPolylines(
-      lng = c(e$lon1, e$lon2),
-      lat = c(e$lat1, e$lat2),
+      lng = arc$lon,
+      lat = arc$lat,
       color = pal(e$scenario_id),
       weight = e$w,
       opacity = 0.55,
@@ -103,39 +125,28 @@ for (i in seq_len(nrow(edges))) {
 }
 
 map <- map |>
-  addLegend("bottomright", pal = pal, values = unique(edges$scenario_id), title = "Scenario", opacity = 1) |>
-  htmlwidgets::onRender(
-    "function(el, x) {
-      function applyFilters() {
-        var topN = parseInt(document.getElementById('flow-topn').value, 10);
-        var metric = document.getElementById('flow-weight').value;
-        var scen = document.getElementById('flow-scenario').value;
-        var paths = el.querySelectorAll('.flow-edge');
-        paths.forEach(function(p) {
-          // Avoid regex/backslash escaping pitfalls by using DOMTokenList.
-          // Fallback to attribute split for older SVG implementations.
-          var classes = p.classList ? Array.from(p.classList) : (p.getAttribute('class') || '').trim().split(' ').filter(Boolean);
-          var rank = null;
-          var scenarioToken = null;
-          classes.forEach(function(c) {
-            if (c.indexOf('rt-') === 0 && metric === 'tons') rank = parseInt(c.slice(3), 10);
-            if (c.indexOf('rm-') === 0 && metric === 'ton_miles') rank = parseInt(c.slice(3), 10);
-            if (c.indexOf('scen-') === 0) scenarioToken = c.replace('scen-', '');
-          });
-          var keepScenario = (scen === 'ALL') || ((scenarioToken || '').toUpperCase() === scen.toUpperCase());
-          var keepRank = (rank !== null && rank <= topN);
-          var keep = keepScenario && keepRank;
-          p.style.opacity = keep ? '0.62' : '0';
-          p.style.pointerEvents = keep ? 'auto' : 'none';
-        });
-      }
-      ['flow-topn','flow-weight','flow-scenario'].forEach(function(id) {
-        var node = document.getElementById(id);
-        if (node) node.addEventListener('change', applyFilters);
-      });
-      applyFilters();
-    }"
-  )
+  addLegend("bottomright", pal = pal, values = unique(edges$scenario_id), title = "Scenario", opacity = 1)
+
+google_maps_api_key <- trimws(Sys.getenv("GOOGLE_MAPS_API_KEY", unset = ""))
+if (nzchar(google_maps_api_key)) {
+  map <- map |>
+    prependContent(
+      tags$script(src = paste0("https://maps.googleapis.com/maps/api/js?key=", google_maps_api_key)),
+      tags$script(src = "https://unpkg.com/leaflet.gridlayer.googlemutant@0.14.1/Leaflet.GoogleMutant.js")
+    ) |>
+    onRender(
+      "function(el, x) {
+         var m = this;
+         if (!(window.google && L && L.gridLayer && L.gridLayer.googleMutant)) return;
+         var osm = [];
+         m.eachLayer(function(layer) {
+           if (layer && layer._url && layer._url.indexOf('openstreetmap') !== -1) osm.push(layer);
+         });
+         osm.forEach(function(layer) { m.removeLayer(layer); });
+         L.gridLayer.googleMutant({ type: 'roadmap' }).addTo(m);
+       }"
+    )
+}
 
 map
 ```
