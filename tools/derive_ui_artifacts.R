@@ -23,6 +23,10 @@ decode_xml_entities <- function(x) {
   x <- gsub("&gt;", ">", x, fixed = TRUE)
   x <- gsub("&quot;", "\"", x, fixed = TRUE)
   x <- gsub("&apos;", "'", x, fixed = TRUE)
+  # Excel shared strings often encode carriage returns as "_x000D_".
+  x <- gsub("_x[0-9A-Fa-f]{4}_", " ", x, perl = TRUE)
+  x <- gsub("[[:space:]]+", " ", x, perl = TRUE)
+  x <- trimws(x)
   x
 }
 

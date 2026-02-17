@@ -4,6 +4,7 @@ project:
 
 website:
   title: "Cold-Chain Freight Monte Carlo"
+  favicon: assets/favicon.svg
   navbar:
     left:
       - href: index.qmd

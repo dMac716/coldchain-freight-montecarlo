@@ -2,7 +2,7 @@
 title: "Scenario Explorer"
 ---
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 pick_path <- function(paths) {
   for (p in paths) if (file.exists(p)) return(p)
   ""
@@ -103,7 +103,7 @@ cat(
 )
 ```
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 plot_df <- subset(df, metric %in% c("gco2_dry", "gco2_reefer", "diff_gco2", "ratio"))
 if (nrow(plot_df) > 0) {
   old_par <- par(mar = c(8, 4, 2, 1))
