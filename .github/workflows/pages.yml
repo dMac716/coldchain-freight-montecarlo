@@ -50,7 +50,9 @@ jobs:
         shell: bash
         run: |
           Rscript -e 'install.packages("renv", repos="https://cloud.r-project.org"); renv::restore(prompt = FALSE)'
-          Rscript -e 'pkgs <- c("leaflet","optparse","digest","jsonlite"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org")'
+          Rscript -e 'install.packages(c("png", "terra", "units"), repos = "https://cloud.r-project.org")'
+          Rscript -e 'install.packages(c("raster", "sf"), repos = "https://cloud.r-project.org")'
+          Rscript -e 'pkgs <- c("htmlwidgets", "htmltools", "leaflet", "optparse", "digest", "jsonlite"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org")'
 
       - name: Build UI artifacts (best-effort offline)
         shell: bash
