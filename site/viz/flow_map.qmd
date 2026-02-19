@@ -3,6 +3,10 @@ title: "FAF OD Flow Map"
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+if (!requireNamespace("leaflet", quietly = TRUE)) {
+  cat("<p><em>Leaflet package is not available in this render environment. Map rendering skipped.</em></p>")
+  knitr::knit_exit()
+}
 suppressPackageStartupMessages({
   library(leaflet)
   library(htmlwidgets)
