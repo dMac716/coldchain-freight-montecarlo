@@ -52,6 +52,7 @@ run_summary_row <- function(sim, context) {
   time_traffic_delay_min <- as.numeric(sched$time_traffic_delay_min %||% NA_real_)
   num_break_30min <- as.integer(sched$num_break_30min %||% NA_integer_)
   num_rest_10hr <- as.integer(sched$num_rest_10hr %||% NA_integer_)
+  sanity <- compute_load_sanity_flags(ld, run_id = as.character(context$run_id %||% ""))
   data.frame(
     run_id = as.character(context$run_id),
     pair_id = as.character(context$pair_id %||% NA_character_),
@@ -103,6 +104,21 @@ run_summary_row <- function(sim, context) {
     trip_duration_total_h = if ("trip_duration_h_cum" %in% names(last)) as.numeric(last$trip_duration_h_cum[[1]]) else NA_real_,
     payload_max_lb_draw = as.numeric(ld$payload_max_lb_draw %||% NA_real_),
     units_per_truck = as.numeric(ld$units_per_truck %||% NA_real_),
+    cases_per_pallet_draw = as.numeric(ld$cases_per_pallet_draw %||% NA_real_),
+    units_per_case_draw = as.numeric(ld$units_per_case_draw %||% NA_real_),
+    cube_limit_units = as.numeric(ld$cube_limit_units %||% NA_real_),
+    weight_limit_units = as.numeric(ld$weight_limit_units %||% NA_real_),
+    limiting_constraint = as.character(ld$limiting_constraint %||% NA_character_),
+    payload_utilization_pct = as.numeric(ld$payload_utilization_pct %||% NA_real_),
+    cube_utilization_pct = as.numeric(ld$cube_utilization_pct %||% NA_real_),
+    cases_per_layer = as.numeric(ld$cases_per_layer %||% NA_real_),
+    layers = as.numeric(ld$layers %||% NA_real_),
+    packing_efficiency_draw = as.numeric(ld$packing_efficiency_draw %||% NA_real_),
+    chosen_pack_pattern = as.character(ld$chosen_pack_pattern %||% NA_character_),
+    pack_pattern_index = as.integer(ld$pack_pattern_index %||% NA_integer_),
+    derived_case_L_in = as.numeric(ld$derived_case_L_in %||% NA_real_),
+    derived_case_W_in = as.numeric(ld$derived_case_W_in %||% NA_real_),
+    derived_case_H_in = as.numeric(ld$derived_case_H_in %||% NA_real_),
     product_mass_lb_per_truck = as.numeric(ld$product_mass_lb_per_truck %||% NA_real_),
     kcal_per_truck = as.numeric(ld$kcal_per_truck %||% NA_real_),
     protein_kg_per_truck = as.numeric(ld$protein_kg_per_truck %||% NA_real_),
@@ -118,6 +134,15 @@ run_summary_row <- function(sim, context) {
     time_traffic_delay_min = time_traffic_delay_min,
     num_break_30min = num_break_30min,
     num_rest_10hr = num_rest_10hr,
+    sanity_flag_low_cube_util = as.integer(sanity$sanity_flag_low_cube_util),
+    sanity_flag_high_cube_util = as.integer(sanity$sanity_flag_high_cube_util),
+    sanity_flag_unrealistic_case_dims = as.integer(sanity$sanity_flag_unrealistic_case_dims),
+    truckloads_per_1e6_kcal = if (is.finite(as.numeric(ld$kcal_per_truck %||% NA_real_)) && as.numeric(ld$kcal_per_truck) > 0) 1e6 / as.numeric(ld$kcal_per_truck) else NA_real_,
+    truckloads_per_1000kg_product = if (is.finite(as.numeric(ld$product_mass_lb_per_truck %||% NA_real_)) && as.numeric(ld$product_mass_lb_per_truck) > 0) {
+      1000 / (as.numeric(ld$product_mass_lb_per_truck) * 0.45359237)
+    } else {
+      NA_real_
+    },
     trucker_hours_per_1000kcal = if (is.finite(driver_on_duty_min) && is.finite(kcal_delivered) && kcal_delivered > 0) {
       (driver_on_duty_min / 60) / (kcal_delivered / 1000)
     } else {
@@ -477,10 +502,58 @@ enforce_real_run_requirements <- function(sim) {
   if (!is.finite(as.numeric(ld$unit_weight_lb %||% NA_real_))) {
     stop("REAL_RUN requires finite unit_weight_lb in load model.")
   }
+  if (!is.finite(as.numeric(ld$units_per_case_draw %||% NA_real_))) {
+    stop("REAL_RUN requires finite units_per_case_draw in load model.")
+  }
+  if (!is.finite(as.numeric(ld$cases_per_pallet_draw %||% NA_real_))) {
+    stop("REAL_RUN requires finite cases_per_pallet_draw in load model.")
+  }
+  if (!is.finite(as.numeric(ld$cube_limit_units %||% NA_real_)) || as.numeric(ld$cube_limit_units %||% 0) < 1) {
+    stop("REAL_RUN requires cube_limit_units >= 1.")
+  }
   if (!is.finite(as.numeric(nutr$kcal_per_kg_product %||% NA_real_))) {
     stop("REAL_RUN requires finite kcal_per_kg_product.")
   }
   invisible(NULL)
+}
+
+compute_load_sanity_flags <- function(ld, run_id = "") {
+  cube_util <- as.numeric(ld$cube_utilization_pct %||% NA_real_)
+  payload_util <- as.numeric(ld$payload_utilization_pct %||% NA_real_)
+  # Accept either fraction [0,1] or percent [0,100].
+  cube_util_frac <- if (is.finite(cube_util) && cube_util > 1.5) cube_util / 100 else cube_util
+  payload_util_frac <- if (is.finite(payload_util) && payload_util > 1.5) payload_util / 100 else payload_util
+
+  case_dims <- c(
+    as.numeric(ld$derived_case_L_in %||% NA_real_),
+    as.numeric(ld$derived_case_W_in %||% NA_real_),
+    as.numeric(ld$derived_case_H_in %||% NA_real_)
+  )
+  cases_per_pallet_draw <- as.numeric(ld$cases_per_pallet_draw %||% NA_real_)
+  flags <- list(
+    sanity_flag_low_cube_util = as.integer(is.finite(cube_util_frac) && cube_util_frac < 0.25),
+    sanity_flag_high_cube_util = as.integer((is.finite(cube_util_frac) && cube_util_frac > 1.05) || (is.finite(payload_util_frac) && payload_util_frac > 1.05) || (is.finite(payload_util_frac) && payload_util_frac < 0.10)),
+    sanity_flag_unrealistic_case_dims = as.integer(any(is.finite(case_dims) & case_dims > 60))
+  )
+
+  if (is_real_run_env()) {
+    if ((is.finite(cases_per_pallet_draw) && (cases_per_pallet_draw < 10 || cases_per_pallet_draw > 120)) ||
+      isTRUE(flags$sanity_flag_high_cube_util == 1L) ||
+      isTRUE(flags$sanity_flag_unrealistic_case_dims == 1L)) {
+      stop("REAL_RUN load realism sanity check failed for run_id=", as.character(run_id))
+    }
+  } else {
+    if (is.finite(cases_per_pallet_draw) && (cases_per_pallet_draw < 10 || cases_per_pallet_draw > 120)) {
+      message("WARN: cases_per_pallet_draw out of demo sanity bounds [10,120] for run_id=", as.character(run_id))
+    }
+    if (isTRUE(flags$sanity_flag_low_cube_util == 1L) || isTRUE(flags$sanity_flag_high_cube_util == 1L)) {
+      message("WARN: cube/payload utilization out of demo sanity bounds for run_id=", as.character(run_id))
+    }
+    if (isTRUE(flags$sanity_flag_unrealistic_case_dims == 1L)) {
+      message("WARN: refrigerated derived case dimensions exceed plausible bounds for run_id=", as.character(run_id))
+    }
+  }
+  flags
 }
 
 write_run_bundle <- function(

@@ -61,6 +61,17 @@ Available now:
 - `data/derived/scenario_summary.csv`
 - `sources/sources_manifest.csv`
 
+## Load Model Assumptions
+- Both products are modeled as cardboard cases on 48x40 pallets (GMA footprint), with geometry-based cube limits and weight backstop.
+- Trailer pallet baseline is 26 pallets in a 53' trailer (single-stack), with payload max drawn from triangular 38k/43k/45k lb.
+- Packaging assumptions (demo-grade empirical input from retailer/shopkeeper):
+  - Dry: 2 x 30 lb bags per cardboard case.
+  - Refrigerated: 5 x 4.5 lb packs per cardboard case.
+- Cube and weight limits are both enforced; weight includes pallet tare and case tare mass, and outputs report limiting constraint (`cube` vs `weight`).
+- References:
+  - 53' trailer baseline context: https://haletrailer.com/blog/dry-van-dimensions-capacities/
+  - Standard pallet footprint (48x40): https://austin-pallets.com/resources/industry-standards
+
 ## Run Modes
 `SMOKE_LOCAL`:
 - Offline-first wiring mode
@@ -164,6 +175,23 @@ Rscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOK
 Rscript tools/run_chunk.R --scenario CENTRALIZED --n 200000 --seed 123 --mode REAL_RUN
 Rscript tools/aggregate.R --run_group BASE --mode REAL_RUN
 ```
+
+## Presentation Snapshot Artifacts
+Generate slide-ready artifacts from run bundles without re-running the simulation:
+
+```bash
+Rscript tools/make_presentation_artifacts.R --bundle_dir outputs/run_bundle --outdir outputs/presentation
+```
+
+Outputs include PNG + CSV metric panels, `key_numbers.csv`, `assumptions_used.yaml`, and `presentation_snapshot.md`.
+
+Export a single map-replay hero run:
+
+```bash
+Rscript tools/export_hero_run.R --bundle_dir outputs/run_bundle --scenario route_sim_demo --seed 123 --outdir outputs/presentation/hero_run
+```
+
+This writes `hero_event_log.csv` plus route/stops GeoJSON for offline playback.
 
 ## Testing
 ```bash
