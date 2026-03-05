@@ -60,13 +60,16 @@ for (f in track_files) {
     origin_network = if (nrow(bsum) > 0 && "origin_network" %in% names(bsum)) as.character(bsum$origin_network[[1]]) else NA_character_,
     route_id = if (nrow(bsum) > 0 && "route_id" %in% names(bsum)) as.character(bsum$route_id[[1]]) else NA_character_,
     kcal_delivered = if (nrow(bsum) > 0 && "kcal_delivered" %in% names(bsum)) as.numeric(bsum$kcal_delivered[[1]]) else NA_real_,
+    mass_required_for_fu_kg = if (nrow(bsum) > 0 && "mass_required_for_fu_kg" %in% names(bsum)) as.numeric(bsum$mass_required_for_fu_kg[[1]]) else NA_real_,
     protein_kg_delivered = if (nrow(bsum) > 0 && "protein_kg_delivered" %in% names(bsum)) as.numeric(bsum$protein_kg_delivered[[1]]) else NA_real_,
     co2_per_1000kcal = if (nrow(bsum) > 0 && "co2_per_1000kcal" %in% names(bsum)) as.numeric(bsum$co2_per_1000kcal[[1]]) else NA_real_,
     co2_per_kg_protein = if (nrow(bsum) > 0 && "co2_per_kg_protein" %in% names(bsum)) as.numeric(bsum$co2_per_kg_protein[[1]]) else NA_real_,
+    co2_g_per_g_protein = if (nrow(bsum) > 0 && "co2_g_per_g_protein" %in% names(bsum)) as.numeric(bsum$co2_g_per_g_protein[[1]]) else NA_real_,
     co2_kg_upstream = if (nrow(bsum) > 0 && "co2_kg_upstream" %in% names(bsum)) as.numeric(bsum$co2_kg_upstream[[1]]) else NA_real_,
     co2_kg_full = if (nrow(bsum) > 0 && "co2_kg_full" %in% names(bsum)) as.numeric(bsum$co2_kg_full[[1]]) else NA_real_,
     co2_full_per_1000kcal = if (nrow(bsum) > 0 && "co2_full_per_1000kcal" %in% names(bsum)) as.numeric(bsum$co2_full_per_1000kcal[[1]]) else NA_real_,
     co2_full_per_kg_protein = if (nrow(bsum) > 0 && "co2_full_per_kg_protein" %in% names(bsum)) as.numeric(bsum$co2_full_per_kg_protein[[1]]) else NA_real_,
+    co2_full_g_per_g_protein = if (nrow(bsum) > 0 && "co2_full_g_per_g_protein" %in% names(bsum)) as.numeric(bsum$co2_full_g_per_g_protein[[1]]) else NA_real_,
     transport_cost_usd = if (nrow(bsum) > 0 && "transport_cost_usd" %in% names(bsum)) as.numeric(bsum$transport_cost_usd[[1]]) else if (nrow(bsum) > 0 && "transport_cost_total" %in% names(bsum)) as.numeric(bsum$transport_cost_total[[1]]) else NA_real_,
     transport_cost_total = if (nrow(bsum) > 0 && "transport_cost_total" %in% names(bsum)) as.numeric(bsum$transport_cost_total[[1]]) else if (nrow(bsum) > 0 && "transport_cost_usd" %in% names(bsum)) as.numeric(bsum$transport_cost_usd[[1]]) else NA_real_,
     transport_cost_per_1000kcal = if (nrow(bsum) > 0 && "transport_cost_per_1000kcal" %in% names(bsum)) as.numeric(bsum$transport_cost_per_1000kcal[[1]]) else NA_real_,
@@ -76,6 +79,11 @@ for (f in track_files) {
     price_index = if (nrow(bsum) > 0 && "price_index" %in% names(bsum)) as.numeric(bsum$price_index[[1]]) else NA_real_,
     price_index_vs_dry_baseline = if (nrow(bsum) > 0 && "price_index_vs_dry_baseline" %in% names(bsum)) as.numeric(bsum$price_index_vs_dry_baseline[[1]]) else NA_real_,
     protein_per_1000kcal = if (nrow(bsum) > 0 && "protein_per_1000kcal" %in% names(bsum)) as.numeric(bsum$protein_per_1000kcal[[1]]) else NA_real_,
+    driving_time_h = if (nrow(bsum) > 0 && "driving_time_h" %in% names(bsum)) as.numeric(bsum$driving_time_h[[1]]) else NA_real_,
+    traffic_delay_time_h = if (nrow(bsum) > 0 && "traffic_delay_time_h" %in% names(bsum)) as.numeric(bsum$traffic_delay_time_h[[1]]) else NA_real_,
+    charging_or_refueling_time_h = if (nrow(bsum) > 0 && "charging_or_refueling_time_h" %in% names(bsum)) as.numeric(bsum$charging_or_refueling_time_h[[1]]) else NA_real_,
+    rest_time_h = if (nrow(bsum) > 0 && "rest_time_h" %in% names(bsum)) as.numeric(bsum$rest_time_h[[1]]) else NA_real_,
+    trip_duration_total_h = if (nrow(bsum) > 0 && "trip_duration_total_h" %in% names(bsum)) as.numeric(bsum$trip_duration_total_h[[1]]) else NA_real_,
     stringsAsFactors = FALSE
   )
 }
@@ -125,6 +133,10 @@ out <- lapply(groups, function(d) {
     p05_co2_full_per_kg_protein = as.numeric(stats::quantile(d$co2_full_per_kg_protein, 0.05, na.rm = TRUE, names = FALSE)),
     p50_co2_full_per_kg_protein = as.numeric(stats::quantile(d$co2_full_per_kg_protein, 0.50, na.rm = TRUE, names = FALSE)),
     p95_co2_full_per_kg_protein = as.numeric(stats::quantile(d$co2_full_per_kg_protein, 0.95, na.rm = TRUE, names = FALSE)),
+    p50_co2_g_per_g_protein = as.numeric(stats::quantile(d$co2_g_per_g_protein, 0.50, na.rm = TRUE, names = FALSE)),
+    p50_co2_full_g_per_g_protein = as.numeric(stats::quantile(d$co2_full_g_per_g_protein, 0.50, na.rm = TRUE, names = FALSE)),
+    p50_trip_duration_total_h = as.numeric(stats::quantile(d$trip_duration_total_h, 0.50, na.rm = TRUE, names = FALSE)),
+    p95_trip_duration_total_h = as.numeric(stats::quantile(d$trip_duration_total_h, 0.95, na.rm = TRUE, names = FALSE)),
     p50_transport_cost_per_1000kcal = as.numeric(stats::quantile(d$transport_cost_per_1000kcal, 0.50, na.rm = TRUE, names = FALSE)),
     p50_transport_cost_per_kg_protein = as.numeric(stats::quantile(d$transport_cost_per_kg_protein, 0.50, na.rm = TRUE, names = FALSE)),
     p50_delivered_price_per_kcal = as.numeric(stats::quantile(d$delivered_price_per_kcal, 0.50, na.rm = TRUE, names = FALSE)),
@@ -171,26 +183,142 @@ tep_df <- make_traffic_penalty(run_level)
 if (nrow(tep_df) > 0) {
   utils::write.csv(tep_df, file.path(opt$outdir, "route_sim_traffic_penalty.csv"), row.names = FALSE)
   cat("Wrote", file.path(opt$outdir, "route_sim_traffic_penalty.csv"), "\n")
+
+  tep_groups <- split(tep_df, list(tep_df$scenario, tep_df$powertrain), drop = TRUE)
+  tep_summary <- do.call(rbind, lapply(tep_groups, function(d) {
+    x <- as.numeric(d$traffic_emissions_penalty_kg)
+    data.frame(
+      scenario = as.character(d$scenario[[1]]),
+      powertrain = as.character(d$powertrain[[1]]),
+      n_pairs = nrow(d),
+      mean_traffic_emissions_penalty_kg = mean(x, na.rm = TRUE),
+      p05_traffic_emissions_penalty_kg = as.numeric(stats::quantile(x, 0.05, na.rm = TRUE, names = FALSE)),
+      p50_traffic_emissions_penalty_kg = as.numeric(stats::quantile(x, 0.50, na.rm = TRUE, names = FALSE)),
+      p95_traffic_emissions_penalty_kg = as.numeric(stats::quantile(x, 0.95, na.rm = TRUE, names = FALSE)),
+      p_traffic_emissions_penalty_gt_0 = mean(x > 0, na.rm = TRUE),
+      stringsAsFactors = FALSE
+    )
+  }))
+  utils::write.csv(tep_summary, file.path(opt$outdir, "route_sim_traffic_penalty_summary.csv"), row.names = FALSE)
+  cat("Wrote", file.path(opt$outdir, "route_sim_traffic_penalty_summary.csv"), "\n")
+}
+
+make_prob_ev_slower <- function(run_level) {
+  req <- c("pair_id", "scenario", "trip_duration_total_h", "powertrain")
+  if (!all(req %in% names(run_level))) return(data.frame())
+  d <- run_level[is.finite(run_level$trip_duration_total_h), , drop = FALSE]
+  if (nrow(d) == 0) return(data.frame())
+  keys <- split(d, list(d$pair_id, d$scenario), drop = TRUE)
+  rows <- lapply(keys, function(x) {
+    e <- x$trip_duration_total_h[tolower(x$powertrain) == "bev"]
+    z <- x$trip_duration_total_h[tolower(x$powertrain) == "diesel"]
+    if (length(e) == 0 || length(z) == 0) return(NULL)
+    n <- min(length(e), length(z))
+    data.frame(
+      pair_id = as.character(x$pair_id[[1]]),
+      scenario = as.character(x$scenario[[1]]),
+      ev_slower_than_diesel = mean(e[seq_len(n)] > z[seq_len(n)], na.rm = TRUE),
+      stringsAsFactors = FALSE
+    )
+  })
+  rows <- Filter(Negate(is.null), rows)
+  if (length(rows) == 0) return(data.frame())
+  do.call(rbind, rows)
+}
+
+make_prob_refrigerated_gt_dry <- function(run_level) {
+  req <- c("pair_id", "scenario", "co2_kg_total", "product_type")
+  if (!all(req %in% names(run_level))) return(data.frame())
+  d <- run_level[is.finite(run_level$co2_kg_total), , drop = FALSE]
+  if (nrow(d) == 0) return(data.frame())
+  keys <- split(d, list(d$pair_id, d$scenario), drop = TRUE)
+  rows <- lapply(keys, function(x) {
+    r <- x$co2_kg_total[tolower(x$product_type) == "refrigerated"]
+    z <- x$co2_kg_total[tolower(x$product_type) == "dry"]
+    if (length(r) == 0 || length(z) == 0) return(NULL)
+    n <- min(length(r), length(z))
+    data.frame(
+      pair_id = as.character(x$pair_id[[1]]),
+      scenario = as.character(x$scenario[[1]]),
+      p_refrigerated_gt_dry = mean(r[seq_len(n)] > z[seq_len(n)], na.rm = TRUE),
+      stringsAsFactors = FALSE
+    )
+  })
+  rows <- Filter(Negate(is.null), rows)
+  if (length(rows) == 0) return(data.frame())
+  do.call(rbind, rows)
+}
+
+ev_slow_df <- make_prob_ev_slower(run_level)
+if (nrow(ev_slow_df) > 0) {
+  utils::write.csv(ev_slow_df, file.path(opt$outdir, "route_sim_prob_ev_slower_than_diesel.csv"), row.names = FALSE)
+  cat("Wrote", file.path(opt$outdir, "route_sim_prob_ev_slower_than_diesel.csv"), "\n")
+}
+
+ref_gt_dry_df <- make_prob_refrigerated_gt_dry(run_level)
+if (nrow(ref_gt_dry_df) > 0) {
+  utils::write.csv(ref_gt_dry_df, file.path(opt$outdir, "route_sim_prob_refrigerated_gt_dry.csv"), row.names = FALSE)
+  cat("Wrote", file.path(opt$outdir, "route_sim_prob_refrigerated_gt_dry.csv"), "\n")
+}
+
+make_upstream_ingredient_summary <- function(run_level, bundle_dir) {
+  rows <- list()
+  for (i in seq_len(nrow(run_level))) {
+    rid <- as.character(run_level$run_id[[i]])
+    p <- file.path(bundle_dir, rid, "upstream_ingredients.csv")
+    if (!file.exists(p) || !isTRUE(file.info(p)$size > 0)) next
+    d <- tryCatch(utils::read.csv(p, stringsAsFactors = FALSE), error = function(e) data.frame())
+    if (nrow(d) == 0) next
+    d$scenario <- run_level$scenario[[i]]
+    d$powertrain <- run_level$powertrain[[i]]
+    d$traffic_mode <- run_level$traffic_mode[[i]]
+    rows[[length(rows) + 1L]] <- d
+  }
+  if (length(rows) == 0) return(data.frame())
+  all <- do.call(rbind, rows)
+  keys <- split(all, list(all$scenario, all$powertrain, all$product_type, all$ingredient_raw), drop = TRUE)
+  out <- lapply(keys, function(x) {
+    data.frame(
+      scenario = as.character(x$scenario[[1]]),
+      powertrain = as.character(x$powertrain[[1]]),
+      product_type = as.character(x$product_type[[1]]),
+      ingredient_raw = as.character(x$ingredient_raw[[1]]),
+      lci_key = as.character(x$lci_key[[1]]),
+      p05_upstream_kgco2_per_1000kcal = as.numeric(stats::quantile(x$upstream_kgco2_per_1000kcal, 0.05, na.rm = TRUE, names = FALSE)),
+      p50_upstream_kgco2_per_1000kcal = as.numeric(stats::quantile(x$upstream_kgco2_per_1000kcal, 0.50, na.rm = TRUE, names = FALSE)),
+      p95_upstream_kgco2_per_1000kcal = as.numeric(stats::quantile(x$upstream_kgco2_per_1000kcal, 0.95, na.rm = TRUE, names = FALSE)),
+      stringsAsFactors = FALSE
+    )
+  })
+  do.call(rbind, out)
+}
+
+upstream_df <- make_upstream_ingredient_summary(run_level, opt$bundle_dir)
+if (nrow(upstream_df) > 0) {
+  utils::write.csv(upstream_df, file.path(opt$outdir, "upstream_ingredients_summary.csv"), row.names = FALSE)
+  cat("Wrote", file.path(opt$outdir, "upstream_ingredients_summary.csv"), "\n")
 }
 
 make_geo_protein_gsi <- function(run_level) {
-  req <- c("route_id", "powertrain", "scenario", "product_type", "origin_network", "co2_per_kg_protein")
+  req <- c("pair_id", "route_id", "powertrain", "scenario", "traffic_mode", "product_type", "origin_network", "co2_per_kg_protein")
   if (!all(req %in% names(run_level))) return(data.frame())
   d <- run_level[is.finite(run_level$co2_per_kg_protein), , drop = FALSE]
   if (nrow(d) == 0) return(data.frame())
-  keys <- split(d, list(d$route_id, d$powertrain, d$scenario, d$product_type), drop = TRUE)
+  keys <- split(d, list(d$pair_id, d$route_id, d$powertrain, d$scenario, d$traffic_mode, d$product_type), drop = TRUE)
   rows <- lapply(keys, function(x) {
+    if (all(is.na(x$pair_id))) return(NULL)
     a <- x$co2_per_kg_protein[tolower(x$origin_network) == "refrigerated_factory_set"]
     b <- x$co2_per_kg_protein[tolower(x$origin_network) == "dry_factory_set"]
     if (length(a) == 0 || length(b) == 0) return(NULL)
+    delta <- as.numeric(stats::median(a, na.rm = TRUE) - stats::median(b, na.rm = TRUE))
     data.frame(
+      pair_id = as.character(x$pair_id[[1]]),
       route_id = as.character(x$route_id[[1]]),
       powertrain = as.character(x$powertrain[[1]]),
       scenario = as.character(x$scenario[[1]]),
+      traffic_mode = as.character(x$traffic_mode[[1]]),
       product_type = as.character(x$product_type[[1]]),
-      gsi_co2_per_kg_protein_p50 = as.numeric(stats::median(a, na.rm = TRUE) - stats::median(b, na.rm = TRUE)),
-      gsi_co2_per_kg_protein_p05 = as.numeric(stats::quantile(a, 0.05, na.rm = TRUE, names = FALSE) - stats::quantile(b, 0.05, na.rm = TRUE, names = FALSE)),
-      gsi_co2_per_kg_protein_p95 = as.numeric(stats::quantile(a, 0.95, na.rm = TRUE, names = FALSE) - stats::quantile(b, 0.95, na.rm = TRUE, names = FALSE)),
+      gsi_delta_co2_per_kg_protein = delta,
       stringsAsFactors = FALSE
     )
   })
@@ -203,6 +331,26 @@ gsi_df <- make_geo_protein_gsi(run_level)
 if (nrow(gsi_df) > 0) {
   utils::write.csv(gsi_df, file.path(opt$outdir, "route_sim_geo_sensitivity_protein.csv"), row.names = FALSE)
   cat("Wrote", file.path(opt$outdir, "route_sim_geo_sensitivity_protein.csv"), "\n")
+
+  gsi_groups <- split(gsi_df, list(gsi_df$route_id, gsi_df$powertrain, gsi_df$scenario, gsi_df$traffic_mode, gsi_df$product_type), drop = TRUE)
+  gsi_summary <- do.call(rbind, lapply(gsi_groups, function(d) {
+    x <- as.numeric(d$gsi_delta_co2_per_kg_protein)
+    data.frame(
+      route_id = as.character(d$route_id[[1]]),
+      powertrain = as.character(d$powertrain[[1]]),
+      scenario = as.character(d$scenario[[1]]),
+      traffic_mode = as.character(d$traffic_mode[[1]]),
+      product_type = as.character(d$product_type[[1]]),
+      n_pairs = nrow(d),
+      gsi_co2_per_kg_protein_p05 = as.numeric(stats::quantile(x, 0.05, na.rm = TRUE, names = FALSE)),
+      gsi_co2_per_kg_protein_p50 = as.numeric(stats::quantile(x, 0.50, na.rm = TRUE, names = FALSE)),
+      gsi_co2_per_kg_protein_p95 = as.numeric(stats::quantile(x, 0.95, na.rm = TRUE, names = FALSE)),
+      p_gsi_gt_0 = mean(x > 0, na.rm = TRUE),
+      stringsAsFactors = FALSE
+    )
+  }))
+  utils::write.csv(gsi_summary, file.path(opt$outdir, "route_sim_geo_sensitivity_protein_summary.csv"), row.names = FALSE)
+  cat("Wrote", file.path(opt$outdir, "route_sim_geo_sensitivity_protein_summary.csv"), "\n")
 }
 
 cat("Wrote", file.path(opt$outdir, "route_sim_run_level.csv"), "\n")

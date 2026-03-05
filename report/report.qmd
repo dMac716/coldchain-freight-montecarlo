@@ -1,5 +1,5 @@
 ---
-title: "Freight Emissions Monte Carlo Summary"
+title: "Transportation and Cold-Chain Implications: Proposal-Aligned Results"
 format: html
 ---
 
@@ -8,23 +8,26 @@ format: html
 options(stringsAsFactors = FALSE)
 ```
 
-## Problem Statement
+## Research Questions
 
-This report summarizes a distributed Monte Carlo simulation of freight emissions for dry vs refrigerated distribution.
-The system boundary is **Manufacturing → Retail Transportation** and the functional unit is **1,000 kcal delivered to retail**.
+1. How much additional GHG is introduced by refrigerated vs dry freight, normalized to **1,000 kcal delivered to retail**?
+2. How do outcomes vary across **CENTRALIZED vs REGIONALIZED** spatial structures?
+3. How do outcomes vary across **Diesel tractor + diesel TRU** vs **BEV tractor + electric TRU load**?
+4. What is `P(refrigerated > dry)` for each scenario/powertrain combination?
+5. At what distance scale does refrigeration become emissions-dominant?
 
-## Methods
+## Model Framing
 
-Deterministic emissions per functional unit:
+The simulation runs in an offline-first Monte Carlo pipeline with deterministic seeds.  
+Functional unit is first-class via `data/inputs_local/functional_unit.csv` (`FU_1000_KCAL`).
 
-```
-Emissions_gCO2 = (Mass_per_FU_kg / 907.185) * Distance_miles *
-  (Truck_EF + Reefer_Penalty) * Utilization_Factor
-```
+Per draw, outputs include:
 
-Uncertainty is propagated via Monte Carlo sampling, and aggregation uses exact moment merging plus mergeable histograms.
+- `ghg_traction`
+- `ghg_refrigeration` (zero for dry mode)
+- `ghg_total = ghg_traction + ghg_refrigeration`
 
-## Assumptions
+## Inputs and Assumptions
 
 ```{r}
 assumptions_path <- "data/inputs_local/assumptions_used.csv"
@@ -32,23 +35,114 @@ assumptions <- if (file.exists(assumptions_path)) read.csv(assumptions_path) els
 assumptions
 ```
 
-## Results
+```{r}
+fu_path <- "data/inputs_local/functional_unit.csv"
+fu <- if (file.exists(fu_path)) read.csv(fu_path) else data.frame()
+fu
+```
+
+## Scenario Results (Dry vs Refrigerated)
 
 ```{r}
-agg_path <- "outputs/aggregate/results_summary.csv"
-local_path <- "outputs/local/results_summary.csv"
+cmp_path <- "outputs/analysis/scenario_comparison.csv"
+cmp <- if (file.exists(cmp_path)) read.csv(cmp_path, stringsAsFactors = FALSE) else data.frame()
+if (nrow(cmp) == 0) {
+  cat("No proposal scenario comparison found. Run:\n")
+  cat("`Rscript tools/summarize_proposal_outputs.R --runs_dir outputs/proposal --outdir outputs/analysis`\n")
+} else {
+  cmp
+}
+```
 
-results_path <- if (file.exists(agg_path)) agg_path else local_path
-results <- if (file.exists(results_path)) read.csv(results_path) else data.frame()
-results
+## Probability Refrigerated Exceeds Dry
+
+```{r}
+if (nrow(cmp) > 0) {
+  old_par <- par(mar = c(8, 4, 2, 1))
+  on.exit(par(old_par), add = TRUE)
+  labels <- paste(cmp$spatial_structure, cmp$powertrain_config, sep = " | ")
+  barplot(
+    cmp$p_refrigerated_gt_dry,
+    names.arg = labels,
+    las = 2,
+    col = "#3D7EA6",
+    ylim = c(0, 1),
+    ylab = "Probability"
+  )
+  abline(h = 0.5, lty = 2, col = "gray40")
+}
+```
+
+## Distance Threshold Sensitivity
+
+```{r}
+th_path <- "outputs/analysis/distance_thresholds.csv"
+ths <- if (file.exists(th_path)) read.csv(th_path, stringsAsFactors = FALSE) else data.frame()
+if (nrow(ths) == 0) {
+  cat("No threshold output found yet.\n")
+} else {
+  ths
+}
+```
+
+## Route Simulation (Offline Planned Stops)
+
+```{r}
+rs_path <- "outputs/analysis/route_sim_summary_stats.csv"
+rs <- if (file.exists(rs_path)) read.csv(rs_path, stringsAsFactors = FALSE) else data.frame()
+if (nrow(rs) == 0) {
+  cat("No route simulation summary found. Run: `make route-sim-summary`\\n")
+} else {
+  rs
+}
+```
+
+## Traffic Emissions Penalty (Paired)
+
+```{r}
+tep_pair_path <- "outputs/analysis/route_sim_traffic_penalty.csv"
+tep_sum_path <- "outputs/analysis/route_sim_traffic_penalty_summary.csv"
+tep_pair <- if (file.exists(tep_pair_path)) read.csv(tep_pair_path, stringsAsFactors = FALSE) else data.frame()
+tep_sum <- if (file.exists(tep_sum_path)) read.csv(tep_sum_path, stringsAsFactors = FALSE) else data.frame()
+if (nrow(tep_sum) == 0) {
+  cat("No paired TEP summary found yet.\\n")
+} else {
+  tep_sum
+}
+```
+
+## Geography Sensitivity Index (Protein-Normalized, Paired)
+
+```{r}
+gsi_pair_path <- "outputs/analysis/route_sim_geo_sensitivity_protein.csv"
+gsi_sum_path <- "outputs/analysis/route_sim_geo_sensitivity_protein_summary.csv"
+gsi_pair <- if (file.exists(gsi_pair_path)) read.csv(gsi_pair_path, stringsAsFactors = FALSE) else data.frame()
+gsi_sum <- if (file.exists(gsi_sum_path)) read.csv(gsi_sum_path, stringsAsFactors = FALSE) else data.frame()
+if (nrow(gsi_sum) == 0) {
+  cat("No paired GSI summary found yet.\\n")
+} else {
+  gsi_sum
+}
 ```
 
 ```{r}
-# Plot histogram if aggregate hist exists
-hist_path <- "outputs/aggregate/hist_diff_gco2.csv"
-if (file.exists(hist_path)) {
-  h <- read.csv(hist_path)
-  mids <- (h$bin_left + h$bin_right) / 2
-  plot(mids, h$count, type = "h", main = "diff_gco2 Histogram", xlab = "gCO2", ylab = "Count")
+sens_path <- "outputs/analysis/distance_sensitivity.csv"
+sens <- if (file.exists(sens_path)) read.csv(sens_path, stringsAsFactors = FALSE) else data.frame()
+if (nrow(sens) > 0) {
+  groups <- unique(paste(sens$scenario_id, sens$powertrain_config, sep = "|"))
+  cols <- c("#4C78A8", "#F58518", "#54A24B", "#E45756")
+  plot(NA, NA,
+    xlim = range(sens$distance_multiplier, na.rm = TRUE),
+    ylim = range(sens$delta_p50, na.rm = TRUE),
+    xlab = "Distance Multiplier",
+    ylab = "Median Delta (Refrigerated - Dry)"
+  )
+  abline(h = 0, lty = 2, col = "gray40")
+  for (i in seq_along(groups)) {
+    g <- groups[[i]]
+    ss <- sens[paste(sens$scenario_id, sens$powertrain_config, sep = "|") == g, , drop = FALSE]
+    lines(ss$distance_multiplier, ss$delta_p50, col = cols[((i - 1) %% length(cols)) + 1], lwd = 2)
+  }
+  legend("topleft", legend = groups, col = cols[seq_along(groups)], lwd = 2, bty = "n")
 }
 ```

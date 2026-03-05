@@ -1,0 +1,12 @@
+process_key,sheet_name,notes
+corn,Corn,Direct map for dry-product composition
+wheat_processing,Wheat processing,Direct map for dry-product composition
+rice,Rice,Direct map for dry-product composition
+soybean_meal_and_oil,Soybean meal and oil,Direct map used by dry and refrigerated composition
+cooling,Cooling,Cooling process map
+freezing,Freezing,Freezing process map
+chicken,Chicken,Animal ingredient process map
+beef,Beef,Animal ingredient process map
+fishmeal_and_oil,Fishmeal and oil,Animal ingredient process map
+spinach,Spinach,Vegetable ingredient process map
+potato,Potato,Vegetable ingredient process map

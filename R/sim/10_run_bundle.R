@@ -58,12 +58,15 @@ run_summary_row <- function(sim, context) {
     co2_kg_propulsion = NA_real_,
     co2_kg_tru = NA_real_,
     kcal_delivered = kcal_delivered,
+    mass_required_for_fu_kg = as.numeric(context$mass_required_for_fu_kg %||% NA_real_),
     protein_kg_delivered = protein_kg_delivered,
     protein_per_1000kcal = if (is.finite(protein_kg_delivered) && is.finite(kcal_delivered) && kcal_delivered > 0) (protein_kg_delivered * 1000) / kcal_delivered else NA_real_,
     co2_per_1000kcal = if (is.finite(kcal_delivered) && kcal_delivered > 0) co2_total / (kcal_delivered / 1000) else NA_real_,
     co2_per_kg_protein = if (is.finite(protein_kg_delivered) && protein_kg_delivered > 0) co2_total / protein_kg_delivered else NA_real_,
+    co2_g_per_g_protein = if (is.finite(protein_kg_delivered) && protein_kg_delivered > 0) (co2_total * 1000) / (protein_kg_delivered * 1000) else NA_real_,
     co2_full_per_1000kcal = if (is.finite(co2_full) && is.finite(kcal_delivered) && kcal_delivered > 0) co2_full / (kcal_delivered / 1000) else NA_real_,
     co2_full_per_kg_protein = if (is.finite(co2_full) && is.finite(protein_kg_delivered) && protein_kg_delivered > 0) co2_full / protein_kg_delivered else NA_real_,
+    co2_full_g_per_g_protein = if (is.finite(co2_full) && is.finite(protein_kg_delivered) && protein_kg_delivered > 0) (co2_full * 1000) / (protein_kg_delivered * 1000) else NA_real_,
     transport_cost_usd = transport_cost_usd,
     transport_cost_total = transport_cost_usd,
     transport_cost_per_1000kcal = if (is.finite(transport_cost_usd) && is.finite(kcal_delivered) && kcal_delivered > 0) transport_cost_usd / (kcal_delivered / 1000) else NA_real_,
@@ -80,6 +83,11 @@ run_summary_row <- function(sim, context) {
     charge_stops = as.integer(last$charge_count[[1]]),
     refuel_stops = as.integer(last$refuel_count[[1]]),
     delay_minutes = as.numeric(last$delay_minutes_cum[[1]]),
+    driving_time_h = if ("driving_time_h_cum" %in% names(last)) as.numeric(last$driving_time_h_cum[[1]]) else NA_real_,
+    traffic_delay_time_h = if ("traffic_delay_h_cum" %in% names(last)) as.numeric(last$traffic_delay_h_cum[[1]]) else NA_real_,
+    charging_or_refueling_time_h = if ("service_time_h_cum" %in% names(last)) as.numeric(last$service_time_h_cum[[1]]) else NA_real_,
+    rest_time_h = if ("rest_time_h_cum" %in% names(last)) as.numeric(last$rest_time_h_cum[[1]]) else NA_real_,
+    trip_duration_total_h = if ("trip_duration_h_cum" %in% names(last)) as.numeric(last$trip_duration_h_cum[[1]]) else NA_real_,
     fuel_type_outbound = if (isTRUE(identical(context$trip_leg, "outbound"))) as.character(last$fuel_type_label[[1]]) else NA_character_,
     fuel_type_return = if (isTRUE(identical(context$trip_leg, "return"))) as.character(last$fuel_type_label[[1]]) else NA_character_,
     stringsAsFactors = FALSE
@@ -145,10 +153,29 @@ derive_delivered_nutrition <- function(sim, cfg_resolved, context) {
   payload_lb <- if ("payload_lb" %in% names(ss)) suppressWarnings(as.numeric(ss$payload_lb[[nrow(ss)]])) else NA_real_
   payload_kg <- if (is.finite(payload_lb)) payload_lb * 0.45359237 else NA_real_
   product_type <- infer_product_type_from_context(context, cfg_resolved)
-  prof <- sample_nutrition_profile(cfg_resolved, product_type = product_type, seed = as.integer(context$seed %||% 123) + 7919L)
-  kcal <- if (is.finite(payload_kg) && is.finite(prof$kcal_per_kg)) payload_kg * prof$kcal_per_kg else NA_real_
-  protein_kg <- if (is.finite(payload_kg) && is.finite(prof$protein_g_per_kg)) payload_kg * prof$protein_g_per_kg / 1000 else NA_real_
-  list(kcal_delivered = kcal, protein_kg_delivered = protein_kg, shipment_mass_kg = payload_kg, product_type = product_type)
+  fu_kcal <- as.numeric(cfg_resolved$cargo$functional_unit_kcal %||% 1000)
+  food_inputs <- read_food_inputs("data")
+  prof <- resolve_food_profile(product_type, food_inputs = food_inputs, seed = as.integer(context$seed %||% 123))
+  if (is.null(prof) || !is.finite(prof$kcal_per_kg_product)) {
+    prof <- sample_nutrition_profile(cfg_resolved, product_type = product_type, seed = as.integer(context$seed %||% 123) + 7919L)
+    prof <- list(
+      kcal_per_kg_product = prof$kcal_per_kg,
+      protein_g_per_kg_product = prof$protein_g_per_kg,
+      kgco2_per_kg_product = NA_real_
+    )
+  }
+  kcal <- if (is.finite(payload_kg) && is.finite(prof$kcal_per_kg_product)) payload_kg * prof$kcal_per_kg_product else NA_real_
+  protein_kg <- if (is.finite(payload_kg) && is.finite(prof$protein_g_per_kg_product)) payload_kg * prof$protein_g_per_kg_product / 1000 else NA_real_
+  fu_mass <- mass_required_for_fu_kg(product_type, fu_kcal = fu_kcal, food_inputs = food_inputs, seed = as.integer(context$seed %||% 123))
+  list(
+    kcal_delivered = kcal,
+    protein_kg_delivered = protein_kg,
+    shipment_mass_kg = payload_kg,
+    mass_required_for_fu_kg = fu_mass,
+    kgco2_per_kg_product = as.numeric(prof$kgco2_per_kg_product %||% NA_real_),
+    ingredient_rows = prof$ingredient_rows %||% data.frame(),
+    product_type = product_type
+  )
 }
 
 derive_transport_cost <- function(sim, cfg_resolved) {
@@ -290,9 +317,42 @@ lci_read_intensity_table <- function(cfg_resolved) {
     )
   })
   out <- do.call(rbind, rows)
+  out <- lci_apply_process_key_map(out, cfg_resolved)
   cache[[cache_key]] <- out
   options(coldchain.lci_intensity_cache = cache)
   out
+}
+
+lci_read_process_key_map <- function(cfg_resolved) {
+  lci_cfg <- cfg_resolved$lci %||% list()
+  map_path <- as.character(lci_cfg$process_key_map_path %||% file.path("data", "inputs", "lci_process_key_map.csv"))
+  if (!nzchar(map_path) || !file.exists(map_path)) return(data.frame())
+  m <- tryCatch(utils::read.csv(map_path, stringsAsFactors = FALSE), error = function(e) data.frame())
+  if (nrow(m) == 0) return(data.frame())
+  need <- c("process_key", "sheet_name")
+  if (!all(need %in% names(m))) return(data.frame())
+  m$process_key <- normalize_lci_key(m$process_key)
+  m$sheet_name_norm <- normalize_lci_key(m$sheet_name)
+  m <- m[nzchar(m$process_key) & nzchar(m$sheet_name_norm), c("process_key", "sheet_name_norm"), drop = FALSE]
+  if (nrow(m) == 0) return(data.frame())
+  unique(m)
+}
+
+lci_apply_process_key_map <- function(intensity_tbl, cfg_resolved) {
+  if (is.null(intensity_tbl) || nrow(intensity_tbl) == 0) return(intensity_tbl)
+  mp <- lci_read_process_key_map(cfg_resolved)
+  if (nrow(mp) == 0) return(intensity_tbl)
+  d <- intensity_tbl
+  d$sheet_name_norm <- normalize_lci_key(d$sheet_name)
+  j <- merge(mp, d[, c("sheet_name_norm", "co2e_kg_per_unit"), drop = FALSE], by = "sheet_name_norm", all.x = TRUE)
+  j <- j[is.finite(j$co2e_kg_per_unit), c("process_key", "co2e_kg_per_unit"), drop = FALSE]
+  if (nrow(j) == 0) return(intensity_tbl)
+  mapped <- stats::aggregate(co2e_kg_per_unit ~ process_key, data = j, FUN = function(x) x[[1]])
+  mapped$sheet_name <- paste0("mapped:", mapped$process_key)
+  mapped <- mapped[, c("sheet_name", "process_key", "co2e_kg_per_unit"), drop = FALSE]
+  base <- intensity_tbl[, c("sheet_name", "process_key", "co2e_kg_per_unit"), drop = FALSE]
+  base <- base[!base$process_key %in% mapped$process_key, , drop = FALSE]
+  rbind(base, mapped)
 }
 
 derive_upstream_lci <- function(cfg_resolved, product_type, shipment_mass_kg) {
@@ -382,6 +442,11 @@ write_run_bundle <- function(
   context$kcal_delivered <- as.numeric(context$kcal_delivered %||% nd$kcal_delivered)
   context$protein_kg_delivered <- as.numeric(context$protein_kg_delivered %||% nd$protein_kg_delivered)
   context$shipment_mass_kg <- as.numeric(context$shipment_mass_kg %||% nd$shipment_mass_kg)
+  context$mass_required_for_fu_kg <- as.numeric(context$mass_required_for_fu_kg %||% nd$mass_required_for_fu_kg)
+  context$co2_kg_upstream <- as.numeric(
+    context$co2_kg_upstream %||%
+      if (is.finite(nd$kgco2_per_kg_product) && is.finite(context$shipment_mass_kg)) nd$kgco2_per_kg_product * context$shipment_mass_kg else NA_real_
+  )
   context$transport_cost_usd <- as.numeric(context$transport_cost_usd %||% context$transport_cost_total %||% derive_transport_cost(sim, cfg_resolved))
   context$base_price_per_kcal <- as.numeric(context$base_price_per_kcal %||% base_price_per_kcal_for_product(cfg_resolved, context$product_type))
   context$baseline_dry_price_per_kcal <- as.numeric(context$baseline_dry_price_per_kcal %||% base_price_per_kcal_for_product(cfg_resolved, "dry"))
@@ -389,6 +454,26 @@ write_run_bundle <- function(
   context$co2_kg_upstream <- as.numeric(context$co2_kg_upstream %||% lci$co2_kg_upstream)
   context$upstream_co2e_per_kg_product <- as.numeric(context$upstream_co2e_per_kg_product %||% lci$upstream_co2e_per_kg_product)
   summary_row <- run_summary_row(sim, context)
+
+  ingredient_summary <- data.frame()
+  if (!is.null(nd$ingredient_rows) && nrow(nd$ingredient_rows) > 0 && is.finite(context$mass_required_for_fu_kg)) {
+    ir <- nd$ingredient_rows
+    kgco2_col <- if ("kgco2_per_kg" %in% names(ir)) suppressWarnings(as.numeric(ir$kgco2_per_kg)) else rep(0, nrow(ir))
+    kgco2_col[!is.finite(kgco2_col)] <- 0
+    ir$kg_ingredient_per_1000kcal <- as.numeric(ir$mass_fraction) * as.numeric(context$mass_required_for_fu_kg)
+    ir$upstream_kgco2_per_1000kcal <- ir$kg_ingredient_per_1000kcal * kgco2_col
+    ingredient_summary <- data.frame(
+      run_id = run_id,
+      product_type = as.character(context$product_type %||% NA_character_),
+      ingredient_raw = as.character(ir$ingredient_raw),
+      lci_key = as.character(ir$lci_key),
+      mass_fraction = as.numeric(ir$mass_fraction),
+      kg_ingredient_per_1000kcal = as.numeric(ir$kg_ingredient_per_1000kcal),
+      upstream_kgco2_per_1000kcal = as.numeric(ir$upstream_kgco2_per_1000kcal),
+      confidence = as.character(ir$confidence %||% NA_character_),
+      stringsAsFactors = FALSE
+    )
+  }
 
   runs_obj <- list(
     run_id = run_id,
@@ -428,6 +513,7 @@ write_run_bundle <- function(
 
   runs_path <- file.path(bundle_dir, "runs.json")
   summaries_path <- file.path(bundle_dir, "summaries.csv")
+  ingredients_path <- file.path(bundle_dir, "upstream_ingredients.csv")
   events_path <- file.path(bundle_dir, "events.csv")
   params_path <- file.path(bundle_dir, "params.json")
   artifacts_path <- file.path(bundle_dir, "artifacts.json")
@@ -435,6 +521,9 @@ write_run_bundle <- function(
 
   jsonlite::write_json(runs_obj, runs_path, pretty = TRUE, auto_unbox = TRUE, null = "null")
   utils::write.csv(summary_row, summaries_path, row.names = FALSE)
+  if (nrow(ingredient_summary) > 0) {
+    utils::write.csv(ingredient_summary, ingredients_path, row.names = FALSE)
+  }
   utils::write.csv(sim$event_log, events_path, row.names = FALSE)
   jsonlite::write_json(params_obj, params_path, pretty = TRUE, auto_unbox = TRUE, null = "null")
   jsonlite::write_json(artifacts_df, artifacts_path, pretty = TRUE, auto_unbox = TRUE, dataframe = "rows", null = "null")
@@ -455,6 +544,7 @@ write_run_bundle <- function(
     bundle_dir = bundle_dir,
     runs_path = runs_path,
     summaries_path = summaries_path,
+    ingredients_path = if (file.exists(ingredients_path)) ingredients_path else NA_character_,
     events_path = events_path,
     params_path = params_path,
     artifacts_path = artifacts_path,
