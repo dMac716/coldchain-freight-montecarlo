@@ -72,6 +72,12 @@ Available now:
   - 53' trailer baseline context: https://haletrailer.com/blog/dry-van-dimensions-capacities/
   - Standard pallet footprint (48x40): https://austin-pallets.com/resources/industry-standards
 
+## LCI Inventory Reporting Policy
+- `tools/make_lci_inventory_reports.R` generates auditable inventory ledgers from run bundles (`outputs/lci_reports/`).
+- LCI "Flow costs / Price" blocks are handled as optional LCC data and never treated as consumer prices.
+- Currency basis from source sheets is preserved (EUR/EUR2005 style); no automatic USD conversion is applied.
+- Guardrail: outputs derived from LCI flow-cost fields must not create `*_usd_*` columns.
+
 ## Run Modes
 `SMOKE_LOCAL`:
 - Offline-first wiring mode
