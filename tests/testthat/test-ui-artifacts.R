@@ -37,11 +37,47 @@ test_that("flow zone ids exist in zone centroid table", {
   expect_true(all(as.character(flows$dest_id) %in% ids))
 })
 
+is_quarto_restricted_env_failure <- function(output_lines, status) {
+  if (is.null(status) || identical(status, 0L)) {
+    return(FALSE)
+  }
+
+  output <- paste(output_lines, collapse = "\n")
+  grepl(
+    paste(
+      "quarto script failed: unrecognized architecture",
+      "sysctl.*Operation not permitted",
+      "bad CPU type in executable",
+      sep = "|"
+    ),
+    output,
+    ignore.case = TRUE
+  )
+}
+
 test_that("quarto site render is available when Quarto is installed", {
   if (Sys.which("quarto") == "") skip("Quarto CLI not installed in this environment")
   if (!requireNamespace("leaflet", quietly = TRUE)) skip("leaflet package not installed")
 
   out <- system2("quarto", c("render", "site/"), stdout = TRUE, stderr = TRUE)
   status <- attr(out, "status")
+
+  if (is_quarto_restricted_env_failure(out, status)) {
+    skip("Quarto installed but not runnable in restricted environment")
+  }
+
   expect_true(is.null(status) || identical(status, 0L), info = paste(out, collapse = "\n"))
+})
+
+test_that("quarto restricted environment failures are detected", {
+  out <- c(
+    "sysctl: sysctl fmt -1 1024 1: Operation not permitted",
+    "quarto script failed: unrecognized architecture"
+  )
+  expect_true(is_quarto_restricted_env_failure(out, status = 1L))
+})
+
+test_that("quarto unrelated failures are not marked as restricted environment", {
+  out <- "ERROR: site input directory not found"
+  expect_false(is_quarto_restricted_env_failure(out, status = 1L))
 })
