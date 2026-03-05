@@ -1,0 +1,600 @@
+test_kit:
+  name: "Class8_Reefer_Cascadia_vs_eCascadia_CarrierVector_37F"
+  version: "2026-03-04"
+  description: >
+    Canonical equipment + operating policy set for refrigerated freight (37°F setpoint),
+    enabling route-accurate simulation with chargers, dynamic road load, and TRU loads.
+
+  # -------------------------------
+  # 0) Fixed cold-chain requirement
+  # -------------------------------
+  cold_chain:
+    product_setpoint_f: 37
+    retail_display_setpoint_f: 37
+    allowable_band_f:
+      min: 35
+      max: 39
+    compliance_metric:
+      # Optional for later: percent of time above max, or degree-hours above 39°F
+      enabled: false
+
+  # -------------------------------
+  # 1) Scenario toggles (the 4-pack)
+  # -------------------------------
+  scenarios:
+    - name: "centralized_diesel"
+      spatial: "centralized"
+      tractor: "diesel_cascadia"
+      refrigeration: "diesel_vector_tru"
+    - name: "centralized_bev"
+      spatial: "centralized"
+      tractor: "bev_ecascadia"
+      refrigeration: "electric_vector_ecool"
+    - name: "regionalized_diesel"
+      spatial: "regionalized"
+      tractor: "diesel_cascadia"
+      refrigeration: "diesel_vector_tru"
+    - name: "regionalized_bev"
+      spatial: "regionalized"
+      tractor: "bev_ecascadia"
+      refrigeration: "electric_vector_ecool"
+
+  # ---------------------------------
+  # 2) Spatial structure assumptions
+  # ---------------------------------
+  spatial_structure:
+    centralized:
+      distance_scale_factor: 1.0
+    regionalized:
+      distance_scale_factor:
+        distribution:
+          type: triangular
+          min: 0.40
+          mode: 0.55
+          max: 0.70
+
+  # ---------------------------------
+  # 3) Tractors (locked equipment)
+  # ---------------------------------
+  tractors:
+    bev_ecascadia:
+      make_model: "Freightliner eCascadia (Class 8, tandem drive)"
+      usable_battery_kwh: 438          # public spec
+      typical_range_miles: 220         # public spec
+      max_charge_power_kw:
+        single_port: 180
+        dual_port: 270                # public spec
+      charge_to_80pct_minutes: 90      # public spec
+
+      # BEV operating policy (critical realism)
+      soc_policy:
+        soc_min: 0.15
+        soc_max: 0.85
+        soc_target_after_charge: 0.80
+        # Planning range is a policy constraint, not a physical limit
+        planning_leg_miles: 160
+
+      # Propulsion energy model (segment-level)
+      propulsion_energy_kwh_per_mile:
+        distribution:
+          type: triangular
+          min: 1.4
+          mode: 1.8
+          max: 2.2
+
+      # Accessory electric loads besides propulsion + TRU (cab HVAC, controls, etc.)
+      accessory_load_kw:
+        distribution:
+          type: triangular
+          min: 0.8
+          mode: 1.5
+          max: 3.0
+
+      regen_efficiency:
+        distribution:
+          type: triangular
+          min: 0.60
+          mode: 0.70
+          max: 0.80
+
+    diesel_cascadia:
+      make_model: "Freightliner Cascadia (Class 8 diesel baseline)"
+      mpg:
+        distribution:
+          type: triangular
+          min: 6.0
+          mode: 7.0
+          max: 8.0
+
+      # Idle fuel if you later model dwell/queueing at docks
+      idle_fuel_gal_per_hr:
+        distribution:
+          type: triangular
+          min: 0.6
+          mode: 0.9
+          max: 1.3
+
+  # ---------------------------------
+  # 4) Trailer (standardize!)
+  # ---------------------------------
+  trailer:
+    type: "53-ft single-temp refrigerated van trailer"
+    max_gcw_lb: 82000
+    tare_weight_lb:
+      distribution:
+        type: triangular
+        min: 13000
+        mode: 15000
+        max: 17000
+
+    # If insulation details are unknown, use a realistic distribution:
+    # polyurethane foam ~R-7.5 per inch (source)
+    insulation:
+      foam_r_per_inch: 7.5
+      foam_thickness_in:
+        distribution:
+          type: triangular
+          min: 4.0
+          mode: 5.0
+          max: 6.0
+      # Derived by code: total_R = r_per_inch * thickness_in
+
+    # Air infiltration / leakage (door seals, etc.)
+    infiltration_factor:
+      distribution:
+        type: triangular
+        min: 0.8
+        mode: 1.0
+        max: 1.3
+
+  # ---------------------------------
+  # 5) Refrigeration units (diesel + electric)
+  # ---------------------------------
+  refrigeration_units:
+    diesel_vector_tru:
+      make_model_reference: "Carrier Vector TRU (diesel)"
+      # CARB sample average and range (public appendix)
+      fuel_gal_per_engine_hr:
+        distribution:
+          type: triangular
+          min: 0.40
+          mode: 1.01
+          max: 1.57
+
+      # Duty cycle is driven by ambient + setpoint + stops
+      duty_cycle_base:
+        distribution:
+          type: triangular
+          min: 0.25
+          mode: 0.45
+          max: 0.70
+
+      defrost_events_per_day:
+        distribution:
+          type: triangular
+          min: 1
+          mode: 2
+          max: 4
+      defrost_fuel_multiplier:
+        distribution:
+          type: triangular
+          min: 1.02
+          mode: 1.06
+          max: 1.12
+
+    electric_vector_ecool:
+      make_model_reference: "Carrier Vector eCool (all-electric system)"
+      # We model electric TRU as kW draw * hours with duty.
+      # Use a conservative, route-friendly distribution bounded by published performance.
+      tru_power_kw_base:
+        distribution:
+          type: triangular
+          min: 2.5
+          mode: 5.0
+          max: 9.0
+      tru_power_kw_cap: 17.0  # aligns with Carrier published high-load table order of magnitude
+
+      duty_cycle_base:
+        distribution:
+          type: triangular
+          min: 0.25
+          mode: 0.45
+          max: 0.70
+
+      # If you choose to model eCool regen drag later:
+      regen_drag_kwh_per_mile:
+        enabled: false
+        distribution:
+          type: triangular
+          min: 0.00
+          mode: 0.02
+          max: 0.06
+
+  # ---------------------------------
+  # 6) Temperature-driven TRU load model (fixed 37°F)
+  # ---------------------------------
+  refrigeration_model:
+    setpoint_f: 37
+
+    # ΔT = max(0, ambient_f - setpoint_f)
+    ambient_sensitivity:
+      duty_slope_per_f:
+        distribution:
+          type: triangular
+          min: 0.010
+          mode: 0.015
+          max: 0.020
+      power_slope_kw_per_f:
+        distribution:
+          type: triangular
+          min: 0.10
+          mode: 0.20
+          max: 0.35
+
+    # Stop/door-open thermal penalty (retail deliveries)
+    stop_events:
+      enabled: true
+      stops_per_100_miles:
+        distribution:
+          type: triangular
+          min: 0
+          mode: 2
+          max: 8
+      kwh_per_stop_equivalent:
+        distribution:
+          type: triangular
+          min: 0.3
+          mode: 0.8
+          max: 1.6
+
+  # ---------------------------------
+  # 7) Cargo + functional unit mapping (you can refine later)
+  # ---------------------------------
+  cargo:
+    product_category: "refrigerated_dog_food"
+    # If you already use "1,000 kcal delivered" as FU, keep it here:
+    functional_unit_kcal: 1000
+    payload_lb:
+      distribution:
+        type: triangular
+        min: 8000
+        mode: 22000
+        max: 42000
+
+    kcal_per_kg:
+      distribution:
+        type: triangular
+        min: 900
+        mode: 1200
+        max: 1500
+
+    # Packaging mass penalty (optional)
+    packaging_fraction_by_mass:
+      distribution:
+        type: triangular
+        min: 0.03
+        mode: 0.06
+        max: 0.10
+
+    load_factor:
+      distribution:
+        type: triangular
+        min: 0.60
+        mode: 0.80
+        max: 0.95
+
+  # ---------------------------------
+  # 7b) Nutrition profiles by product type
+  # ---------------------------------
+  nutrition:
+    dry:
+      kcal_per_kg:
+        distribution:
+          type: triangular
+          min: 3200
+          mode: 3500
+          max: 3800
+      protein_g_per_kg:
+        distribution:
+          type: triangular
+          min: 220
+          mode: 260
+          max: 300
+
+    refrigerated:
+      kcal_per_kg:
+        distribution:
+          type: triangular
+          min: 900
+          mode: 1200
+          max: 1500
+      protein_g_per_kg:
+        distribution:
+          type: triangular
+          min: 120
+          mode: 150
+          max: 180
+
+  # ---------------------------------
+  # 7c) Economics inputs for delivered price metrics
+  # ---------------------------------
+  costs:
+    diesel_price_per_gal: 4.00
+    electricity_price_per_kwh: 0.18
+    driver_cost_per_hour: 35.0
+    # Base product price component ($/kcal) before transportation.
+    base_price_per_kcal:
+      dry: 0.0022
+      refrigerated: 0.0083
+
+  # ---------------------------------
+  # 7d) Optional LCI enrichment (summary layer only)
+  # ---------------------------------
+  lci:
+    enabled: false
+    lci_workbook_path: "LCI.xlsx"
+    gwp100:
+      co2_fossil: 1
+      co2_biogenic: 0
+      ch4: 27.2
+      n2o: 273
+    product_composition:
+      dry:
+        corn: 0.30
+        wheat_processing: 0.25
+        rice: 0.15
+        soybean_meal_and_oil: 0.30
+        cooling: 0.00
+        freezing: 0.00
+      refrigerated:
+        chicken: 0.45
+        beef: 0.15
+        fishmeal_and_oil: 0.10
+        spinach: 0.05
+        potato: 0.10
+        soybean_meal_and_oil: 0.15
+        cooling: 0.20
+        freezing: 0.10
+
+  # ---------------------------------
+  # 8) Emissions factors
+  # ---------------------------------
+  emissions:
+    diesel_co2_kg_per_gallon:
+      baseline: 10.19   # EIA distillate fuel oil
+      alt_value_for_compatibility: 10.21
+
+    grid_intensity_gco2_per_kwh:
+      distribution:
+        type: triangular
+        min: 200
+        mode: 400
+        max: 700
+
+  # ---------------------------------
+  # 9) Routing + charging integration
+  # ---------------------------------
+  routing:
+    map_provider: "Google Maps Platform"
+    use_real_route_geometry: true
+    use_real_elevation: true
+    routes_geometry_path: "data/derived/routes_facility_to_petco.csv"
+    od_cache_path: "data/derived/google_routes_od_cache.csv"
+
+    speed_model:
+      # If you have per-segment speed limits, use those; otherwise use a simple multiplier.
+      enabled: true
+      speed_multiplier:
+        distribution:
+          type: triangular
+          min: 0.85
+          mode: 1.00
+          max: 1.10
+
+    weather:
+      # You can feed this from an API later; for now model ambient.
+      ambient_temp_f:
+        distribution:
+          type: triangular
+          min: 40
+          mode: 70
+          max: 105
+
+  charging:
+    route_plans_path: "data/derived/bev_route_plans.csv"
+    stations_path: "data/derived/ev_charging_stations_corridor.csv"
+    charger_dataset_path: "data/chargers_cached.csv"
+    charger_dataset_format: "csv"
+    connector_required: "CCS"
+    min_station_power_kw: 150
+    max_detour_miles: 10
+    selection_policy: "min_total_time"
+    queue_delay_minutes:
+      distribution:
+        type: triangular
+        min: 0
+        mode: 10
+        max: 45
+    queue_delay_minutes_by_hour:
+      default:
+        distribution:
+          type: triangular
+          min: 0
+          mode: 10
+          max: 45
+      peak:
+        distribution:
+          type: triangular
+          min: 10
+          mode: 25
+          max: 90
+
+    # Charging curve simplification: fast to 80%, slower after
+    charge_curve:
+      model: "two_stage"
+      stage1_to_soc: 0.80
+      stage1_power_fraction_of_max:
+        distribution:
+          type: triangular
+          min: 0.65
+          mode: 0.80
+          max: 0.95
+      stage2_power_fraction_of_max:
+        distribution:
+          type: triangular
+          min: 0.20
+          mode: 0.35
+          max: 0.50
+
+    station_reliability:
+      distribution:
+        type: triangular
+        min: 0.85
+        mode: 0.95
+        max: 0.99
+
+  # ---------------------------------
+  # 10) Dynamic road load model (structure now, calibrate later)
+  # ---------------------------------
+  road_load:
+    enable_dynamic_road_load: true
+
+    # Aerodynamics
+    cdA_m2:
+      distribution:
+        type: triangular
+        min: 6.0
+        mode: 7.0
+        max: 8.0
+
+    air_density_kg_per_m3:
+      baseline: 1.20
+
+    # Rolling resistance
+    crr:
+      distribution:
+        type: triangular
+        min: 0.0045
+        mode: 0.0055
+        max: 0.0065
+
+    # Drivetrain efficiency (applies to both diesel and BEV differently)
+    bev_drivetrain_efficiency:
+      distribution:
+        type: triangular
+        min: 0.86
+        mode: 0.90
+        max: 0.93
+
+    diesel_drivetrain_efficiency:
+      distribution:
+        type: triangular
+        min: 0.40
+        mode: 0.44
+        max: 0.48
+
+    grade_effects: true
+    wind_effects:
+      enabled: false
+
+  # ---------------------------------
+  # 11) Simulation controls
+  # ---------------------------------
+  simulation:
+    seed: 211
+    monte_carlo_draws: 2000
+    output_quantiles: [0.05, 0.50, 0.95]
+    store_segment_level_outputs: true
+    store_charge_stop_details: true
+
+  # ---------------------------------
+  # 12) Time + traffic discrete-event controls
+  # ---------------------------------
+  time_sim:
+    start_datetime_local: "2026-03-04T00:00:00"
+    duration_hours: 24
+    timestep_seconds: 60
+
+  traffic:
+    enabled: true
+    hourly_speed_multiplier:
+      default:
+        distribution:
+          type: triangular
+          min: 0.85
+          mode: 1.00
+          max: 1.10
+    peak_hours:
+      morning: [7, 8, 9]
+      evening: [16, 17, 18]
+    peak_multiplier:
+      distribution:
+        type: triangular
+        min: 0.65
+        mode: 0.80
+        max: 0.95
+    incident_delay:
+      enabled: true
+      chance_per_100_miles: 0.05
+      delay_minutes:
+        distribution:
+          type: triangular
+          min: 10
+          mode: 20
+          max: 40
+
+  stops:
+    pickup_dwell_minutes:
+      distribution:
+        type: triangular
+        min: 20
+        mode: 45
+        max: 90
+    delivery_dwell_minutes:
+      distribution:
+        type: triangular
+        min: 20
+        mode: 60
+        max: 120
+
+  # ---------------------------------
+  # 13) Diesel refueling + directional fuel types
+  # ---------------------------------
+  diesel_refuel:
+    tank_capacity_gal: 200
+    start_fuel_fraction: 0.90
+    reserve_fuel_fraction: 0.15
+    refuel_target_fraction: 0.90
+    fixed_stop_minutes:
+      distribution:
+        type: triangular
+        min: 10
+        mode: 18
+        max: 30
+    gallons_per_minute:
+      distribution:
+        type: triangular
+        min: 6
+        mode: 10
+        max: 14
+    max_detour_miles: 5
+
+  diesel_fuel_types:
+    outbound:
+      name: "ULSD_B20"
+      co2_kg_per_gallon:
+        baseline: 9.2
+        distribution:
+          type: triangular
+          min: 8.8
+          mode: 9.2
+          max: 9.8
+    return:
+      name: "ULSD"
+      co2_kg_per_gallon:
+        baseline: 10.19
+        distribution:
+          type: triangular
+          min: 10.0
+          mode: 10.19
+          max: 10.4

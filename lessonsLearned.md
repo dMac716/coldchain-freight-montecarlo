@@ -59,3 +59,10 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - Always make publish idempotent by `run_id` (delete+reload for summaries/events, upsert for runs).
 - Include hashes of key derived inputs in `artifacts.json` and store `inputs_hash` in `runs`.
 - For site updates, query BigQuery into `site/data/*.csv` first; Quarto pages should render from local CSVs only.
+
+## Monte Carlo comparison design (CRN)
+- For geography comparisons (`origin_network` swap), use Common Random Numbers: sample exogenous uncertainty once per seed, then evaluate both networks with the same draw.
+- Shared draw fields should include payload, ambient temperature, traffic multiplier, queue delay, grid intensity, and diesel mpg.
+- Store `pair_id` plus exogenous draw columns in run-level outputs so paired integrity is auditable.
+- Never resample exogenous uncertainty when only `origin_network` changes; otherwise GSI variance is inflated by noise.
+- For congestion sensitivity, pair `traffic_mode=stochastic` vs `traffic_mode=freeflow` within the same seed and network; this yields a low-noise Traffic Emissions Penalty (TEP).
