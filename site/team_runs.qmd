@@ -1,0 +1,33 @@
+---
+title: "Team Runs"
+---
+
+```{r}
+#| echo: false
+runs_path <- "site/data/runs_latest.csv"
+summ_path <- "site/data/summaries_latest.csv"
+
+has_runs <- file.exists(runs_path)
+has_summ <- file.exists(summ_path)
+
+if (!has_runs || !has_summ) {
+  cat("Run `Rscript tools/refresh_site_from_bq.R --project <GCP_PROJECT> --dataset coldchain_sim --n 50` to refresh site/data CSVs.\n")
+} else {
+  runs <- utils::read.csv(runs_path, stringsAsFactors = FALSE)
+  summ <- utils::read.csv(summ_path, stringsAsFactors = FALSE)
+
+  cat("## Latest Published Runs\n\n")
+  knitr::kable(utils::head(runs, 25))
+
+  cat("\n\n## Scenario Distribution (CO2 kg total)\n\n")
+  if (nrow(summ) > 0 && all(c("scenario", "co2_kg_total") %in% names(summ))) {
+    op <- par(mar = c(8, 4, 2, 1))
+    on.exit(par(op), add = TRUE)
+    by_s <- tapply(summ$co2_kg_total, summ$scenario, mean, na.rm = TRUE)
+    by_s <- by_s[order(by_s, decreasing = TRUE)]
+    barplot(by_s, las = 2, ylab = "Mean CO2 kg", main = "Mean CO2 by Scenario")
+  } else {
+    cat("summaries_latest.csv missing required columns scenario/co2_kg_total\n")
+  }
+}
+```

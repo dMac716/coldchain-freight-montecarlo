@@ -13,6 +13,10 @@ website:
         text: Flow Map
       - href: viz/scenario_explorer.qmd
         text: Scenario Explorer
+      - href: route_sim_animation.qmd
+        text: Route Simulator
+      - href: team_runs.qmd
+        text: Team Runs
 
 format:
   html:
