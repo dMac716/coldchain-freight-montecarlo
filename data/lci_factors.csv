@@ -1,0 +1,17 @@
+factor_id,kgco2_per_kg,source_note
+chicken,6.9,illustrative_default
+beef,27.0,illustrative_default
+egg,4.8,illustrative_default
+salmon,5.5,illustrative_default
+corn,1.1,illustrative_default
+wheat_processing,1.0,illustrative_default
+rice,2.7,illustrative_default
+barley,0.9,illustrative_default
+soybean_meal_and_oil,2.0,illustrative_default
+oats,0.9,illustrative_default
+pumpkin,0.5,illustrative_default
+spinach,0.7,illustrative_default
+potato,0.4,illustrative_default
+fishmeal_and_oil,4.5,illustrative_default
+pea_protein,1.4,illustrative_default
+micro_additive,2.0,illustrative_default

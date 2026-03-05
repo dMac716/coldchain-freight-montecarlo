@@ -1,0 +1,16 @@
+ingredient,mass_fraction_dry,mass_fraction_refrigerated,kcal_per_kg,protein_g_per_kg,lci_factor_id
+chicken,0.08,0.35,2150,270,chicken
+beef,0.00,0.15,2500,260,beef
+egg,0.00,0.08,1400,130,egg
+salmon,0.00,0.07,2080,220,salmon
+corn,0.18,0.00,3650,90,corn
+wheat_processing,0.14,0.00,3400,120,wheat_processing
+rice,0.18,0.00,3600,70,rice
+barley,0.16,0.00,3500,100,barley
+soybean_meal_and_oil,0.20,0.10,4200,430,soybean_meal_and_oil
+oats,0.04,0.00,3900,170,oats
+pumpkin,0.00,0.08,260,12,pumpkin
+spinach,0.00,0.05,230,29,spinach
+potato,0.00,0.04,770,20,potato
+fishmeal_and_oil,0.00,0.03,7000,600,fishmeal_and_oil
+pea_protein,0.00,0.05,3700,800,pea_protein

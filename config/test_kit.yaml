@@ -333,6 +333,7 @@ test_kit:
   lci:
     enabled: false
     lci_workbook_path: "LCI.xlsx"
+    process_key_map_path: "data/inputs/lci_process_key_map.csv"
     gwp100:
       co2_fossil: 1
       co2_biogenic: 0

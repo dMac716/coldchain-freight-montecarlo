@@ -1,0 +1,3 @@
+powertrain,range_km_low,range_km_high,service_time_min_low,service_time_min_high,hos_drive_max_h,hos_shift_max_h,hos_break_after_h,hos_break_min,hos_reset_h
+diesel,1200,1600,10,15,11,14,8,30,10
+bev,300,500,45,90,11,14,8,30,10

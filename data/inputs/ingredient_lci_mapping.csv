@@ -1,0 +1,39 @@
+ingredient_raw,lci_key,allocation,notes,confidence,is_micro_additive
+Chicken,chicken,mass,primary protein,high,false
+Cracked Pearled Barley,barley,mass,grain proxy,high,false
+Brown Rice,rice,mass,grain proxy,high,false
+Brewers Rice,rice,mass,grain proxy,high,false
+Whole Grain Wheat,wheat_processing,mass,grain proxy,high,false
+Whole Grain Corn,corn,mass,grain proxy,high,false
+Corn Protein Meal,corn,mass,corn derivative proxy,medium,false
+Chicken Meal,chicken,mass,rendered poultry proxy,medium,false
+Chicken Fat,chicken,mass,animal fat proxy,medium,false
+Chicken Liver Flavor,micro_additive,mass,flavor additive bucket,low,true
+Soybean Meal,soybean_meal_and_oil,mass,soy proxy,high,false
+Dried Beet Pulp,pumpkin,mass,fiber crop proxy,low,false
+Soybean Oil,soybean_meal_and_oil,mass,soy oil proxy,medium,false
+Lactic Acid,micro_additive,mass,processing additive bucket,low,true
+Flaxseed,oats,mass,oilseed proxy,medium,false
+Pork Liver Flavor,micro_additive,mass,flavor additive bucket,low,true
+Potassium Chloride,micro_additive,mass,mineral additive bucket,low,true
+Iodized Salt,micro_additive,mass,mineral additive bucket,low,true
+Whole Grain Oats,oats,mass,grain proxy,high,false
+Fructooligosaccharides (FOS),micro_additive,mass,functional additive bucket,low,true
+Choline Chloride,micro_additive,mass,micronutrient additive bucket,low,true
+Calcium Carbonate,micro_additive,mass,mineral additive bucket,low,true
+Vitamin Premix,micro_additive,mass,micronutrient additive bucket,low,true
+Taurine,micro_additive,mass,amino acid additive bucket,low,true
+Mineral Premix,micro_additive,mass,micronutrient additive bucket,low,true
+Mixed Tocopherols,micro_additive,mass,preservative additive bucket,low,true
+Natural Flavors,micro_additive,mass,flavor additive bucket,low,true
+Beta-Carotene,micro_additive,mass,micronutrient additive bucket,low,true
+Beef,beef,mass,primary protein,high,false
+Egg,egg,mass,animal protein,high,false
+Salmon,salmon,mass,fish protein,high,false
+Beef Liver,beef,mass,organ meat proxy,medium,false
+Pea Protein,pea_protein,mass,plant protein,high,false
+Pumpkin,pumpkin,mass,vegetable,high,false
+Spinach,spinach,mass,vegetable,high,false
+Fish Oil,fishmeal_and_oil,mass,fish oil proxy,medium,false
+Salt,micro_additive,mass,mineral additive bucket,low,true
+Celery Powder,spinach,mass,vegetable powder proxy,low,false
