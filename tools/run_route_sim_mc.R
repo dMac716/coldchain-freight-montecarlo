@@ -170,7 +170,8 @@ for (i in seq_len(as.integer(opt$n))) {
       trip_leg = tolower(opt$trip_leg),
       planned_stops = ctx$planned_stops,
       od_cache = od_cache,
-      exogenous_draws = exo_mode
+      exogenous_draws = exo_mode,
+      product_type = infer_product_type()
     )
     rid <- if (paired_origin_networks) {
       paste(opt$scenario, tolower(opt$powertrain), origin_network_label, traffic_mode_label, s, sep = "_")
@@ -214,6 +215,12 @@ for (i in seq_len(as.integer(opt$n))) {
       queue_delay_minutes = as.numeric(exo_mode$queue_delay_minutes %||% NA_real_),
       grid_kg_per_kwh = as.numeric(exo_mode$grid_kg_per_kwh %||% NA_real_),
       mpg = as.numeric(exo_mode$mpg %||% NA_real_),
+      payload_max_lb_draw = as.numeric(exo_mode$payload_max_lb_draw %||% NA_real_),
+      bags_per_pallet = as.numeric(exo_mode$bags_per_pallet %||% NA_real_),
+      cases_per_pallet = as.numeric(exo_mode$cases_per_pallet %||% NA_real_),
+      load_unload_min = as.numeric(exo_mode$load_unload_min %||% NA_real_),
+      refuel_stop_min = as.numeric(exo_mode$refuel_stop_min %||% NA_real_),
+      connector_overhead_min = as.numeric(exo_mode$connector_overhead_min %||% NA_real_),
       status = status,
       co2_kg_total = total_co2,
       stringsAsFactors = FALSE

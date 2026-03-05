@@ -1,6 +1,8 @@
 source_files_io <- list.files(file.path("..", "..", "R", "io"), pattern = "\\.R$", full.names = TRUE)
 source_files_sim <- list.files(file.path("..", "..", "R", "sim"), pattern = "\\.R$", full.names = TRUE)
 for (f in c(source_files_io, source_files_sim)) source(f, local = FALSE)
+source(file.path("..", "..", "R", "08_driver_duty_cycle.R"), local = FALSE)
+source(file.path("..", "..", "R", "08_load_model.R"), local = FALSE)
 
 base_cfg <- function() {
   list(

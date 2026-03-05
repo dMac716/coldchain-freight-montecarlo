@@ -9,6 +9,9 @@ new_rng <- function(seed) {
 
 sample_exogenous_draws <- function(cfg, seed = 123) {
   rng <- new_rng(seed)
+  trailer <- sample_trailer_capacity(seed = seed + 100L, test_kit = cfg)
+  dry_pack <- sample_product_packaging(seed = seed + 101L, product_type = "dry", test_kit = cfg)
+  ref_pack <- sample_product_packaging(seed = seed + 102L, product_type = "refrigerated", test_kit = cfg)
   list(
     payload_lb = sim_pick_distribution(cfg$cargo$payload_lb, rng = rng),
     trailer_tare_lb = sim_pick_distribution(cfg$trailer$tare_weight_lb, rng = rng),
@@ -16,7 +19,17 @@ sample_exogenous_draws <- function(cfg, seed = 123) {
     traffic_multiplier = sample_traffic_multiplier(as.POSIXct("2026-01-01 12:00:00", tz = "UTC"), cfg$traffic, rng = rng),
     queue_delay_minutes = sample_queue_delay_minutes(as.POSIXct("2026-01-01 12:00:00", tz = "UTC"), cfg$charging, cfg$traffic, rng = rng),
     grid_kg_per_kwh = sim_pick_distribution(cfg$emissions$grid_intensity_gco2_per_kwh, rng = rng) / 1000,
-    mpg = sim_pick_distribution(cfg$tractors$diesel_cascadia$mpg, rng = rng)
+    mpg = sim_pick_distribution(cfg$tractors$diesel_cascadia$mpg, rng = rng),
+    payload_max_lb_draw = as.numeric(trailer$payload_max_lb),
+    pallets_max = as.integer(trailer$pallets_max),
+    unit_weight_lb_dry = as.numeric(dry_pack$unit_weight_lb),
+    unit_weight_lb_refrigerated = as.numeric(ref_pack$unit_weight_lb),
+    bags_per_pallet = as.numeric(dry_pack$bags_per_pallet),
+    cases_per_pallet = as.numeric(ref_pack$cases_per_pallet),
+    packs_per_case = as.numeric(ref_pack$packs_per_case),
+    load_unload_min = as.numeric(sim_pick_distribution(cfg$driver_time$load_unload_min, rng = rng)),
+    refuel_stop_min = as.numeric(sim_pick_distribution(cfg$driver_time$refuel_stop_min, rng = rng)),
+    connector_overhead_min = as.numeric(sim_pick_distribution(cfg$driver_time$charge_connector_overhead_min, rng = rng))
   )
 }
 
@@ -33,7 +46,8 @@ simulate_route_day <- function(
     duration_hours = NULL,
     planned_stops = NULL,
     od_cache = NULL,
-    exogenous_draws = NULL) {
+    exogenous_draws = NULL,
+    product_type = "refrigerated") {
   powertrain <- match.arg(powertrain)
   trip_leg <- match.arg(trip_leg)
   rng <- new_rng(seed)
@@ -41,6 +55,7 @@ simulate_route_day <- function(
   start_time <- as.POSIXct(start_time %||% cfg$time_sim$start_datetime_local %||% "2026-03-04T00:00:00", tz = "UTC")
   duration_hours <- as.numeric(duration_hours %||% cfg$time_sim$duration_hours %||% 24)
   end_time <- start_time + duration_hours * 3600
+  product_type <- infer_product_type_from_text(product_type, default = "refrigerated")
 
   payload_lb <- if (!is.null(exogenous_draws) && is.finite(as.numeric(exogenous_draws$payload_lb %||% NA_real_))) {
     as.numeric(exogenous_draws$payload_lb)
@@ -52,6 +67,25 @@ simulate_route_day <- function(
     as.numeric(exogenous_draws$ambient_f)
   } else sim_pick_distribution(cfg$routing$weather$ambient_temp_f, rng = rng)
   if (!is.finite(ambient_f)) ambient_f <- 70
+
+  load_draw <- resolve_load_draw(seed = as.integer(seed), cfg = cfg, product_type = product_type, exogenous_draws = exogenous_draws)
+  nutrition <- list(kcal_per_kg_product = NA_real_, protein_g_per_kg_product = NA_real_)
+  if (exists("resolve_food_profile", mode = "function")) {
+    fi <- if (exists("read_food_inputs", mode = "function")) read_food_inputs("data") else NULL
+    nutrition <- resolve_food_profile(product_type, food_inputs = fi, seed = as.integer(seed))
+  }
+  kcal_per_kg_product <- as.numeric(nutrition$kcal_per_kg_product %||% NA_real_)
+  protein_g_per_kg_product <- as.numeric(nutrition$protein_g_per_kg_product %||% NA_real_)
+  load_draw$kcal_per_truck <- if (is.finite(load_draw$product_mass_lb_per_truck) && is.finite(kcal_per_kg_product)) {
+    kcal_per_kg_product * (load_draw$product_mass_lb_per_truck * 0.45359237)
+  } else {
+    NA_real_
+  }
+  load_draw$protein_kg_per_truck <- if (is.finite(load_draw$product_mass_lb_per_truck) && is.finite(protein_g_per_kg_product)) {
+    (protein_g_per_kg_product / 1000) * (load_draw$product_mass_lb_per_truck * 0.45359237)
+  } else {
+    NA_real_
+  }
 
   events <- list()
   states <- list()
@@ -112,13 +146,23 @@ simulate_route_day <- function(
   }
 
   counts <- list(stop = 0L, charge = 0L, refuel = 0L)
+  schedule <- init_schedule_state(cfg)
+  hos <- init_hos_state()
   tcur <- start_time
   add_event(tcur, tcur, "DEPART_DEPOT", route_segments$lat[[1]], route_segments$lng[[1]], reason = "start")
 
-  pickup_dwell <- sim_pick_distribution(cfg$stops$pickup_dwell_minutes, rng = rng)
-  if (is.finite(pickup_dwell) && pickup_dwell > 0) {
-    tnext <- tcur + pickup_dwell * 60
-    add_event(tcur, tnext, "DWELL_STOP", route_segments$lat[[1]], route_segments$lng[[1]], reason = "pickup_dwell")
+  load_unload_min <- if (!is.null(exogenous_draws) && is.finite(as.numeric(exogenous_draws$load_unload_min %||% NA_real_))) {
+    as.numeric(exogenous_draws$load_unload_min)
+  } else {
+    as.numeric(sim_pick_distribution(cfg$driver_time$load_unload_min, rng = rng))
+  }
+  if (is.finite(load_unload_min) && load_unload_min > 0) {
+    tnext <- tcur + load_unload_min * 60
+    add_event(tcur, tnext, "LOAD_UNLOAD_START", route_segments$lat[[1]], route_segments$lng[[1]], reason = "pickup")
+    lu <- schedule_add_on_duty(schedule, hos, load_unload_min)
+    schedule <- lu$schedule
+    hos <- lu$hos
+    schedule$time_load_unload_min <- as.numeric(schedule$time_load_unload_min) + load_unload_min
     tcur <- tnext
     counts$stop <- counts$stop + 1L
   }
@@ -135,7 +179,6 @@ simulate_route_day <- function(
   traffic_delay_h <- 0
   service_h <- 0
   rest_h <- 0
-  hos <- init_hos_state()
 
   battery_kwh <- as.numeric(cfg$tractors$bev_ecascadia$usable_battery_kwh %||% 438)
   soc <- if (powertrain == "bev") as.numeric(cfg$tractors$bev_ecascadia$soc_policy$soc_max %||% 0.85) else NA_real_
@@ -215,6 +258,21 @@ simulate_route_day <- function(
     if (tcur >= end_time) break
     seg_service_h <- 0
 
+    hos_gate <- enforce_hos_before_driving(
+      hos = hos,
+      schedule = schedule,
+      tcur = tcur,
+      counts = counts,
+      add_event_fn = add_event,
+      lat = seg$lat[[1]],
+      lng = seg$lng[[1]],
+      cfg = cfg
+    )
+    hos <- hos_gate$hos
+    schedule <- hos_gate$schedule
+    tcur <- hos_gate$tcur
+    counts <- hos_gate$counts
+
     mult <- if (!is.null(exogenous_draws) && is.finite(as.numeric(exogenous_draws$traffic_multiplier %||% NA_real_))) {
       as.numeric(exogenous_draws$traffic_multiplier)
     } else sample_traffic_multiplier(tcur, cfg$traffic, rng = rng)
@@ -263,6 +321,10 @@ simulate_route_day <- function(
           qmin <- if (!is.null(exogenous_draws) && is.finite(as.numeric(exogenous_draws$queue_delay_minutes %||% NA_real_))) {
             as.numeric(exogenous_draws$queue_delay_minutes)
           } else sample_queue_delay_minutes(tcur, cfg$charging, cfg$traffic, rng = rng)
+          connector_overhead_min <- if (!is.null(exogenous_draws) && is.finite(as.numeric(exogenous_draws$connector_overhead_min %||% NA_real_))) {
+            as.numeric(exogenous_draws$connector_overhead_min)
+          } else as.numeric(sim_pick_distribution(cfg$driver_time$charge_connector_overhead_min, rng = rng))
+          if (!is.finite(connector_overhead_min) || connector_overhead_min < 0) connector_overhead_min <- 0
           ddet <- stop_detour_minutes(stop_row)
           dmin <- as.numeric(ddet$minutes)
           if (isTRUE(ddet$hit)) od_hits <- od_hits + 1L
@@ -280,13 +342,19 @@ simulate_route_day <- function(
             add_event(q1, q1, "QUEUE_END", stop_row$lat[[1]], stop_row$lng[[1]], reason = paste0("planned_stop_idx=", next_stop_idx))
           }
           add_kwh <- max(0, (soc_target - soc) * battery_kwh)
-          add_event(q1, q1, "CHARGE_START", stop_row$lat[[1]], stop_row$lng[[1]], energy_delta_kwh = 0, reason = paste0("planned_stop_idx=", next_stop_idx))
-          c1 <- q1 + cmin * 60
+          conn1 <- q1 + connector_overhead_min * 60
+          add_event(q1, conn1, "CHARGE_CONNECTOR_OVERHEAD", stop_row$lat[[1]], stop_row$lng[[1]], reason = paste0("planned_stop_idx=", next_stop_idx))
+          add_event(conn1, conn1, "CHARGE_START", stop_row$lat[[1]], stop_row$lng[[1]], energy_delta_kwh = 0, reason = paste0("planned_stop_idx=", next_stop_idx))
+          c1 <- conn1 + cmin * 60
           add_event(c1, c1, "CHARGE_END", stop_row$lat[[1]], stop_row$lng[[1]], energy_delta_kwh = add_kwh, reason = paste0("planned_stop_idx=", next_stop_idx))
-          delay_min <- delay_min + dmin + qmin + cmin
+          delay_min <- delay_min + dmin + qmin + connector_overhead_min + cmin
           detour_min <- detour_min + dmin
-          seg_service_h <- resolve_service_time_hours("bev", dmin + qmin + cmin)
+          seg_service_h <- resolve_service_time_hours("bev", dmin + qmin + connector_overhead_min + cmin)
           service_h <- service_h + seg_service_h
+          sched1 <- schedule_add_on_duty(schedule, hos, dmin + qmin + connector_overhead_min + cmin)
+          schedule <- sched1$schedule
+          hos <- sched1$hos
+          schedule$time_charging_min <- as.numeric(schedule$time_charging_min) + cmin + connector_overhead_min
           tcur <- c1
           soc <- soc_target
           next_stop_idx <- next_stop_idx + 1L
@@ -316,6 +384,10 @@ simulate_route_day <- function(
         delay_min <- delay_min + re$stop_minutes
         seg_service_h <- resolve_service_time_hours("diesel", re$stop_minutes)
         service_h <- service_h + seg_service_h
+        sched2 <- schedule_add_on_duty(schedule, hos, re$stop_minutes)
+        schedule <- sched2$schedule
+        hos <- sched2$hos
+        schedule$time_refuel_min <- as.numeric(schedule$time_refuel_min) + re$stop_minutes
         tcur <- t1
         fuel_type_label <- re$fuel_type_name
       }
@@ -325,13 +397,14 @@ simulate_route_day <- function(
     driving_h <- driving_h + travel_h
     traffic_delay_h <- traffic_delay_h + incident_min / 60
     delay_min <- delay_min + incident_min
-    hos$shift_driving_h <- hos$shift_driving_h + travel_h
-    hos$shift_on_duty_h <- hos$shift_on_duty_h + travel_h + (incident_min / 60) + seg_service_h
-    hos_step <- apply_hos_rules(hos, tcur, counts, add_event, seg$lat[[1]], seg$lng[[1]], cfg)
-    hos <- hos_step$hos_state
-    tcur <- hos_step$tcur
-    counts <- hos_step$counts
-    rest_h <- rest_h + hos_step$rest_h
+    sched3 <- schedule_add_driving(
+      schedule = schedule,
+      hos = hos,
+      driving_minutes = travel_h * 60 + incident_min,
+      traffic_delay_minutes = incident_min
+    )
+    schedule <- sched3$schedule
+    hos <- sched3$hos
 
     add_state(
       t = tcur,
@@ -369,6 +442,37 @@ simulate_route_day <- function(
     add_event(tcur, tcur, "ROUTE_COMPLETE", route_segments$lat[[nrow(route_segments)]], route_segments$lng[[nrow(route_segments)]], reason = "completed")
   }
 
+  if (completed && !plan_soc_violation) {
+    if (is.finite(load_unload_min) && load_unload_min > 0) {
+      t1 <- tcur + load_unload_min * 60
+      add_event(tcur, t1, "LOAD_UNLOAD_END", route_segments$lat[[nrow(route_segments)]], route_segments$lng[[nrow(route_segments)]], reason = "delivery")
+      sched4 <- schedule_add_on_duty(schedule, hos, load_unload_min)
+      schedule <- sched4$schedule
+      hos <- sched4$hos
+      schedule$time_load_unload_min <- as.numeric(schedule$time_load_unload_min) + load_unload_min
+      tcur <- t1
+      counts$stop <- counts$stop + 1L
+      service_h <- service_h + load_unload_min / 60
+      delay_min <- delay_min + load_unload_min
+    }
+
+    posttrip_min <- as.numeric(cfg$driver_time$posttrip_min %||% 0)
+    if (is.finite(posttrip_min) && posttrip_min > 0) {
+      t1 <- tcur + posttrip_min * 60
+      add_event(tcur, t1, "POSTTRIP", route_segments$lat[[nrow(route_segments)]], route_segments$lng[[nrow(route_segments)]], reason = "posttrip")
+      sched5 <- schedule_add_on_duty(schedule, hos, posttrip_min)
+      schedule <- sched5$schedule
+      hos <- sched5$hos
+      tcur <- t1
+      service_h <- service_h + posttrip_min / 60
+      delay_min <- delay_min + posttrip_min
+    }
+  }
+
+  sched_tot <- schedule_totals(schedule)
+  rest_h <- as.numeric(sched_tot$driver_off_duty_min) / 60
+  service_h <- as.numeric(sched_tot$driver_on_duty_min - sched_tot$driver_driving_min) / 60
+
   # Refrigeration continues during non-driving hours; apply stationary runtime penalty.
   trip_rollup <- compute_trip_time_rollup(driving_h, traffic_delay_h, service_h, rest_h)
   stationary_h <- max(0, trip_rollup$trip_duration_h - driving_h)
@@ -398,7 +502,14 @@ simulate_route_day <- function(
       scenario = scenario,
       plan_soc_violation = plan_soc_violation,
       trip_time = trip_rollup,
-      exogenous_draws = exogenous_draws
+      exogenous_draws = exogenous_draws,
+      schedule = sched_tot,
+      load = load_draw,
+      product_type = product_type,
+      nutrition = list(
+        kcal_per_kg_product = kcal_per_kg_product,
+        protein_g_per_kg_product = protein_g_per_kg_product
+      )
     )
   )
 }

@@ -327,6 +327,67 @@ test_kit:
       dry: 0.0022
       refrigerated: 0.0083
 
+  load_model:
+    trailer:
+      pallets_max: 26
+      payload_max_lb:
+        distribution:
+          type: triangular
+          min: 38000
+          mode: 43000
+          max: 45000
+    products:
+      dry:
+        unit_name: "bag_30lb"
+        unit_weight_lb: 30
+        bags_per_pallet:
+          distribution:
+            type: triangular
+            min: 40
+            mode: 50
+            max: 65
+      refrigerated:
+        unit_name: "pack_4.5lb"
+        unit_weight_lb: 4.5
+        packs_per_case: 6
+        cases_per_pallet:
+          distribution:
+            type: triangular
+            min: 60
+            mode: 75
+            max: 90
+
+  driver_time:
+    pretrip_inspection_min: 15
+    posttrip_min: 10
+    load_unload_min:
+      distribution:
+        type: triangular
+        min: 20
+        mode: 45
+        max: 90
+    refuel_stop_min:
+      distribution:
+        type: triangular
+        min: 10
+        mode: 15
+        max: 25
+    charge_connector_overhead_min:
+      distribution:
+        type: triangular
+        min: 5
+        mode: 8
+        max: 12
+
+  hos:
+    enabled: true
+    max_driving_hours: 11
+    max_on_duty_window_hours: 14
+    break_required_after_driving_hours: 8
+    break_duration_min: 30
+    rest_reset_hours: 10
+    weekly_limit_enabled: false
+
   # ---------------------------------
   # 7d) Optional LCI enrichment (summary layer only)
   # ---------------------------------

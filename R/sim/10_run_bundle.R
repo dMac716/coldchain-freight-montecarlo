@@ -25,6 +25,9 @@ run_summary_row <- function(sim, context) {
   ss <- sim$sim_state
   if (is.null(ss) || nrow(ss) == 0) return(data.frame())
   last <- ss[nrow(ss), , drop = FALSE]
+  sched <- sim$metadata$schedule %||% list()
+  ld <- sim$metadata$load %||% list()
+  nutr <- sim$metadata$nutrition %||% list()
   product_type <- as.character(context$product_type %||% NA_character_)
   origin_network <- as.character(context$origin_network %||% NA_character_)
   kcal_delivered <- as.numeric(context$kcal_delivered %||% NA_real_)
@@ -39,6 +42,16 @@ run_summary_row <- function(sim, context) {
   protein_kg_delivered <- if (is.finite(protein_kg_delivered)) pmax(protein_kg_delivered, 1e-9) else NA_real_
   transport_cost_per_kcal <- if (is.finite(transport_cost_usd) && is.finite(kcal_delivered) && kcal_delivered > 0) transport_cost_usd / kcal_delivered else NA_real_
   delivered_price_per_kcal <- if (is.finite(base_price_per_kcal) && is.finite(transport_cost_per_kcal)) base_price_per_kcal + transport_cost_per_kcal else NA_real_
+  delivery_time_min <- as.numeric(sched$delivery_time_min %||% NA_real_)
+  driver_driving_min <- as.numeric(sched$driver_driving_min %||% NA_real_)
+  driver_on_duty_min <- as.numeric(sched$driver_on_duty_min %||% NA_real_)
+  driver_off_duty_min <- as.numeric(sched$driver_off_duty_min %||% NA_real_)
+  time_charging_min <- as.numeric(sched$time_charging_min %||% NA_real_)
+  time_refuel_min <- as.numeric(sched$time_refuel_min %||% NA_real_)
+  time_load_unload_min <- as.numeric(sched$time_load_unload_min %||% NA_real_)
+  time_traffic_delay_min <- as.numeric(sched$time_traffic_delay_min %||% NA_real_)
+  num_break_30min <- as.integer(sched$num_break_30min %||% NA_integer_)
+  num_rest_10hr <- as.integer(sched$num_rest_10hr %||% NA_integer_)
   data.frame(
     run_id = as.character(context$run_id),
     pair_id = as.character(context$pair_id %||% NA_character_),
@@ -88,6 +101,28 @@ run_summary_row <- function(sim, context) {
     charging_or_refueling_time_h = if ("service_time_h_cum" %in% names(last)) as.numeric(last$service_time_h_cum[[1]]) else NA_real_,
     rest_time_h = if ("rest_time_h_cum" %in% names(last)) as.numeric(last$rest_time_h_cum[[1]]) else NA_real_,
     trip_duration_total_h = if ("trip_duration_h_cum" %in% names(last)) as.numeric(last$trip_duration_h_cum[[1]]) else NA_real_,
+    payload_max_lb_draw = as.numeric(ld$payload_max_lb_draw %||% NA_real_),
+    units_per_truck = as.numeric(ld$units_per_truck %||% NA_real_),
+    product_mass_lb_per_truck = as.numeric(ld$product_mass_lb_per_truck %||% NA_real_),
+    kcal_per_truck = as.numeric(ld$kcal_per_truck %||% NA_real_),
+    protein_kg_per_truck = as.numeric(ld$protein_kg_per_truck %||% NA_real_),
+    kcal_per_kg_product = as.numeric(nutr$kcal_per_kg_product %||% NA_real_),
+    protein_g_per_kg_product = as.numeric(nutr$protein_g_per_kg_product %||% NA_real_),
+    delivery_time_min = delivery_time_min,
+    driver_driving_min = driver_driving_min,
+    driver_on_duty_min = driver_on_duty_min,
+    driver_off_duty_min = driver_off_duty_min,
+    time_charging_min = time_charging_min,
+    time_refuel_min = time_refuel_min,
+    time_load_unload_min = time_load_unload_min,
+    time_traffic_delay_min = time_traffic_delay_min,
+    num_break_30min = num_break_30min,
+    num_rest_10hr = num_rest_10hr,
+    trucker_hours_per_1000kcal = if (is.finite(driver_on_duty_min) && is.finite(kcal_delivered) && kcal_delivered > 0) {
+      (driver_on_duty_min / 60) / (kcal_delivered / 1000)
+    } else {
+      NA_real_
+    },
     fuel_type_outbound = if (isTRUE(identical(context$trip_leg, "outbound"))) as.character(last$fuel_type_label[[1]]) else NA_character_,
     fuel_type_return = if (isTRUE(identical(context$trip_leg, "return"))) as.character(last$fuel_type_label[[1]]) else NA_character_,
     stringsAsFactors = FALSE
@@ -150,7 +185,11 @@ sample_nutrition_profile <- function(cfg_resolved, product_type, seed = 123) {
 derive_delivered_nutrition <- function(sim, cfg_resolved, context) {
   ss <- sim$sim_state
   if (is.null(ss) || nrow(ss) == 0) return(list(kcal_delivered = NA_real_, protein_kg_delivered = NA_real_, shipment_mass_kg = NA_real_, product_type = NA_character_))
+  ld <- sim$metadata$load %||% list()
   payload_lb <- if ("payload_lb" %in% names(ss)) suppressWarnings(as.numeric(ss$payload_lb[[nrow(ss)]])) else NA_real_
+  if (is.finite(as.numeric(ld$product_mass_lb_per_truck %||% NA_real_))) {
+    payload_lb <- as.numeric(ld$product_mass_lb_per_truck)
+  }
   payload_kg <- if (is.finite(payload_lb)) payload_lb * 0.45359237 else NA_real_
   product_type <- infer_product_type_from_context(context, cfg_resolved)
   fu_kcal <- as.numeric(cfg_resolved$cargo$functional_unit_kcal %||% 1000)
@@ -412,6 +451,38 @@ inputs_hash_from_artifacts <- function(artifacts_df) {
   sha256_text(key)
 }
 
+warn_packaging_mass_tbd_once <- function(run_id, product_type) {
+  p <- file.path("data", "inputs_local", "products.csv")
+  if (!file.exists(p)) return(invisible(NULL))
+  d <- tryCatch(utils::read.csv(p, stringsAsFactors = FALSE), error = function(e) data.frame())
+  if (nrow(d) == 0 || !"status" %in% names(d)) return(invisible(NULL))
+  status <- toupper(as.character(d$status))
+  pt_col <- if ("product_type" %in% names(d)) tolower(as.character(d$product_type)) else rep("", nrow(d))
+  pt <- tolower(as.character(product_type %||% ""))
+  has_tbd <- any(status == "PACKAGING_MASS_TBD" & (pt_col == pt | !nzchar(pt_col)), na.rm = TRUE)
+  if (!has_tbd) return(invisible(NULL))
+  key <- paste0("coldchain.packaging_warned.", as.character(run_id))
+  if (isTRUE(getOption(key, FALSE))) return(invisible(NULL))
+  message("WARN: PACKAGING_MASS_TBD present in products.csv; continuing in demo mode.")
+  do.call(options, setNames(list(TRUE), key))
+  invisible(NULL)
+}
+
+enforce_real_run_requirements <- function(sim) {
+  real_run <- Sys.getenv("REAL_RUN", unset = "0")
+  is_real <- tolower(trimws(real_run)) %in% c("1", "true", "yes", "y")
+  if (!is_real) return(invisible(NULL))
+  ld <- sim$metadata$load %||% list()
+  nutr <- sim$metadata$nutrition %||% list()
+  if (!is.finite(as.numeric(ld$unit_weight_lb %||% NA_real_))) {
+    stop("REAL_RUN requires finite unit_weight_lb in load model.")
+  }
+  if (!is.finite(as.numeric(nutr$kcal_per_kg_product %||% NA_real_))) {
+    stop("REAL_RUN requires finite kcal_per_kg_product.")
+  }
+  invisible(NULL)
+}
+
 write_run_bundle <- function(
     sim,
     context,
@@ -437,6 +508,8 @@ write_run_bundle <- function(
   artifacts_df <- artifact_manifest(artifact_paths)
   inputs_hash <- inputs_hash_from_artifacts(artifacts_df)
   status <- run_status_from_sim(sim)
+  enforce_real_run_requirements(sim)
+  warn_packaging_mass_tbd_once(run_id, context$product_type %||% sim$metadata$product_type)
   nd <- derive_delivered_nutrition(sim, cfg_resolved, context)
   context$product_type <- as.character(context$product_type %||% nd$product_type)
   context$kcal_delivered <- as.numeric(context$kcal_delivered %||% nd$kcal_delivered)
