@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Cold-Chain Freight Monte Carlo</title>
+<title>Team Runs – Cold-Chain Freight Monte Carlo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -104,9 +69,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="assets/styles.css">
@@ -130,7 +92,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -146,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Route Simulator</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./team_runs.html"> 
+    <a class="nav-link active" href="./team_runs.html" aria-current="page"> 
 <span class="menu-text">Team Runs</span></a>
   </li>  
 </ul>
@@ -160,24 +122,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#host-setup-basics" id="toc-host-setup-basics" class="nav-link active" data-scroll-target="#host-setup-basics">Host Setup (Basics)</a></li>
-  <li><a href="#data-inputs" id="toc-data-inputs" class="nav-link" data-scroll-target="#data-inputs">Data Inputs</a></li>
-  <li><a href="#refresh-ui-artifacts" id="toc-refresh-ui-artifacts" class="nav-link" data-scroll-target="#refresh-ui-artifacts">Refresh UI Artifacts</a></li>
-  <li><a href="#calculation-spec-what-feeds-what" id="toc-calculation-spec-what-feeds-what" class="nav-link" data-scroll-target="#calculation-spec-what-feeds-what">Calculation Spec (What Feeds What)</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Cold-Chain Freight Monte Carlo</h1>
+<h1 class="title">Team Runs</h1>
 </div>
 
 
@@ -194,68 +147,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This visualization layer is static-first and artifact-driven.</p>
-<ul>
-<li>No live services are queried at page render time.</li>
-<li>Map and scenario views read committed/generated CSVs from <code>data/derived/</code> and <code>outputs/</code>.</li>
-<li>Works with local <code>quarto render site/</code> and GitHub Pages deployment.</li>
-</ul>
-<section id="host-setup-basics" class="level2">
-<h2 class="anchored" data-anchor-id="host-setup-basics">Host Setup (Basics)</h2>
-<p>Minimum setup for a contributor host (macOS/Linux/Windows with R + terminal):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/dMac716/coldchain-freight-montecarlo.git</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> coldchain-freight-montecarlo</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> config/gcp.example.env config/gcp.env</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pkgs &lt;- c("optparse","jsonlite","digest","testthat","leaflet"); missing &lt;- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) &gt; 0) install.packages(missing, repos = "https://cloud.r-project.org")'</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'testthat::test_dir("tests/testthat")'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/smoke_test.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Notes: - <code>quarto</code> is required only to render the static site locally. - <code>python3</code> is optional (used for FAF zone-name extraction when available). - <code>bq</code>/<code>gsutil</code> are optional (only for the BigQuery FAF pipeline). - Team viewing is browser-based, so PC users can use GitHub Pages output directly.</p>
-</section>
-<section id="data-inputs" class="level2">
-<h2 class="anchored" data-anchor-id="data-inputs">Data Inputs</h2>
-<ul>
-<li><code>data/derived/faf_top_od_flows.csv</code></li>
-<li><code>data/derived/faf_zone_centroids.csv</code></li>
-<li><code>data/derived/scenario_summary.csv</code> (preferred; generated from available run outputs)</li>
-<li><code>outputs/aggregate/results_summary.csv</code> (fallback if <code>scenario_summary.csv</code> is not available)</li>
-</ul>
-</section>
-<section id="refresh-ui-artifacts" class="level2">
-<h2 class="anchored" data-anchor-id="refresh-ui-artifacts">Refresh UI Artifacts</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tools/derive_ui_artifacts.R <span class="at">--top_n</span> 200</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/ <span class="at">--no-clean</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="calculation-spec-what-feeds-what" class="level2">
-<h2 class="anchored" data-anchor-id="calculation-spec-what-feeds-what">Calculation Spec (What Feeds What)</h2>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-  A[data/inputs_local/*.csv] --&gt; B[R/01_validate.R]
-  B --&gt; C[R/03_model_core.R deterministic equations]
-  C --&gt; D[R/04_sampling.R Monte Carlo draws]
-  D --&gt; E[R/05_histogram.R]
-  E --&gt; F[R/06_analysis.R summary stats/quantiles]
-  F --&gt; G[outputs/* results_summary.csv + metadata]
-  G --&gt; H[tools/derive_ui_artifacts.R]
-  H --&gt; I[data/derived/faf_top_od_flows.csv]
-  H --&gt; J[data/derived/faf_zone_centroids.csv]
-  H --&gt; K[data/derived/scenario_summary.csv]
-  I --&gt; L[site/viz/flow_map.qmd]
-  J --&gt; L
-  K --&gt; M[site/viz/scenario_explorer.qmd]
-  G --&gt; M
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Run `Rscript tools/refresh_site_from_bq.R --project &lt;GCP_PROJECT&gt; --dataset coldchain_sim --n 50` to refresh site/data CSVs.</code></pre>
 </div>
 </div>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
