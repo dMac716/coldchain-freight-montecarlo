@@ -1,5 +1,9 @@
 #!/usr/bin/env Rscript
 
+# Disabled external contributions for now (local-only branch).
+# Original BigQuery refresh implementation is intentionally kept below for easy restore.
+stop("Disabled in local-only mode: tools/refresh_site_from_bq.R (BigQuery refresh disabled).")
+
 suppressPackageStartupMessages({
   library(optparse)
 })

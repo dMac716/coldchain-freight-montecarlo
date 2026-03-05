@@ -2,6 +2,15 @@
 
 Distributed Monte Carlo simulation for refrigerated dog food freight impacts under a locked research scope.
 
+## Local-Only Runtime Note
+This branch is configured for local-only execution with pre-installed data (including large map artifacts).
+
+- External contribution/data features are currently disabled:
+  - BigQuery/GCS publish and refresh workflows
+  - External dataset sync/download scripts
+  - Optional FAF BigQuery ingestion pipeline
+- Core simulation remains active for local deterministic runs.
+
 Project scope updated to match proposal PDF (March 2026):
 - `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`
 

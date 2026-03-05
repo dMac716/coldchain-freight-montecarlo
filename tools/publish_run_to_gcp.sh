@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Disabled external contributions for now (local-only branch).
+# Original publish implementation is intentionally kept below for easy restore.
+echo "Disabled in local-only mode: tools/publish_run_to_gcp.sh"
+echo "Reason: external GCS/BigQuery publishing is turned off for this local deployment."
+exit 1
+
 # Usage:
 #   RUN_ID=my_run GCP_PROJECT=my-proj GCS_BUCKET=my-bucket bash tools/publish_run_to_gcp.sh
 
@@ -72,6 +78,8 @@ WHEN MATCHED THEN UPDATE SET
   repo_dirty = S.repo_dirty,
   status = S.status,
   scenario = S.scenario,
+  product_type = S.product_type,
+  origin_network = S.origin_network,
   route_id = S.route_id,
   route_plan_id = S.route_plan_id,
   seed = S.seed,
@@ -79,8 +87,8 @@ WHEN MATCHED THEN UPDATE SET
   gcs_prefix = S.gcs_prefix,
   inputs_hash = S.inputs_hash
 WHEN NOT MATCHED THEN
-  INSERT (run_id, created_at_utc, runner, git_sha, git_branch, repo_dirty, status, scenario, route_id, route_plan_id, seed, mc_draws, gcs_prefix, inputs_hash)
-  VALUES (S.run_id, S.created_at_utc, S.runner, S.git_sha, S.git_branch, S.repo_dirty, S.status, S.scenario, S.route_id, S.route_plan_id, S.seed, S.mc_draws, S.gcs_prefix, S.inputs_hash)
+  INSERT (run_id, created_at_utc, runner, git_sha, git_branch, repo_dirty, status, scenario, product_type, origin_network, route_id, route_plan_id, seed, mc_draws, gcs_prefix, inputs_hash)
+  VALUES (S.run_id, S.created_at_utc, S.runner, S.git_sha, S.git_branch, S.repo_dirty, S.status, S.scenario, S.product_type, S.origin_network, S.route_id, S.route_plan_id, S.seed, S.mc_draws, S.gcs_prefix, S.inputs_hash)
 "
 
 bq --project_id "$GCP_PROJECT" rm -f -t "$STAGING" >/dev/null

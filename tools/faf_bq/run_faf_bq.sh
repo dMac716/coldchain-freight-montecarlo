@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Disabled external contributions for now (local-only branch).
+# Original FAF BigQuery pipeline implementation is intentionally kept below for easy restore.
+echo "Disabled in local-only mode: tools/faf_bq/run_faf_bq.sh"
+echo "Reason: external FAF BigQuery pipeline is turned off for this local deployment."
+exit 1
+
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ENV_FILE="${1:-$ROOT_DIR/config/gcp.env}"
 

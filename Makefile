@@ -17,10 +17,13 @@ SIM_FACILITY ?= FACILITY_REFRIG_ENNIS
 SIM_POWERTRAIN ?= bev
 SIM_SCENARIO ?= route_sim_demo
 SIM_N ?= 20
-SIM_WORKERS ?= 4
+SIM_WORKERS ?= 2
 SIM_POLL_SECONDS ?= 5
 SIM_STALL_SECONDS ?= 180
 SIM_MAX_RETRIES ?= 1
+SIM_WORKER_NICE ?= 10
+SIM_WORKER_THROTTLE ?= 0
+SIM_CONFIRM_HEAVY ?= true
 GCP_PROJECT ?=
 GCS_BUCKET ?=
 BQ_DATASET ?= coldchain_sim
@@ -52,7 +55,10 @@ aggregate:
 	Rscript tools/aggregate.R --run_group $(RUN_GROUP) --mode $(MODE) --distance_mode $(DISTANCE_MODE)
 
 bq:
-	bash tools/faf_bq/run_faf_bq.sh
+	# Disabled external contributions for now (BigQuery/GCS pipeline).
+	# bash tools/faf_bq/run_faf_bq.sh
+	@echo "Disabled in local-only mode: bq pipeline"
+	@exit 1
 
 clean-chunks:
 	bash tools/clean_chunks.sh
@@ -88,16 +94,25 @@ route-sim-mc:
 	Rscript tools/run_route_sim_mc.R --facility_id $(SIM_FACILITY) --powertrain $(SIM_POWERTRAIN) --scenario $(SIM_SCENARIO) --seed $(SEED) --n $(SIM_N)
 
 route-sim-coord:
-	Rscript tools/run_route_sim_coordinator.R --facility_id $(SIM_FACILITY) --powertrain $(SIM_POWERTRAIN) --scenario $(SIM_SCENARIO) --seed $(SEED) --n $(SIM_N) --workers $(SIM_WORKERS) --poll_seconds $(SIM_POLL_SECONDS) --stall_seconds $(SIM_STALL_SECONDS) --max_retries $(SIM_MAX_RETRIES)
+	Rscript tools/run_route_sim_coordinator.R --facility_id $(SIM_FACILITY) --powertrain $(SIM_POWERTRAIN) --scenario $(SIM_SCENARIO) --seed $(SEED) --n $(SIM_N) --workers $(SIM_WORKERS) --confirm_heavy $(SIM_CONFIRM_HEAVY) --worker_nice $(SIM_WORKER_NICE) --worker_throttle_seconds $(SIM_WORKER_THROTTLE) --poll_seconds $(SIM_POLL_SECONDS) --stall_seconds $(SIM_STALL_SECONDS) --max_retries $(SIM_MAX_RETRIES)
 
 route-sim-summary:
 	Rscript tools/summarize_route_sim_outputs.R --tracks_dir outputs/sim_tracks --events_dir outputs/sim_events --outdir outputs/analysis
 
 setup-bq:
-	GCP_PROJECT=$(GCP_PROJECT) BQ_DATASET=$(BQ_DATASET) bash tools/setup_bq.sh
+	# Disabled external contributions for now (shared BigQuery setup).
+	# GCP_PROJECT=$(GCP_PROJECT) BQ_DATASET=$(BQ_DATASET) bash tools/setup_bq.sh
+	@echo "Disabled in local-only mode: setup-bq"
+	@exit 1
 
 publish-run:
-	RUN_ID=$(RUN_ID) GCP_PROJECT=$(GCP_PROJECT) GCS_BUCKET=$(GCS_BUCKET) BQ_DATASET=$(BQ_DATASET) bash tools/publish_run_to_gcp.sh
+	# Disabled external contributions for now (GCS + BigQuery publish).
+	# RUN_ID=$(RUN_ID) GCP_PROJECT=$(GCP_PROJECT) GCS_BUCKET=$(GCS_BUCKET) BQ_DATASET=$(BQ_DATASET) bash tools/publish_run_to_gcp.sh
+	@echo "Disabled in local-only mode: publish-run"
+	@exit 1
 
 refresh-site-bq:
-	Rscript tools/refresh_site_from_bq.R --project $(GCP_PROJECT) --dataset $(BQ_DATASET) --n $(SITE_RUNS_N)
+	# Disabled external contributions for now (BigQuery-backed site refresh).
+	# Rscript tools/refresh_site_from_bq.R --project $(GCP_PROJECT) --dataset $(BQ_DATASET) --n $(SITE_RUNS_N)
+	@echo "Disabled in local-only mode: refresh-site-bq"
+	@exit 1

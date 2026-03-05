@@ -1,5 +1,9 @@
 #!/usr/bin/env Rscript
 
+# Disabled external contributions for now (local-only branch).
+# Original GCS sync implementation is intentionally kept below for easy restore.
+stop("Disabled in local-only mode: tools/gcs_sync_sources.R (external dataset download disabled).")
+
 suppressPackageStartupMessages({
   library(optparse)
 })
