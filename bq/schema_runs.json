@@ -1,0 +1,16 @@
+[
+  {"name":"run_id","type":"STRING","mode":"REQUIRED"},
+  {"name":"created_at_utc","type":"TIMESTAMP","mode":"REQUIRED"},
+  {"name":"runner","type":"STRING"},
+  {"name":"git_sha","type":"STRING"},
+  {"name":"git_branch","type":"STRING"},
+  {"name":"repo_dirty","type":"BOOL"},
+  {"name":"status","type":"STRING"},
+  {"name":"scenario","type":"STRING"},
+  {"name":"route_id","type":"STRING"},
+  {"name":"route_plan_id","type":"STRING"},
+  {"name":"seed","type":"INT64"},
+  {"name":"mc_draws","type":"INT64"},
+  {"name":"gcs_prefix","type":"STRING"},
+  {"name":"inputs_hash","type":"STRING"}
+]
