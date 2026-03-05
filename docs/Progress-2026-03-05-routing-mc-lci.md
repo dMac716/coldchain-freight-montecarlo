@@ -79,11 +79,23 @@ Rscript tools/summarize_route_sim_outputs.R \
 ```
 
 ## Next development steps
-1. Add paired GSI output table directly from `pair_id` with p05/p50/p95 and `P(GSI>0)`.
-2. Add paired TEP summary table (aggregated by scenario/powertrain/product/origin with quantiles and probability positive).
-3. Extend report/site pages to include TEP and full-system (transport vs full) comparisons.
-4. Lock LCI process-key mapping with a small explicit map file to avoid ambiguous sheet-name matching.
-5. Decide and codify `LCI.xlsx` location/provenance policy in docs.
+Completed in this branch update:
+1. Added paired GSI output from `pair_id` with quantiles and `P(GSI>0)`:
+   - `outputs/analysis/route_sim_geo_sensitivity_protein.csv`
+   - `outputs/analysis/route_sim_geo_sensitivity_protein_summary.csv`
+2. Added paired TEP summary table with quantiles and probability positive:
+   - `outputs/analysis/route_sim_traffic_penalty_summary.csv`
+3. Extended report page sections to surface paired TEP and GSI outputs.
+4. Added explicit LCI process-key mapping file:
+   - `data/inputs/lci_process_key_map.csv`
+   - configured via `lci.process_key_map_path` in `test_kit.yaml` and `config/test_kit.yaml`
+5. Added tests for:
+   - LCI process-key mapping behavior
+   - paired summary output generation
+
+Remaining practical follow-ups:
+1. Decide final tracked location/policy for `LCI.xlsx` (root vs `sources/`), then document in README + reproducibility notes.
+2. Run a fresh presentation-scale Monte Carlo batch and render the report/site artifacts from that run.
 
 ## Files changed in this slice
 - `tools/run_route_sim_mc.R`

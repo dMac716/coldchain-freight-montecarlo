@@ -14,6 +14,14 @@ This branch is configured for local-only execution with pre-installed data (incl
 Project scope updated to match proposal PDF (March 2026):
 - `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`
 
+Additional local source artifacts used by summary-layer enrichments:
+- `Product_Information.pdf` (ingredient lists + kcal/kg labels)
+- `LCI.xlsx` (optional upstream LCI workbook when `lci.enabled: true`)
+
+Both are registered in `sources/sources_manifest.csv` and referenced by source IDs:
+- `product_information_pdf_2026`
+- `lci_workbook_root_2026`
+
 ## Project Scope (locked)
 Scope definition source:
 - `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`
