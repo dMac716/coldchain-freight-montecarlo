@@ -65,3 +65,55 @@ test_that("run_route_sim_mc materializes paired-origin bundles with two labeled 
     expect_equal(sort(unique(as.character(r$origin_network))), c("dry_factory_set", "refrigerated_factory_set"))
   }
 })
+
+test_that("run_route_sim_mc accepts csv paired flags and creates pair directories", {
+  routes_path <- file.path("..", "..", "data", "derived", "routes_facility_to_petco.csv")
+  if (!file.exists(routes_path)) skip("routes cache missing for paired-origin integration test")
+  routes <- utils::read.csv(routes_path, stringsAsFactors = FALSE)
+  need_fac <- c("FACILITY_DRY_TOPEKA", "FACILITY_REFRIG_ENNIS")
+  if (!all(need_fac %in% unique(as.character(routes$facility_id)))) {
+    skip("required dry/refrigerated facilities not present in routes cache")
+  }
+
+  td <- tempfile("paired_origin_mc_csv_")
+  dir.create(td, recursive = TRUE)
+  bundle_root <- file.path(td, "run_bundle")
+  summary_out <- file.path(td, "summary.csv")
+  runs_out <- file.path(td, "runs.csv")
+  repo_root <- normalizePath(file.path("..", ".."), winslash = "/", mustWork = TRUE)
+
+  cmd <- c(
+    file.path(repo_root, "tools", "run_route_sim_mc.R"),
+    "--config", file.path(repo_root, "test_kit.yaml"),
+    "--scenario", "paired_origin_csv_regression",
+    "--powertrain", "diesel",
+    "--product_type", "dry",
+    "--paired_origin_networks", "dry_factory_set,refrigerated_factory_set",
+    "--paired_traffic_modes", "stochastic,freeflow",
+    "--facility_id_dry", "FACILITY_DRY_TOPEKA",
+    "--facility_id_refrigerated", "FACILITY_REFRIG_ENNIS",
+    "--n", "1",
+    "--seed", "2600",
+    "--bundle_root", bundle_root,
+    "--summary_out", summary_out,
+    "--runs_out", runs_out
+  )
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(repo_root)
+  status <- system2("Rscript", cmd, stdout = TRUE, stderr = TRUE)
+  expect_true(is.null(attr(status, "status")) || identical(attr(status, "status"), 0L))
+
+  output_text <- paste(status, collapse = "\n")
+  expect_match(output_text, "PAIR_BUNDLE_CREATED:")
+
+  pair_dirs <- list.dirs(bundle_root, full.names = TRUE, recursive = FALSE)
+  pair_dirs <- pair_dirs[grepl("/pair_", pair_dirs)]
+  expect_equal(length(pair_dirs), 2)
+  for (pd in pair_dirs) {
+    expect_true(file.exists(file.path(pd, "runs.csv")))
+    expect_true(file.exists(file.path(pd, "summaries.csv")))
+    rr <- utils::read.csv(file.path(pd, "runs.csv"), stringsAsFactors = FALSE)
+    expect_equal(sort(unique(as.character(rr$origin_network))), c("dry_factory_set", "refrigerated_factory_set"))
+  }
+})
