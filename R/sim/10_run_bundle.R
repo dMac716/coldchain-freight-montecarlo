@@ -476,21 +476,81 @@ inputs_hash_from_artifacts <- function(artifacts_df) {
   sha256_text(key)
 }
 
-warn_packaging_mass_tbd_once <- function(run_id, product_type) {
-  p <- file.path("data", "inputs_local", "products.csv")
-  if (!file.exists(p)) return(invisible(NULL))
+evaluate_packaging_mass_policy <- function(product_type) {
+  candidates <- c(
+    file.path("data", "inputs_local", "products.csv"),
+    file.path("..", "data", "inputs_local", "products.csv"),
+    file.path("..", "..", "data", "inputs_local", "products.csv")
+  )
+  p <- candidates[file.exists(candidates)][[1]] %||% candidates[[1]]
+  default_note <- "Packaging mass TBD; results exclude packaging mass or use default=0 (whichever is implemented)."
+  if (!file.exists(p)) {
+    return(list(
+      packaging_mass_policy = if (is_real_run_env()) "REAL_RUN_ENFORCED" else "DEMO_WARN_CONTINUE",
+      packaging_mass_tbd_count = 0L,
+      packaging_mass_assumption_note = default_note,
+      packaging_mass_tbd_fields = "",
+      packaging_mass_tbd_products = ""
+    ))
+  }
   d <- tryCatch(utils::read.csv(p, stringsAsFactors = FALSE), error = function(e) data.frame())
-  if (nrow(d) == 0 || !"status" %in% names(d)) return(invisible(NULL))
+  if (nrow(d) == 0 || !"status" %in% names(d)) {
+    return(list(
+      packaging_mass_policy = if (is_real_run_env()) "REAL_RUN_ENFORCED" else "DEMO_WARN_CONTINUE",
+      packaging_mass_tbd_count = 0L,
+      packaging_mass_assumption_note = default_note,
+      packaging_mass_tbd_fields = "",
+      packaging_mass_tbd_products = ""
+    ))
+  }
   status <- toupper(as.character(d$status))
-  pt_col <- if ("product_type" %in% names(d)) tolower(as.character(d$product_type)) else rep("", nrow(d))
+  pt_col <- if ("preservation" %in% names(d)) tolower(as.character(d$preservation)) else if ("product_type" %in% names(d)) tolower(as.character(d$product_type)) else rep("", nrow(d))
   pt <- tolower(as.character(product_type %||% ""))
-  has_tbd <- any(status == "PACKAGING_MASS_TBD" & (pt_col == pt | !nzchar(pt_col)), na.rm = TRUE)
-  if (!has_tbd) return(invisible(NULL))
-  key <- paste0("coldchain.packaging_warned.", as.character(run_id))
-  if (isTRUE(getOption(key, FALSE))) return(invisible(NULL))
-  message("WARN: PACKAGING_MASS_TBD present in products.csv; continuing in demo mode.")
-  do.call(options, setNames(list(TRUE), key))
-  invisible(NULL)
+  row_keep <- status == "PACKAGING_MASS_TBD" & (pt_col == pt | !nzchar(pt_col))
+  td <- d[row_keep, , drop = FALSE]
+  tbd_count <- nrow(td)
+
+  tbd_fields <- character()
+  if (tbd_count > 0) {
+    for (nm in names(td)) {
+      col <- td[[nm]]
+      col_chr <- trimws(as.character(col))
+      has_tbd_literal <- any(grepl("TBD", toupper(col_chr), fixed = TRUE), na.rm = TRUE)
+      has_na_packaging <- grepl("packaging", tolower(nm), fixed = TRUE) && any(!nzchar(col_chr) | is.na(col), na.rm = TRUE)
+      if (has_tbd_literal || has_na_packaging) tbd_fields <- c(tbd_fields, nm)
+    }
+  }
+  tbd_fields <- unique(tbd_fields)
+  product_ids <- if ("product_id" %in% names(td)) as.character(td$product_id) else as.character(td$product_mode %||% td$preservation %||% "")
+  product_ids <- unique(product_ids[nzchar(product_ids)])
+
+  if (tbd_count > 0) {
+    if (is_real_run_env()) {
+      stop(
+        "REAL_RUN blocked: PACKAGING_MASS_TBD rows found for product_type=", pt,
+        "; affected_products=", paste(product_ids, collapse = "|"),
+        "; tbd_fields=", paste(tbd_fields, collapse = "|")
+      )
+    }
+    warn_key <- "coldchain.packaging_warned.invocation"
+    if (!isTRUE(getOption(warn_key, FALSE))) {
+      message(
+        "WARN: PACKAGING_MASS_TBD continuing in demo mode. product_type=", pt,
+        "; affected_products=", paste(product_ids, collapse = "|"),
+        "; tbd_fields=", paste(tbd_fields, collapse = "|"),
+        "; assumption=", default_note
+      )
+      options(coldchain.packaging_warned.invocation = TRUE)
+    }
+  }
+
+  list(
+    packaging_mass_policy = if (is_real_run_env()) "REAL_RUN_ENFORCED" else "DEMO_WARN_CONTINUE",
+    packaging_mass_tbd_count = as.integer(tbd_count),
+    packaging_mass_assumption_note = default_note,
+    packaging_mass_tbd_fields = paste(tbd_fields, collapse = "|"),
+    packaging_mass_tbd_products = paste(product_ids, collapse = "|")
+  )
 }
 
 enforce_real_run_requirements <- function(sim) {
@@ -582,7 +642,7 @@ write_run_bundle <- function(
   inputs_hash <- inputs_hash_from_artifacts(artifacts_df)
   status <- run_status_from_sim(sim)
   enforce_real_run_requirements(sim)
-  warn_packaging_mass_tbd_once(run_id, context$product_type %||% sim$metadata$product_type)
+  pkg_policy <- evaluate_packaging_mass_policy(context$product_type %||% sim$metadata$product_type)
   nd <- derive_delivered_nutrition(sim, cfg_resolved, context)
   context$product_type <- as.character(context$product_type %||% nd$product_type)
   context$kcal_delivered <- as.numeric(context$kcal_delivered %||% nd$kcal_delivered)
@@ -656,6 +716,11 @@ write_run_bundle <- function(
     route_plan_id = context$route_plan_id %||% NA_character_,
     config = cfg_resolved
   )
+  params_obj$packaging_mass_policy <- as.character(pkg_policy$packaging_mass_policy %||% "DEMO_WARN_CONTINUE")
+  params_obj$packaging_mass_tbd_count <- as.integer(pkg_policy$packaging_mass_tbd_count %||% 0L)
+  params_obj$packaging_mass_assumption_note <- as.character(pkg_policy$packaging_mass_assumption_note %||% "")
+  params_obj$packaging_mass_tbd_fields <- as.character(pkg_policy$packaging_mass_tbd_fields %||% "")
+  params_obj$packaging_mass_tbd_products <- as.character(pkg_policy$packaging_mass_tbd_products %||% "")
 
   runs_path <- file.path(bundle_dir, "runs.json")
   summaries_path <- file.path(bundle_dir, "summaries.csv")
