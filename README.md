@@ -265,16 +265,23 @@ Methodology and initial-results page:
 
 ## GitHub Codespaces + Pages
 - This repo can be used in GitHub Codespaces for reproducible docs/artifact workflows.
+- Codespaces bootstrap files are included in:
+  - `.devcontainer/devcontainer.json`
+  - `.devcontainer/postCreate.sh`
 - Recommended Codespaces flow:
   1. Open repo in Codespaces.
-  2. Run canonical build and validation:
+  2. Wait for `postCreate` setup to finish (R/Python/Quarto + ffmpeg/ImageMagick).
+  3. Run smoke/tests:
+     - `Rscript -e 'testthat::test_dir(\"tests/testthat\")'`
+     - `bash tools/smoke_test.sh`
+  4. Run canonical build and validation:
      - `bash tools/build_presentation_artifacts.sh --skip-runs --with-animation`
      - `bash tools/validate_final_artifacts.sh`
-  3. Duplicate selected outputs into tracked snapshot directory:
+  4. Duplicate selected outputs into tracked snapshot directory:
      - `artifacts/github_release/<snapshot_id>/`
-  4. Render pages:
+  5. Render pages:
      - `quarto render site/`
-  5. Commit changes under `site/`, `docs/`, and `artifacts/github_release/`.
+  6. Commit changes under `site/`, `docs/`, and `artifacts/github_release/`.
 
 Data-driven map uses:
 - `data/derived/faf_top_od_flows.csv`
