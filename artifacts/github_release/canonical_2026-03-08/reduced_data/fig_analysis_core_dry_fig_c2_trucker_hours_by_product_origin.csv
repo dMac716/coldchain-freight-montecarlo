@@ -1,0 +1,5 @@
+product_type,origin_network,powertrain,traffic_mode,n_rows,n_pairs,co2_per_1000kcal,co2_per_kg_protein,transport_cost_per_1000kcal,trucker_hours_per_1000kcal,delivery_time_min,cube_utilization_pct,charge_stops,refuel_stops,delay_minutes
+Dry,Dry factory set,,Freeflow,40,40,529.45941945693,,,,837.20585564103,99.9499198717949,0,0,3.80086562071604
+Dry,Dry factory set,,Stochastic,40,40,517.925006035894,,,,840.710706987511,99.9499198717949,0,0,3.80086562071604
+Dry,Refrigerated factory set,,Freeflow,40,40,530.079918925601,,,,837.962997717446,99.9499198717949,0,0,3.88291814757058
+Dry,Refrigerated factory set,,Stochastic,40,40,518.992602303235,,,,841.079512497717,99.9499198717949,0,0,3.18947069823555

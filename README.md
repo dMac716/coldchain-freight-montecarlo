@@ -187,6 +187,15 @@ Current placeholders intentionally gated behind `NEEDS_SOURCE_VALUE`:
   - Non-transport stages can still include `NEEDS_SOURCE_VALUE` placeholders; refer to completeness CSVs for current coverage.
 - Animation runtime dependencies:
   - Route animations require Python with `numpy`, `pandas`, and `matplotlib` and optional `ffmpeg` for mp4/gif encoding.
+- Animation product quality roadmap:
+  - Current generated route animations are primarily lat/long path playback with counters.
+  - Future work should add map context, event overlays (charging/refuel/delays), and stronger narrative/comparative callouts.
+
+## GitHub Upload Snapshot
+- To preserve key run outputs in git (since `outputs/` is ignored), a duplicated release snapshot is stored at:
+  - `artifacts/github_release/canonical_2026-03-08/`
+- Snapshot notes and animation roadmap TODO:
+  - `artifacts/github_release/canonical_2026-03-08/NOTES.md`
 
 ## Provenance Rules
 - All numeric inputs used by runtime tables are tied to `source_id` in `sources/sources_manifest.csv`.

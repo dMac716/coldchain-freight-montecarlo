@@ -1,0 +1,8 @@
+stage,total_rows,placeholder_rows,complete_rows,completion_pct
+ingredients,320,320,0,0
+manufacturing,640,640,0,0
+packaging,320,320,0,0
+distribution,1920,0,1920,100
+retail_storage,320,320,0,0
+household_storage,320,320,0,0
+eol,320,320,0,0

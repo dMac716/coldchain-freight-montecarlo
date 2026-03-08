@@ -22,6 +22,13 @@ bash tools/validate_final_artifacts.sh
 ## Final Artifact Location
 - `outputs/presentation/canonical/final_release_bundle/`
 
+## GitHub Snapshot Copy
+- Because `outputs/` is gitignored, a tracked copy of high-value release artifacts is kept at:
+  - `artifacts/github_release/canonical_2026-03-08/`
+- Snapshot includes figures, tables, merged LCI CSVs, manifests, demo summary CSVs, and route animations.
+- See roadmap note in:
+  - `artifacts/github_release/canonical_2026-03-08/NOTES.md`
+
 ## Authoritative Outputs
 - Figures: `outputs/presentation/canonical/final_release_bundle/figures/`
 - Tables: `outputs/presentation/canonical/final_release_bundle/tables/`
