@@ -30,12 +30,16 @@ BQ_DATASET ?= coldchain_sim
 SITE_RUNS_N ?= 50
 RUN_ID ?=
 
-.PHONY: setup preflight test smoke local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
+.PHONY: setup validate-inputs preflight test smoke local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
 
 setup:
 	bash tools/bootstrap_local.sh
 
+validate-inputs:
+	Rscript tools/validate_inputs.R --mode $(MODE)
+
 preflight:
+	$(MAKE) validate-inputs MODE=$(MODE)
 	Rscript tools/preflight.R --mode $(MODE) --scenario $(SCENARIO) --run_group $(RUN_GROUP) --distance_mode $(DISTANCE_MODE)
 
 test:
@@ -55,10 +59,7 @@ aggregate:
 	Rscript tools/aggregate.R --run_group $(RUN_GROUP) --mode $(MODE) --distance_mode $(DISTANCE_MODE)
 
 bq:
-	# Disabled external contributions for now (BigQuery/GCS pipeline).
-	# bash tools/faf_bq/run_faf_bq.sh
-	@echo "Disabled in local-only mode: bq pipeline"
-	@exit 1
+	bash tools/faf_bq/run_faf_bq.sh
 
 clean-chunks:
 	bash tools/clean_chunks.sh
@@ -100,19 +101,15 @@ route-sim-summary:
 	Rscript tools/summarize_route_sim_outputs.R --tracks_dir outputs/sim_tracks --events_dir outputs/sim_events --outdir outputs/analysis
 
 setup-bq:
-	# Disabled external contributions for now (shared BigQuery setup).
-	# GCP_PROJECT=$(GCP_PROJECT) BQ_DATASET=$(BQ_DATASET) bash tools/setup_bq.sh
-	@echo "Disabled in local-only mode: setup-bq"
-	@exit 1
+	@test -n "$(GCP_PROJECT)" || (echo "GCP_PROJECT is required"; exit 1)
+	GCP_PROJECT=$(GCP_PROJECT) BQ_DATASET=$(BQ_DATASET) bash tools/setup_bq.sh
 
 publish-run:
-	# Disabled external contributions for now (GCS + BigQuery publish).
-	# RUN_ID=$(RUN_ID) GCP_PROJECT=$(GCP_PROJECT) GCS_BUCKET=$(GCS_BUCKET) BQ_DATASET=$(BQ_DATASET) bash tools/publish_run_to_gcp.sh
-	@echo "Disabled in local-only mode: publish-run"
-	@exit 1
+	@test -n "$(RUN_ID)" || (echo "RUN_ID is required"; exit 1)
+	@test -n "$(GCP_PROJECT)" || (echo "GCP_PROJECT is required"; exit 1)
+	@test -n "$(GCS_BUCKET)" || (echo "GCS_BUCKET is required"; exit 1)
+	RUN_ID=$(RUN_ID) GCP_PROJECT=$(GCP_PROJECT) GCS_BUCKET=$(GCS_BUCKET) BQ_DATASET=$(BQ_DATASET) bash tools/publish_run_to_gcp.sh
 
 refresh-site-bq:
-	# Disabled external contributions for now (BigQuery-backed site refresh).
-	# Rscript tools/refresh_site_from_bq.R --project $(GCP_PROJECT) --dataset $(BQ_DATASET) --n $(SITE_RUNS_N)
-	@echo "Disabled in local-only mode: refresh-site-bq"
-	@exit 1
+	@test -n "$(GCP_PROJECT)" || (echo "GCP_PROJECT is required"; exit 1)
+	Rscript tools/refresh_site_from_bq.R --project $(GCP_PROJECT) --dataset $(BQ_DATASET) --n $(SITE_RUNS_N)
