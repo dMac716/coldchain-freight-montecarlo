@@ -12,6 +12,8 @@ Source paths used:
 - Release manifest/readiness/index/pair audits
 - Route animation mp4 files + final frame pngs
 - Demo summary CSVs used for representative-run selection and animation context
+- Downloadable animation ZIP:
+  - `downloads/route_animations_canonical_2026-03-08.zip`
 
 ## Roadmap Note (Animations)
 Current animation artifacts are route-track visualizations based mostly on latitude/longitude progression and cumulative counters.
@@ -21,3 +23,10 @@ TODO roadmap for animation quality:
 - Add event overlays (charging, refuel, delay, stop windows) with timestamps.
 - Add scenario/powertrain comparison callouts tied to scientific metrics.
 - Add camera framing and narrative sequencing beyond simple route playback.
+
+## Rebuild Animation ZIP
+```bash
+bash tools/package_animation_artifacts.sh \
+  outputs/presentation/canonical/final_release_bundle/animations \
+  artifacts/github_release/canonical_2026-03-08/downloads/route_animations_canonical_2026-03-08.zip
+```
