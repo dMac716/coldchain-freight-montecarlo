@@ -116,6 +116,11 @@ jobs:
         run: |
           Rscript -e 'install.packages("renv", repos="https://cloud.r-project.org"); renv::restore(prompt = FALSE)'
 
+      - name: Validate input CSV contracts
+        shell: bash
+        run: |
+          Rscript tools/validate_inputs.R --mode SMOKE_LOCAL
+
       # ---- Unit tests ----
       - name: Run unit tests (testthat)
         shell: bash
