@@ -15,8 +15,14 @@ website:
         text: Scenario Explorer
       - href: route_sim_animation.qmd
         text: Route Simulator
+      - href: viz/transport_results.qmd
+        text: Transport Results
+      - href: methodology_results.qmd
+        text: Methodology & Results
       - href: team_runs.qmd
         text: Team Runs
+      - href: repo_system_guide.qmd
+        text: System Guide
 
 format:
   html:

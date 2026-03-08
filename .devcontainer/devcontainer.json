@@ -1,0 +1,19 @@
+{
+  "name": "coldchain-freight-montecarlo",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "REditorSupport.r",
+        "quarto.quarto",
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ],
+      "settings": {
+        "r.bracketedPaste": true,
+        "files.eol": "\n"
+      }
+    }
+  }
+}

@@ -48,6 +48,12 @@ For diesel variants, SmartWay `co2_g_per_ton_mile` remains the baseline. Diesel 
 Implementation entry point:
 - `compute_emissions_intensity()` in `R/03_model_core.R`
 
+## Refrigeration Logic Policy
+- Cold-chain load is driven by product requirement (`product_type`), not by origin facility label.
+- Dry product transport must have reefer/TRU terms equal to zero.
+- Refrigerated product transport must retain reefer/TRU terms, including geography counterfactual origin runs.
+- Policy implementation is enforced in route simulation, summaries, validators, and downstream LCI bridge logic.
+
 ## Inputs Status
 Available now:
 - `data/inputs_local/products.csv`
@@ -60,6 +66,98 @@ Available now:
 - `data/derived/faf_zone_centroids.csv`
 - `data/derived/scenario_summary.csv`
 - `sources/sources_manifest.csv`
+
+## Load Model Assumptions
+- Both products are modeled as cardboard cases on 48x40 pallets (GMA footprint), with geometry-based cube limits and weight backstop.
+- Trailer pallet baseline is 26 pallets in a 53' trailer (single-stack), with payload max drawn from triangular 38k/43k/45k lb.
+- Packaging assumptions (demo-grade empirical input from retailer/shopkeeper):
+  - Dry: 2 x 30 lb bags per cardboard case.
+  - Refrigerated: discrete uncertainty draw for packs per case: `{4, 5, 6}` with default weights `{0.25, 0.50, 0.25}` (centered on 5).
+- Assumption metadata is tracked as representative logistics assumptions (not manufacturer-certified shipping specs):
+  - `source_type`
+  - `confidence_level`
+  - `rationale`
+- Dry packaging policy:
+  - fixed case dimensions `24x16x6`
+  - `2` bags per case
+  - retailer-informed representative assumption
+- Refrigerated packaging policy:
+  - observed unit dimensions `6.99x7.99x10.32`
+  - `units_per_case` modeled as uncertainty `{4,5,6}`
+  - case geometry derived from unit dimensions and selected pack pattern
+- Packaging assumptions mainly influence cube utilization and truckload assignment; they are not the primary driver of route energy/emissions physics.
+
+## Scenario Test Matrix
+- Canonical test-condition definitions are stored in:
+  - `config/scenario_test_matrix.csv`
+- Key fields include:
+  - `scenario_id`, `scenario`, `product_type`, `powertrain`, `origin_network`, `traffic_mode`
+  - `cold_chain_required`, `facility_id`, `retail_id`, `trip_leg`
+  - `units_per_case_policy`, `case_geometry_policy`, `load_assignment_policy`, `artifact_mode`, `notes`
+- These fields are propagated into route simulation outputs (`runs.csv`, `summaries.csv`, pair bundle outputs) and support reproducible presentation tables.
+
+## Canonical Run Matrix (Authoritative)
+- Canonical run definitions are in:
+  - `config/canonical_run_matrix.csv`
+- Canonical families:
+  - `validation_small`
+  - `analysis_core_dry`
+  - `analysis_core_refrigerated`
+  - `bev_diagnostic`
+  - `demo_full_artifact`
+- Canonical runner:
+  - `bash tools/run_canonical_suite.sh <run_family_or_run_id>`
+
+Canonical output layout:
+- `outputs/run_bundle/canonical/<run_family>/<run_id>/`
+- `outputs/analysis/canonical/<run_family>/<run_id>/`
+- `outputs/lci_reports/canonical/{dry,refrigerated,full_lca}/`
+- `outputs/presentation/canonical/{figures,tables,animations}/`
+
+Canonical end-to-end build:
+- `bash tools/build_presentation_artifacts.sh`
+
+Final presentation manifest:
+- `outputs/presentation/canonical/final_artifact_manifest.csv`
+
+Run snapshot (2026-03-08, tracked in git):
+- `docs/artifacts/canonical_2026-03-08/release_readiness_report.md`
+- `docs/artifacts/canonical_2026-03-08/final_artifact_manifest.csv`
+- `docs/artifacts/canonical_2026-03-08/presentation_index.csv`
+- `docs/artifacts/canonical_2026-03-08/pair_integrity_summary.csv`
+- `docs/artifacts/canonical_2026-03-08/lci_completeness_overall.csv`
+- `docs/artifacts/canonical_2026-03-08/animation_inventory.md`
+
+Authoritative outputs for reporting:
+- `outputs/analysis/canonical/transport_analysis_bundle/*/paired_core_comparison_table.csv`
+- `outputs/lci_reports/canonical/full_lca/inventory_ledger_full.csv`
+- `outputs/lci_reports/canonical/full_lca/inventory_summary_by_stage_full.csv`
+- `outputs/lci_reports/canonical/full_lca/lci_completeness_by_stage.csv`
+- `outputs/presentation/canonical/final_artifact_manifest.csv`
+
+## Shipment Assignment vs Capacity
+- Trailer capacity and assigned shipment are modeled separately.
+- Capacity diagnostics:
+  - `units_per_truck_capacity`
+  - `cases_per_truck_capacity`
+- Actual shipment fields:
+  - `assigned_units`, `assigned_cases`, `actual_units_loaded`, `load_fraction`, `unused_capacity_units`
+- Assignment policies:
+  - `full_truckload`
+  - `partial_load`
+  - `store_demand_draw`
+- Normalized metrics (`co2_per_1000kcal`, `co2_per_kg_protein`, `truckloads_per_1e6_kcal`) are computed from actual loaded/delivered product assumptions.
+- Cube and weight limits are both enforced; weight includes pallet tare and case tare mass, and outputs report limiting constraint (`cube` vs `weight`).
+- References:
+  - 53' trailer baseline context: https://haletrailer.com/blog/dry-van-dimensions-capacities/
+  - Standard pallet footprint (48x40): https://austin-pallets.com/resources/industry-standards
+
+## LCI Inventory Reporting Policy
+- `tools/make_lci_inventory_reports.R` generates auditable inventory ledgers from run bundles (`outputs/lci_reports/`).
+- LCI "Flow costs / Price" blocks are handled as optional LCC data and never treated as consumer prices.
+- Currency basis from source sheets is preserved (EUR/EUR2005 style); no automatic USD conversion is applied.
+- Guardrail: outputs derived from LCI flow-cost fields must not create `*_usd_*` columns.
+- Completeness note: canonical merged LCI (`outputs/lci_reports/canonical/full_lca/`) currently has strong distribution-stage population while some upstream/downstream stages may remain `NEEDS_SOURCE_VALUE`; use `tools/check_lci_completeness.R` outputs for explicit stage/product completion percentages.
 
 ## Run Modes
 `SMOKE_LOCAL`:
@@ -75,6 +173,29 @@ Available now:
 ## Data Needs Remaining
 Current placeholders intentionally gated behind `NEEDS_SOURCE_VALUE`:
 - Hybrid BEV + diesel-TRU emissions factor row (`bev_refrigerated_diesel_tru`)
+
+## Incomplete / Not Functional / TBD (as of 2026-03-08)
+- Packaging mass:
+  - `PACKAGING_MASS_TBD` rows exist for some products in `data/inputs_local/products.csv`.
+  - In demo mode this is warning-only; in `REAL_RUN` it is a hard block.
+- Demo artifact family behavior:
+  - `demo_full_artifact` runs are `origin_mode=single`, so no `pair_*` directories are produced by design.
+  - Pair-based presentation graphics are skipped automatically for this family.
+- Optional transport figures:
+  - Protein-efficiency and BEV outlier figures may be skipped when required columns are unavailable.
+- LCI completeness:
+  - Non-transport stages can still include `NEEDS_SOURCE_VALUE` placeholders; refer to completeness CSVs for current coverage.
+- Animation runtime dependencies:
+  - Route animations require Python with `numpy`, `pandas`, and `matplotlib` and optional `ffmpeg` for mp4/gif encoding.
+- Animation product quality roadmap:
+  - Current generated route animations are primarily lat/long path playback with counters.
+  - Future work should add map context, event overlays (charging/refuel/delays), and stronger narrative/comparative callouts.
+
+## GitHub Upload Snapshot
+- To preserve key run outputs in git (since `outputs/` is ignored), a duplicated release snapshot is stored at:
+  - `artifacts/github_release/canonical_2026-03-08/`
+- Snapshot notes and animation roadmap TODO:
+  - `artifacts/github_release/canonical_2026-03-08/NOTES.md`
 
 ## Provenance Rules
 - All numeric inputs used by runtime tables are tied to `source_id` in `sources/sources_manifest.csv`.
@@ -138,6 +259,30 @@ make derive-ui
 quarto render site/
 ```
 
+Methodology and initial-results page:
+- `site/methodology_results.qmd`
+- Published as `docs/methodology_results.html` via Quarto/GitHub Pages.
+
+## GitHub Codespaces + Pages
+- This repo can be used in GitHub Codespaces for reproducible docs/artifact workflows.
+- Codespaces bootstrap files are included in:
+  - `.devcontainer/devcontainer.json`
+  - `.devcontainer/postCreate.sh`
+- Recommended Codespaces flow:
+  1. Open repo in Codespaces.
+  2. Wait for `postCreate` setup to finish (R/Python/Quarto + ffmpeg/ImageMagick).
+  3. Run smoke/tests:
+     - `Rscript -e 'testthat::test_dir(\"tests/testthat\")'`
+     - `bash tools/smoke_test.sh`
+  4. Run canonical build and validation:
+     - `bash tools/build_presentation_artifacts.sh --skip-runs --with-animation`
+     - `bash tools/validate_final_artifacts.sh`
+  4. Duplicate selected outputs into tracked snapshot directory:
+     - `artifacts/github_release/<snapshot_id>/`
+  5. Render pages:
+     - `quarto render site/`
+  6. Commit changes under `site/`, `docs/`, and `artifacts/github_release/`.
+
 Data-driven map uses:
 - `data/derived/faf_top_od_flows.csv`
 - `data/derived/faf_zone_centroids.csv`
@@ -148,6 +293,33 @@ Presentation-ready route artifacts:
 - `data/derived/route_elevation_profiles.csv`
 - `data/derived/ev_charging_stations_corridor.csv`
 - `data/derived/bev_route_plans.csv`
+
+## System Guide
+- Full repository architecture, variable inventory, pipeline semantics, validation layers, and analysis outputs:
+  - `docs/repo_system_guide.html`
+
+## Development Workflow
+- Milestones and acceptance criteria:
+  - `docs/DEVELOPMENT_PLAN.md`
+- Full developer runbook (setup, tests, graphics publish, BQ publish):
+  - `docs/DEVELOPMENT_WORKFLOW.md`
+- Canonical scenario assumptions and test-condition narrative:
+  - `docs/scenario_conditions.md`
+- Local env templates for `direnv` + token handling:
+  - `.env.local.example`
+  - `.envrc.example`
+
+## Development Governance
+- Feature work goes on `dev/*` branches (for example `dev/scientific-graphics-and-animation`).
+- Optional polish branches may use `feat/*`.
+- Presentation snapshots use `release/*` branches and only include stabilized, validated outputs.
+- `main` only receives reviewed and validated merges.
+
+Where to develop what:
+- Simulation core logic: `dev/*`
+- Graphics and animation tooling: `dev/*`
+- Site / GitHub Pages publishing logic: `dev/*`
+- Only validated merged artifacts should be promoted into presentation snapshot branches.
 
 ## Run Commands
 ```bash
@@ -164,6 +336,83 @@ Rscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOK
 Rscript tools/run_chunk.R --scenario CENTRALIZED --n 200000 --seed 123 --mode REAL_RUN
 Rscript tools/aggregate.R --run_group BASE --mode REAL_RUN
 ```
+
+Route-sim Monte Carlo artifact policy:
+- Use `--artifact_mode summary_only` for presentation-scale/large sweeps.
+  - Writes scalar `runs.csv` + `summary_out` and paired bundle summaries.
+  - Skips heavy per-run track/event artifacts by default.
+- Use `--artifact_mode full` for a small number of representative demo runs when full replay artifacts are needed.
+
+Examples:
+```bash
+Rscript tools/run_route_sim_mc.R --scenario paired_origin_demo --powertrain diesel --paired_origin_networks true --n 200 --seed 123 --artifact_mode summary_only --summary_out outputs/summaries/route_sim_summary.csv --runs_out outputs/summaries/route_sim_runs.csv
+Rscript tools/run_route_sim_mc.R --scenario route_sim_demo --powertrain bev --n 3 --seed 123 --artifact_mode full --summary_out outputs/summaries/route_sim_summary.csv --runs_out outputs/summaries/route_sim_runs.csv
+```
+
+## Transport Presentation Graphics (MC + LCA)
+Generate presentation visuals directly from paired Monte Carlo run outputs:
+
+```bash
+Rscript tools/generate_transport_presentation_graphics.R --bundle_root outputs/run_bundle/<run_id> --validation_root outputs/validation/<run_id> --outdir outputs/presentation/transport_graphics_<run_id>
+```
+
+Re-generate after new run data lands:
+
+```bash
+bash tools/regenerate_transport_graphics.sh <run_id>
+```
+
+Optional BEV route-plan check during regeneration:
+
+```bash
+RUN_BEV_VALIDATION=true bash tools/regenerate_transport_graphics.sh <run_id>
+```
+
+Outputs:
+- `transport_mc_filtered_runs.csv` (matched-pair run-level rows used for diagnostics)
+- `transport_mc_distribution.png/.svg`
+- `transport_mc_distribution_summary.csv`
+- `transport_burden_breakdown.png/.svg`
+- `transport_burden_breakdown_values.csv`
+- `transport_mc_animation.gif`
+- `transport_mc_animation.mp4` (requires `ffmpeg` installed)
+- `transport_mc_animation_last_frame.png`
+- `transport_trip_time_diagnostic.png/.svg` (3-panel trip-time/bimodality diagnostic)
+- `refrigerated_split_diagnostic.png/.svg` (compact refrigerated split-cause check)
+- `transport_mc_evolution.mp4/.gif` (convergence + regime-emergence animation)
+- `transport_mc_evolution_last_frame.png`
+- `transport_graphics_filter_metadata.json`
+- `transport_graphics_README.md`
+- `refrigerated_units_per_case_sensitivity_summary.csv` and `refrigerated_units_per_case_sensitivity_boxplots.png`
+- `bev_grouping_explanatory_table.csv`, `bev_grouping_explanatory_figure.png/.svg`, `bev_grouping_note.md`
+
+Standalone BEV grouping diagnosis:
+
+```bash
+Rscript tools/diagnose_bev_grouping.R --runs_csv outputs/summaries/<run_id>_runs_merged.csv --outdir outputs/analysis/bev_grouping_<run_id>
+```
+
+Dependencies:
+- R packages: `optparse`, `data.table`, `jsonlite`
+- Python packages: `numpy`, `pandas`, `matplotlib`
+- System tools: `ffmpeg` (MP4 export), ImageMagick `magick`/`convert` (R GIF fallback)
+
+## Presentation Snapshot Artifacts
+Generate slide-ready artifacts from run bundles without re-running the simulation:
+
+```bash
+Rscript tools/make_presentation_artifacts.R --bundle_dir outputs/run_bundle --outdir outputs/presentation
+```
+
+Outputs include PNG + CSV metric panels, `key_numbers.csv`, `assumptions_used.yaml`, and `presentation_snapshot.md`.
+
+Export a single map-replay hero run:
+
+```bash
+Rscript tools/export_hero_run.R --bundle_dir outputs/run_bundle --scenario route_sim_demo --seed 123 --outdir outputs/presentation/hero_run
+```
+
+This writes `hero_event_log.csv` plus route/stops GeoJSON for offline playback.
 
 ## Testing
 ```bash

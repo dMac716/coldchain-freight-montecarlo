@@ -72,9 +72,28 @@ For improved road-distance realism while keeping offline simulation execution:
 - Artifact integrity uses canonical JSON checksum semantics.
 - Tests enforce manifest coverage and runtime gate behavior.
 
+## Packaging/load assumptions for route sim
+- Both dry and refrigerated products are treated as cardboard cases on pallets (not loose units).
+- Case assumptions use demo-grade empirical input from retailer/shopkeeper:
+  - dry: 2 x 30lb bags per case
+  - refrigerated: 5 x 4.5lb packs per case
+- Loading is cube-limited from pallet/case geometry and capped by payload after pallet/case tare.
+- Baseline trailer loading uses 26 single-stack pallets in a 53' trailer, with default payload max triangular 38k/43k/45k lb.
+- References:
+  - https://haletrailer.com/blog/dry-van-dimensions-capacities/
+  - https://austin-pallets.com/resources/industry-standards
+
 ## Local source artifacts (nutrition + LCI)
 - `Product_Information.pdf` and `LCI.xlsx` are local source artifacts used by summary-layer enrichments.
 - They are registered in `sources/sources_manifest.csv` under:
   - `product_information_pdf_2026`
   - `lci_workbook_root_2026`
 - `LCI.xlsx` is only required when `lci.enabled: true` in config.
+
+## LCI Cost Field Policy
+- LCI workbook "Flow costs / Price" fields are treated as optional LCC metadata, not market consumer prices.
+- Currency basis is preserved as provided (typically EUR / EUR2005 in ecoinvent-style exports); no automatic USD conversion is performed.
+- Any price-style output derived from LCI flow costs must remain either:
+  - explicitly labeled `lci_cost_eur_*`, or
+  - a dimensionless index where currency cancels (for example `price_index`).
+- Outputs claiming `*_usd_*` from LCI flow-cost fields are forbidden and should fail lint checks.

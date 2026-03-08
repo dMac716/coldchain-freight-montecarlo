@@ -30,6 +30,93 @@ read_cfg <- function(path) {
   if (!is.null(y$test_kit)) y$test_kit else y
 }
 
+sanitize_id <- function(x) gsub("[^A-Za-z0-9._-]+", "_", as.character(x))
+
+materialize_paired_origin_bundle <- function(bundle_root, pair_id, member_run_ids) {
+  member_run_ids <- unique(as.character(member_run_ids))
+  member_run_ids <- member_run_ids[nzchar(member_run_ids)]
+  if (length(member_run_ids) < 2) return(invisible(NULL))
+
+  pair_dir <- file.path(bundle_root, paste0("pair_", sanitize_id(pair_id)))
+  dir.create(pair_dir, recursive = TRUE, showWarnings = FALSE)
+
+  run_rows <- list()
+  summary_rows <- list()
+  art_rows <- list()
+  ri <- 0L
+  si <- 0L
+  ai <- 0L
+  for (rid in member_run_ids) {
+    bdir <- file.path(bundle_root, rid)
+    if (!dir.exists(bdir)) next
+    rj <- tryCatch(jsonlite::fromJSON(file.path(bdir, "runs.json"), simplifyVector = TRUE), error = function(e) NULL)
+    sm <- tryCatch(utils::read.csv(file.path(bdir, "summaries.csv"), stringsAsFactors = FALSE), error = function(e) data.frame())
+    aj <- tryCatch(jsonlite::fromJSON(file.path(bdir, "artifacts.json"), simplifyVector = TRUE), error = function(e) data.frame())
+    if (!is.null(rj)) {
+      ri <- ri + 1L
+      run_rows[[ri]] <- data.frame(
+        run_id = as.character(rj$run_id %||% rid),
+        pair_id = as.character(pair_id),
+        origin_network = as.character(rj$origin_network %||% NA_character_),
+        product_type = as.character(rj$product_type %||% NA_character_),
+        traffic_mode = if (nrow(sm) > 0 && "traffic_mode" %in% names(sm)) as.character(sm$traffic_mode[[1]]) else NA_character_,
+        route_id = as.character(rj$route_id %||% NA_character_),
+        stringsAsFactors = FALSE
+      )
+    }
+    if (nrow(sm) > 0) {
+      si <- si + 1L
+      summary_rows[[si]] <- sm
+    }
+    if (nrow(aj) > 0) {
+      aj$member_run_id <- rid
+      ai <- ai + 1L
+      art_rows[[ai]] <- aj
+    }
+  }
+
+  if (length(run_rows) == 0 || length(summary_rows) == 0) return(invisible(NULL))
+  runs_df <- do.call(rbind, run_rows)
+  sums_df <- do.call(rbind, summary_rows)
+  arts_df <- if (length(art_rows) > 0) do.call(rbind, art_rows) else data.frame()
+
+  runs_jsonl <- file.path(pair_dir, "runs.jsonl")
+  con <- file(runs_jsonl, open = "wt")
+  on.exit(close(con), add = TRUE)
+  for (i in seq_len(nrow(runs_df))) {
+    writeLines(jsonlite::toJSON(as.list(runs_df[i, , drop = FALSE]), auto_unbox = TRUE, null = "null"), con = con)
+  }
+
+  utils::write.csv(runs_df, file.path(pair_dir, "runs.csv"), row.names = FALSE)
+  utils::write.csv(sums_df, file.path(pair_dir, "summaries.csv"), row.names = FALSE)
+  jsonlite::write_json(
+    list(
+      pair_id = as.character(pair_id),
+      run_ids = as.character(member_run_ids),
+      bundle_member_count = as.integer(length(member_run_ids)),
+      created_at_utc = as.character(format(Sys.time(), tz = "UTC", usetz = TRUE)),
+      artifacts = arts_df
+    ),
+    path = file.path(pair_dir, "artifacts.json"),
+    pretty = TRUE,
+    auto_unbox = TRUE,
+    null = "null"
+  )
+  jsonlite::write_json(
+    list(
+      pair_id = as.character(pair_id),
+      paired_origin_networks = TRUE,
+      origin_networks = sort(unique(as.character(sums_df$origin_network %||% NA_character_))),
+      member_runs_path = "runs.csv"
+    ),
+    path = file.path(pair_dir, "params.json"),
+    pretty = TRUE,
+    auto_unbox = TRUE,
+    null = "null"
+  )
+  invisible(pair_dir)
+}
+
 opt <- parse_args(OptionParser(option_list = list(
   make_option(c("--config"), type = "character", default = "test_kit.yaml"),
   make_option(c("--routes"), type = "character", default = ""),
@@ -58,8 +145,38 @@ opt <- parse_args(OptionParser(option_list = list(
 )))
 
 cfg <- read_cfg(opt$config)
-paired_origin_networks <- tolower(as.character(opt$paired_origin_networks %||% "false")) %in% c("1", "true", "yes", "y")
-paired_traffic_modes <- tolower(as.character(opt$paired_traffic_modes %||% "false")) %in% c("1", "true", "yes", "y")
+parse_csv_tokens <- function(x) {
+  raw <- as.character(x %||% "")
+  if (!nzchar(raw)) return(character())
+  parts <- trimws(unlist(strsplit(raw, ",")))
+  parts[nzchar(parts)]
+}
+
+parse_pair_flag_or_list <- function(x, valid_values = NULL) {
+  raw <- as.character(x %||% "")
+  low <- tolower(trimws(raw))
+  if (low %in% c("", "0", "false", "no", "n")) return(list(enabled = FALSE, values = character()))
+  if (low %in% c("1", "true", "yes", "y")) return(list(enabled = TRUE, values = character()))
+  vals <- parse_csv_tokens(raw)
+  if (length(vals) == 0) return(list(enabled = FALSE, values = character()))
+  vals_low <- tolower(vals)
+  if (!is.null(valid_values)) {
+    bad <- setdiff(vals_low, valid_values)
+    if (length(bad) > 0) stop("Unsupported paired values: ", paste(bad, collapse = ", "))
+  }
+  list(enabled = TRUE, values = vals_low)
+}
+
+origin_pair_arg <- parse_pair_flag_or_list(
+  opt$paired_origin_networks,
+  valid_values = c("dry_factory_set", "refrigerated_factory_set")
+)
+traffic_pair_arg <- parse_pair_flag_or_list(
+  opt$paired_traffic_modes,
+  valid_values = c("stochastic", "freeflow")
+)
+paired_origin_networks <- isTRUE(origin_pair_arg$enabled)
+paired_traffic_modes <- isTRUE(traffic_pair_arg$enabled)
 traffic_mode_input <- tolower(as.character(opt$traffic_mode %||% "stochastic"))
 if (!traffic_mode_input %in% c("stochastic", "freeflow")) {
   stop("--traffic_mode must be one of: stochastic, freeflow")
@@ -116,6 +233,11 @@ build_facility_context <- function(facility_id) {
 }
 
 facility_contexts <- if (paired_origin_networks) {
+  origin_labels <- if (length(origin_pair_arg$values) > 0) unique(origin_pair_arg$values) else c("dry_factory_set", "refrigerated_factory_set")
+  required_labels <- c("dry_factory_set", "refrigerated_factory_set")
+  if (!all(required_labels %in% origin_labels)) {
+    stop("--paired_origin_networks must include both dry_factory_set and refrigerated_factory_set when enabled.")
+  }
   list(
     dry_factory_set = build_facility_context(opt$facility_id_dry),
     refrigerated_factory_set = build_facility_context(opt$facility_id_refrigerated)
@@ -140,6 +262,8 @@ write_progress <- function(i, status) {
 }
 
 write_progress(0L, "STARTING")
+expected_pair_bundles <- 0L
+pair_bundles_created <- 0L
 for (i in seq_len(as.integer(opt$n))) {
   s <- as.integer(opt$seed) + i - 1L
   exo <- sample_exogenous_draws(cfg, seed = s)
@@ -156,8 +280,10 @@ for (i in seq_len(as.integer(opt$n))) {
 
   run_one <- function(ctx, origin_network_label, traffic_mode_label) {
     exo_mode <- exo_for_mode(traffic_mode_label)
-    pair_id <- if (paired_traffic_modes) {
-      paste0(pair_id_base, "_", as.character(origin_network_label %||% infer_origin_network()))
+    pair_id <- if (paired_origin_networks && paired_traffic_modes) {
+      paste0(pair_id_base, "_", as.character(traffic_mode_label))
+    } else if (paired_traffic_modes) {
+      pair_id_base
     } else {
       pair_id_base
     }
@@ -179,7 +305,7 @@ for (i in seq_len(as.integer(opt$n))) {
       paste(opt$scenario, tolower(opt$powertrain), traffic_mode_label, s, sep = "_")
     }
     paths <- write_route_sim_outputs(sim, rid)
-    write_run_bundle(
+    bundle <- write_run_bundle(
       sim = sim,
       context = list(
         run_id = rid,
@@ -216,24 +342,45 @@ for (i in seq_len(as.integer(opt$n))) {
       grid_kg_per_kwh = as.numeric(exo_mode$grid_kg_per_kwh %||% NA_real_),
       mpg = as.numeric(exo_mode$mpg %||% NA_real_),
       payload_max_lb_draw = as.numeric(exo_mode$payload_max_lb_draw %||% NA_real_),
-      bags_per_pallet = as.numeric(exo_mode$bags_per_pallet %||% NA_real_),
-      cases_per_pallet = as.numeric(exo_mode$cases_per_pallet %||% NA_real_),
+      units_per_case_draw_dry = as.numeric(exo_mode$units_per_case_draw_dry %||% NA_real_),
+      units_per_case_draw_refrigerated = as.numeric(exo_mode$units_per_case_draw_refrigerated %||% NA_real_),
+      cases_per_pallet_draw_dry = as.numeric(exo_mode$cases_per_pallet_draw_dry %||% NA_real_),
+      cases_per_pallet_draw_refrigerated = as.numeric(exo_mode$cases_per_pallet_draw_refrigerated %||% NA_real_),
+      pallet_tare_lb_draw = as.numeric(exo_mode$pallet_tare_lb_draw %||% NA_real_),
+      packing_efficiency_draw_refrigerated = as.numeric(exo_mode$packing_efficiency_draw_refrigerated %||% NA_real_),
+      pack_pattern_index_refrigerated = as.integer(exo_mode$pack_pattern_index_refrigerated %||% NA_integer_),
       load_unload_min = as.numeric(exo_mode$load_unload_min %||% NA_real_),
       refuel_stop_min = as.numeric(exo_mode$refuel_stop_min %||% NA_real_),
       connector_overhead_min = as.numeric(exo_mode$connector_overhead_min %||% NA_real_),
+      bundle_dir = as.character(bundle$bundle_dir %||% NA_character_),
       status = status,
       co2_kg_total = total_co2,
       stringsAsFactors = FALSE
     )
   }
 
-  traffic_modes <- if (paired_traffic_modes) c("stochastic", "freeflow") else traffic_mode_input
+  traffic_modes <- if (paired_traffic_modes) {
+    if (length(traffic_pair_arg$values) > 0) unique(traffic_pair_arg$values) else c("stochastic", "freeflow")
+  } else {
+    traffic_mode_input
+  }
   iter_status <- "OK"
   iter_statuses <- character()
   for (tm in traffic_modes) {
     if (paired_origin_networks) {
+      expected_pair_bundles <- expected_pair_bundles + 1L
       r1 <- run_one(facility_contexts$dry_factory_set, "dry_factory_set", tm)
       r2 <- run_one(facility_contexts$refrigerated_factory_set, "refrigerated_factory_set", tm)
+      pair_dir <- materialize_paired_origin_bundle(
+        bundle_root = opt$bundle_root,
+        pair_id = as.character(r1$pair_id[[1]]),
+        member_run_ids = c(as.character(r1$run_id[[1]]), as.character(r2$run_id[[1]]))
+      )
+      if (is.null(pair_dir) || !nzchar(as.character(pair_dir)) || !dir.exists(pair_dir)) {
+        stop("Paired-origin run requested but pair bundle was not created for pair_id=", as.character(r1$pair_id[[1]]))
+      }
+      pair_bundles_created <- pair_bundles_created + 1L
+      cat("PAIR_BUNDLE_CREATED:", as.character(pair_dir), "members=2", "\n")
       rows[[length(rows) + 1L]] <- r1
       rows[[length(rows) + 1L]] <- r2
       iter_statuses <- c(iter_statuses, as.character(r1$status[[1]]), as.character(r2$status[[1]]))
@@ -248,6 +395,13 @@ for (i in seq_len(as.integer(opt$n))) {
   if (is.finite(opt$throttle_seconds) && as.numeric(opt$throttle_seconds) > 0) {
     Sys.sleep(as.numeric(opt$throttle_seconds))
   }
+}
+
+if (paired_origin_networks && pair_bundles_created < expected_pair_bundles) {
+  stop(
+    "Paired-origin requested but only ", pair_bundles_created,
+    " pair bundles were created out of expected ", expected_pair_bundles, "."
+  )
 }
 
 runs <- do.call(rbind, rows)

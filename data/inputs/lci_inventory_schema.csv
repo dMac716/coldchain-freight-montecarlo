@@ -1,0 +1,14 @@
+required_column,notes
+system_id,dry|refrigerated
+stage,ingredients|manufacturing|packaging|distribution|retail_storage|household_storage|eol
+process,string
+flow_name,string
+direction,input|output
+amount,numeric
+unit,string
+functional_unit_basis,per_1000kcal|per_kg_product
+dataset_key,string
+source_file,string
+source_version,string
+assumption_notes,string
+confidence,high|med|low

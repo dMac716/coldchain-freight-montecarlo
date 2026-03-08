@@ -79,6 +79,8 @@ test_that("summarize_route_sim_outputs writes paired TEP and GSI summaries", {
       charging_or_refueling_time_h = 0,
       rest_time_h = 0,
       trip_duration_total_h = 1.1,
+      truckloads_per_1e6_kcal = 2.0,
+      truckloads_per_1000kg_product = 1.5,
       stringsAsFactors = FALSE
     )
     utils::write.csv(bsum, file.path(bdir, "summaries.csv"), row.names = FALSE)
@@ -108,4 +110,10 @@ test_that("summarize_route_sim_outputs writes paired TEP and GSI summaries", {
   gsi <- utils::read.csv(gsi_sum, stringsAsFactors = FALSE)
   expect_true("p_traffic_emissions_penalty_gt_0" %in% names(tep))
   expect_true("p_gsi_gt_0" %in% names(gsi))
+
+  summary_path <- file.path(outdir, "route_sim_summary_stats.csv")
+  summary_df <- utils::read.csv(summary_path, stringsAsFactors = FALSE)
+  expect_true("p05_truckloads_per_1e6_kcal" %in% names(summary_df))
+  expect_true("p50_truckloads_per_1e6_kcal" %in% names(summary_df))
+  expect_true("p95_truckloads_per_1000kg_product" %in% names(summary_df))
 })

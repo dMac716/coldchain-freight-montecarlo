@@ -1,10 +1,217 @@
-body {
-  line-height: 1.55;
+:root {
+  --bg: #f4f8fc;
+  --surface: #ffffff;
+  --text: #132332;
+  --muted: #516476;
+  --primary: #0d4f8f;
+  --primary-2: #2784d6;
+  --accent: #e97a28;
+  --border: #d4e0ed;
+  --shadow: 0 10px 30px rgba(15, 38, 63, 0.1);
+  --radius: 14px;
+  --radius-lg: 18px;
 }
 
-.navbar-brand {
+body {
+  background:
+    radial-gradient(1200px 420px at 8% -5%, #dcecff 0%, transparent 55%),
+    radial-gradient(900px 360px at 100% 0%, #eef6ff 0%, transparent 50%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.navbar {
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 16px rgba(20, 43, 68, 0.18);
+}
+
+.navbar-brand,
+.navbar-title {
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+h1, h2, h3 {
+  color: #0f2f4d;
+  letter-spacing: -0.01em;
+}
+
+.quarto-title-banner {
+  background: transparent !important;
+}
+
+.content {
+  max-width: 1080px;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.hero {
+  background:
+    linear-gradient(135deg, rgba(12, 73, 130, 0.94) 0%, rgba(39, 132, 214, 0.95) 100%),
+    repeating-linear-gradient(115deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 6px, rgba(255,255,255,0.02) 6px, rgba(255,255,255,0.02) 12px);
+  border: 1px solid #1f73bf;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 34px rgba(12, 59, 103, 0.24);
+  color: #fff;
+  margin: 0.6rem 0 1.25rem;
+  padding: 1.4rem 1.3rem 1.15rem;
+}
+
+.hero h1,
+.hero h2,
+.hero p,
+.hero li,
+.hero strong {
+  color: #fff;
+}
+
+.hero p {
+  max-width: 74ch;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+}
+
+a.btn-pill {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  color: #fff;
+  display: inline-block;
+  font-size: 0.9rem;
   font-weight: 700;
-  letter-spacing: 0.2px;
+  padding: 0.32rem 0.78rem;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+a.btn-pill:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.kpi-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 1rem 0 1.25rem;
+}
+
+.kpi-card,
+.panel,
+.quick-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 0.95rem 1rem;
+}
+
+.quick-card {
+  transition: transform 0.14s ease, box-shadow 0.16s ease;
+}
+
+.quick-card:hover {
+  box-shadow: 0 14px 30px rgba(15, 42, 70, 0.14);
+  transform: translateY(-3px);
+}
+
+.kpi-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-value {
+  color: #0f2f4d;
+  font-size: 1.48rem;
+  font-weight: 800;
+}
+
+.grid-2 {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin: 1rem 0;
+}
+
+.quick-card h3,
+.panel h3 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+
+.section-title {
+  border-bottom: 2px solid #dbe8f5;
+  margin-top: 1.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.badge-soft {
+  background: #e6f1ff;
+  border: 1px solid #b8d5f4;
+  border-radius: 999px;
+  color: #0f4f8f;
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin: 0 0.35rem 0.35rem 0;
+  padding: 0.15rem 0.55rem;
+}
+
+table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+th {
+  background: #edf4fb;
+  color: #1b3f63;
+  font-weight: 700;
+}
+
+td, th {
+  padding: 0.55rem 0.6rem !important;
+}
+
+img {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.figure-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.roadmap {
+  background: #fff8ef;
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+}
+
+pre.sourceCode,
+pre code {
+  border-radius: 10px !important;
 }
 
 #scenario-filter {
@@ -15,4 +222,13 @@ body {
 #scenario-table td,
 #scenario-table th {
   font-size: 0.92rem;
+}
+
+@media (max-width: 820px) {
+  .hero {
+    padding: 1.05rem 0.95rem 0.9rem;
+  }
+  .kpi-value {
+    font-size: 1.3rem;
+  }
 }

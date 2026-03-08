@@ -52,6 +52,7 @@ run_summary_row <- function(sim, context) {
   time_traffic_delay_min <- as.numeric(sched$time_traffic_delay_min %||% NA_real_)
   num_break_30min <- as.integer(sched$num_break_30min %||% NA_integer_)
   num_rest_10hr <- as.integer(sched$num_rest_10hr %||% NA_integer_)
+  sanity <- compute_load_sanity_flags(ld, run_id = as.character(context$run_id %||% ""))
   data.frame(
     run_id = as.character(context$run_id),
     pair_id = as.character(context$pair_id %||% NA_character_),
@@ -103,6 +104,21 @@ run_summary_row <- function(sim, context) {
     trip_duration_total_h = if ("trip_duration_h_cum" %in% names(last)) as.numeric(last$trip_duration_h_cum[[1]]) else NA_real_,
     payload_max_lb_draw = as.numeric(ld$payload_max_lb_draw %||% NA_real_),
     units_per_truck = as.numeric(ld$units_per_truck %||% NA_real_),
+    cases_per_pallet_draw = as.numeric(ld$cases_per_pallet_draw %||% NA_real_),
+    units_per_case_draw = as.numeric(ld$units_per_case_draw %||% NA_real_),
+    cube_limit_units = as.numeric(ld$cube_limit_units %||% NA_real_),
+    weight_limit_units = as.numeric(ld$weight_limit_units %||% NA_real_),
+    limiting_constraint = as.character(ld$limiting_constraint %||% NA_character_),
+    payload_utilization_pct = as.numeric(ld$payload_utilization_pct %||% NA_real_),
+    cube_utilization_pct = as.numeric(ld$cube_utilization_pct %||% NA_real_),
+    cases_per_layer = as.numeric(ld$cases_per_layer %||% NA_real_),
+    layers = as.numeric(ld$layers %||% NA_real_),
+    packing_efficiency_draw = as.numeric(ld$packing_efficiency_draw %||% NA_real_),
+    chosen_pack_pattern = as.character(ld$chosen_pack_pattern %||% NA_character_),
+    pack_pattern_index = as.integer(ld$pack_pattern_index %||% NA_integer_),
+    derived_case_L_in = as.numeric(ld$derived_case_L_in %||% NA_real_),
+    derived_case_W_in = as.numeric(ld$derived_case_W_in %||% NA_real_),
+    derived_case_H_in = as.numeric(ld$derived_case_H_in %||% NA_real_),
     product_mass_lb_per_truck = as.numeric(ld$product_mass_lb_per_truck %||% NA_real_),
     kcal_per_truck = as.numeric(ld$kcal_per_truck %||% NA_real_),
     protein_kg_per_truck = as.numeric(ld$protein_kg_per_truck %||% NA_real_),
@@ -118,6 +134,15 @@ run_summary_row <- function(sim, context) {
     time_traffic_delay_min = time_traffic_delay_min,
     num_break_30min = num_break_30min,
     num_rest_10hr = num_rest_10hr,
+    sanity_flag_low_cube_util = as.integer(sanity$sanity_flag_low_cube_util),
+    sanity_flag_high_cube_util = as.integer(sanity$sanity_flag_high_cube_util),
+    sanity_flag_unrealistic_case_dims = as.integer(sanity$sanity_flag_unrealistic_case_dims),
+    truckloads_per_1e6_kcal = if (is.finite(as.numeric(ld$kcal_per_truck %||% NA_real_)) && as.numeric(ld$kcal_per_truck) > 0) 1e6 / as.numeric(ld$kcal_per_truck) else NA_real_,
+    truckloads_per_1000kg_product = if (is.finite(as.numeric(ld$product_mass_lb_per_truck %||% NA_real_)) && as.numeric(ld$product_mass_lb_per_truck) > 0) {
+      1000 / (as.numeric(ld$product_mass_lb_per_truck) * 0.45359237)
+    } else {
+      NA_real_
+    },
     trucker_hours_per_1000kcal = if (is.finite(driver_on_duty_min) && is.finite(kcal_delivered) && kcal_delivered > 0) {
       (driver_on_duty_min / 60) / (kcal_delivered / 1000)
     } else {
@@ -451,21 +476,81 @@ inputs_hash_from_artifacts <- function(artifacts_df) {
   sha256_text(key)
 }
 
-warn_packaging_mass_tbd_once <- function(run_id, product_type) {
-  p <- file.path("data", "inputs_local", "products.csv")
-  if (!file.exists(p)) return(invisible(NULL))
+evaluate_packaging_mass_policy <- function(product_type) {
+  candidates <- c(
+    file.path("data", "inputs_local", "products.csv"),
+    file.path("..", "data", "inputs_local", "products.csv"),
+    file.path("..", "..", "data", "inputs_local", "products.csv")
+  )
+  p <- candidates[file.exists(candidates)][[1]] %||% candidates[[1]]
+  default_note <- "Packaging mass TBD; results exclude packaging mass or use default=0 (whichever is implemented)."
+  if (!file.exists(p)) {
+    return(list(
+      packaging_mass_policy = if (is_real_run_env()) "REAL_RUN_ENFORCED" else "DEMO_WARN_CONTINUE",
+      packaging_mass_tbd_count = 0L,
+      packaging_mass_assumption_note = default_note,
+      packaging_mass_tbd_fields = "",
+      packaging_mass_tbd_products = ""
+    ))
+  }
   d <- tryCatch(utils::read.csv(p, stringsAsFactors = FALSE), error = function(e) data.frame())
-  if (nrow(d) == 0 || !"status" %in% names(d)) return(invisible(NULL))
+  if (nrow(d) == 0 || !"status" %in% names(d)) {
+    return(list(
+      packaging_mass_policy = if (is_real_run_env()) "REAL_RUN_ENFORCED" else "DEMO_WARN_CONTINUE",
+      packaging_mass_tbd_count = 0L,
+      packaging_mass_assumption_note = default_note,
+      packaging_mass_tbd_fields = "",
+      packaging_mass_tbd_products = ""
+    ))
+  }
   status <- toupper(as.character(d$status))
-  pt_col <- if ("product_type" %in% names(d)) tolower(as.character(d$product_type)) else rep("", nrow(d))
+  pt_col <- if ("preservation" %in% names(d)) tolower(as.character(d$preservation)) else if ("product_type" %in% names(d)) tolower(as.character(d$product_type)) else rep("", nrow(d))
   pt <- tolower(as.character(product_type %||% ""))
-  has_tbd <- any(status == "PACKAGING_MASS_TBD" & (pt_col == pt | !nzchar(pt_col)), na.rm = TRUE)
-  if (!has_tbd) return(invisible(NULL))
-  key <- paste0("coldchain.packaging_warned.", as.character(run_id))
-  if (isTRUE(getOption(key, FALSE))) return(invisible(NULL))
-  message("WARN: PACKAGING_MASS_TBD present in products.csv; continuing in demo mode.")
-  do.call(options, setNames(list(TRUE), key))
-  invisible(NULL)
+  row_keep <- status == "PACKAGING_MASS_TBD" & (pt_col == pt | !nzchar(pt_col))
+  td <- d[row_keep, , drop = FALSE]
+  tbd_count <- nrow(td)
+
+  tbd_fields <- character()
+  if (tbd_count > 0) {
+    for (nm in names(td)) {
+      col <- td[[nm]]
+      col_chr <- trimws(as.character(col))
+      has_tbd_literal <- any(grepl("TBD", toupper(col_chr), fixed = TRUE), na.rm = TRUE)
+      has_na_packaging <- grepl("packaging", tolower(nm), fixed = TRUE) && any(!nzchar(col_chr) | is.na(col), na.rm = TRUE)
+      if (has_tbd_literal || has_na_packaging) tbd_fields <- c(tbd_fields, nm)
+    }
+  }
+  tbd_fields <- unique(tbd_fields)
+  product_ids <- if ("product_id" %in% names(td)) as.character(td$product_id) else as.character(td$product_mode %||% td$preservation %||% "")
+  product_ids <- unique(product_ids[nzchar(product_ids)])
+
+  if (tbd_count > 0) {
+    if (is_real_run_env()) {
+      stop(
+        "REAL_RUN blocked: PACKAGING_MASS_TBD rows found for product_type=", pt,
+        "; affected_products=", paste(product_ids, collapse = "|"),
+        "; tbd_fields=", paste(tbd_fields, collapse = "|")
+      )
+    }
+    warn_key <- "coldchain.packaging_warned.invocation"
+    if (!isTRUE(getOption(warn_key, FALSE))) {
+      message(
+        "WARN: PACKAGING_MASS_TBD continuing in demo mode. product_type=", pt,
+        "; affected_products=", paste(product_ids, collapse = "|"),
+        "; tbd_fields=", paste(tbd_fields, collapse = "|"),
+        "; assumption=", default_note
+      )
+      options(coldchain.packaging_warned.invocation = TRUE)
+    }
+  }
+
+  list(
+    packaging_mass_policy = if (is_real_run_env()) "REAL_RUN_ENFORCED" else "DEMO_WARN_CONTINUE",
+    packaging_mass_tbd_count = as.integer(tbd_count),
+    packaging_mass_assumption_note = default_note,
+    packaging_mass_tbd_fields = paste(tbd_fields, collapse = "|"),
+    packaging_mass_tbd_products = paste(product_ids, collapse = "|")
+  )
 }
 
 enforce_real_run_requirements <- function(sim) {
@@ -477,10 +562,58 @@ enforce_real_run_requirements <- function(sim) {
   if (!is.finite(as.numeric(ld$unit_weight_lb %||% NA_real_))) {
     stop("REAL_RUN requires finite unit_weight_lb in load model.")
   }
+  if (!is.finite(as.numeric(ld$units_per_case_draw %||% NA_real_))) {
+    stop("REAL_RUN requires finite units_per_case_draw in load model.")
+  }
+  if (!is.finite(as.numeric(ld$cases_per_pallet_draw %||% NA_real_))) {
+    stop("REAL_RUN requires finite cases_per_pallet_draw in load model.")
+  }
+  if (!is.finite(as.numeric(ld$cube_limit_units %||% NA_real_)) || as.numeric(ld$cube_limit_units %||% 0) < 1) {
+    stop("REAL_RUN requires cube_limit_units >= 1.")
+  }
   if (!is.finite(as.numeric(nutr$kcal_per_kg_product %||% NA_real_))) {
     stop("REAL_RUN requires finite kcal_per_kg_product.")
   }
   invisible(NULL)
+}
+
+compute_load_sanity_flags <- function(ld, run_id = "") {
+  cube_util <- as.numeric(ld$cube_utilization_pct %||% NA_real_)
+  payload_util <- as.numeric(ld$payload_utilization_pct %||% NA_real_)
+  # Accept either fraction [0,1] or percent [0,100].
+  cube_util_frac <- if (is.finite(cube_util) && cube_util > 1.5) cube_util / 100 else cube_util
+  payload_util_frac <- if (is.finite(payload_util) && payload_util > 1.5) payload_util / 100 else payload_util
+
+  case_dims <- c(
+    as.numeric(ld$derived_case_L_in %||% NA_real_),
+    as.numeric(ld$derived_case_W_in %||% NA_real_),
+    as.numeric(ld$derived_case_H_in %||% NA_real_)
+  )
+  cases_per_pallet_draw <- as.numeric(ld$cases_per_pallet_draw %||% NA_real_)
+  flags <- list(
+    sanity_flag_low_cube_util = as.integer(is.finite(cube_util_frac) && cube_util_frac < 0.25),
+    sanity_flag_high_cube_util = as.integer((is.finite(cube_util_frac) && cube_util_frac > 1.05) || (is.finite(payload_util_frac) && payload_util_frac > 1.05) || (is.finite(payload_util_frac) && payload_util_frac < 0.10)),
+    sanity_flag_unrealistic_case_dims = as.integer(any(is.finite(case_dims) & case_dims > 60))
+  )
+
+  if (is_real_run_env()) {
+    if ((is.finite(cases_per_pallet_draw) && (cases_per_pallet_draw < 10 || cases_per_pallet_draw > 120)) ||
+      isTRUE(flags$sanity_flag_high_cube_util == 1L) ||
+      isTRUE(flags$sanity_flag_unrealistic_case_dims == 1L)) {
+      stop("REAL_RUN load realism sanity check failed for run_id=", as.character(run_id))
+    }
+  } else {
+    if (is.finite(cases_per_pallet_draw) && (cases_per_pallet_draw < 10 || cases_per_pallet_draw > 120)) {
+      message("WARN: cases_per_pallet_draw out of demo sanity bounds [10,120] for run_id=", as.character(run_id))
+    }
+    if (isTRUE(flags$sanity_flag_low_cube_util == 1L) || isTRUE(flags$sanity_flag_high_cube_util == 1L)) {
+      message("WARN: cube/payload utilization out of demo sanity bounds for run_id=", as.character(run_id))
+    }
+    if (isTRUE(flags$sanity_flag_unrealistic_case_dims == 1L)) {
+      message("WARN: refrigerated derived case dimensions exceed plausible bounds for run_id=", as.character(run_id))
+    }
+  }
+  flags
 }
 
 write_run_bundle <- function(
@@ -509,7 +642,7 @@ write_run_bundle <- function(
   inputs_hash <- inputs_hash_from_artifacts(artifacts_df)
   status <- run_status_from_sim(sim)
   enforce_real_run_requirements(sim)
-  warn_packaging_mass_tbd_once(run_id, context$product_type %||% sim$metadata$product_type)
+  pkg_policy <- evaluate_packaging_mass_policy(context$product_type %||% sim$metadata$product_type)
   nd <- derive_delivered_nutrition(sim, cfg_resolved, context)
   context$product_type <- as.character(context$product_type %||% nd$product_type)
   context$kcal_delivered <- as.numeric(context$kcal_delivered %||% nd$kcal_delivered)
@@ -583,6 +716,11 @@ write_run_bundle <- function(
     route_plan_id = context$route_plan_id %||% NA_character_,
     config = cfg_resolved
   )
+  params_obj$packaging_mass_policy <- as.character(pkg_policy$packaging_mass_policy %||% "DEMO_WARN_CONTINUE")
+  params_obj$packaging_mass_tbd_count <- as.integer(pkg_policy$packaging_mass_tbd_count %||% 0L)
+  params_obj$packaging_mass_assumption_note <- as.character(pkg_policy$packaging_mass_assumption_note %||% "")
+  params_obj$packaging_mass_tbd_fields <- as.character(pkg_policy$packaging_mass_tbd_fields %||% "")
+  params_obj$packaging_mass_tbd_products <- as.character(pkg_policy$packaging_mass_tbd_products %||% "")
 
   runs_path <- file.path(bundle_dir, "runs.json")
   summaries_path <- file.path(bundle_dir, "summaries.csv")
