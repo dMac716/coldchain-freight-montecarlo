@@ -1,0 +1,45 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.5.1"
+
+      - name: Install lintr
+        shell: bash
+        run: |
+          Rscript -e 'install.packages("lintr", repos="https://cloud.r-project.org")'
+
+      - name: Run lintr
+        shell: bash
+        run: |
+          Rscript -e 'lintr::lint_dir()'
+
+      - name: Install shellcheck
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Shellcheck tools scripts
+        shell: bash
+        run: |
+          find tools -maxdepth 1 -type f -name "*.sh" -print0 | xargs -0 -r shellcheck
+          shellcheck .devcontainer/postCreate.sh
+
+      - name: Check Makefile CLI contract
+        shell: bash
+        run: |
+          bash tools/check_makefile_cli_contract.sh Makefile
