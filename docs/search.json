@@ -74,35 +74,42 @@
     "href": "index.html",
     "title": "Cold-Chain Freight Monte Carlo",
     "section": "",
-    "text": "This visualization layer is static-first and artifact-driven."
+    "text": "Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.\nLast canonical snapshot: 2026-03-08\nValidation gates: PASS"
   },
   {
-    "objectID": "index.html#host-setup-basics",
-    "href": "index.html#host-setup-basics",
+    "objectID": "index.html#explore",
+    "href": "index.html#explore",
     "title": "Cold-Chain Freight Monte Carlo",
-    "section": "Host Setup (Basics)",
-    "text": "Host Setup (Basics)\nMinimum setup for a contributor host (macOS/Linux/Windows with R + terminal):\ngit clone https://github.com/dMac716/coldchain-freight-montecarlo.git\ncd coldchain-freight-montecarlo\ncp config/gcp.example.env config/gcp.env\nRscript -e 'pkgs &lt;- c(\"optparse\",\"jsonlite\",\"digest\",\"testthat\",\"leaflet\"); missing &lt;- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) &gt; 0) install.packages(missing, repos = \"https://cloud.r-project.org\")'\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\nbash tools/smoke_test.sh\nNotes: - quarto is required only to render the static site locally. - python3 is optional (used for FAF zone-name extraction when available). - bq/gsutil are optional (only for the BigQuery FAF pipeline). - Team viewing is browser-based, so PC users can use GitHub Pages output directly."
+    "section": "Explore",
+    "text": "Explore\n\n\nMethodology and Initial Results\nStart here for model pipeline, validation status, and initial figures.\nOpen Methodology & Results\n\n\nScenario Explorer\nInteractive, artifact-driven scenario table and filters.\nOpen Scenario Explorer\n\n\nFlow Map\nStatic map from derived FAF flow artifacts.\nOpen Flow Map\n\n\nTransport Results\nCompiled transport outputs and supporting visuals.\nOpen Transport Results"
   },
   {
-    "objectID": "index.html#data-inputs",
-    "href": "index.html#data-inputs",
+    "objectID": "index.html#reproducibility",
+    "href": "index.html#reproducibility",
     "title": "Cold-Chain Freight Monte Carlo",
-    "section": "Data Inputs",
-    "text": "Data Inputs\n\ndata/derived/faf_top_od_flows.csv\ndata/derived/faf_zone_centroids.csv\ndata/derived/scenario_summary.csv (preferred; generated from available run outputs)\noutputs/aggregate/results_summary.csv (fallback if scenario_summary.csv is not available)"
+    "section": "Reproducibility",
+    "text": "Reproducibility\n\nRuntime Model\n\nNo live services are queried during page rendering.\nPages consume committed/generated artifacts from data/derived/, artifacts/github_release/, and generated site assets.\nWorks for local render and GitHub Pages publishing.\n\nOffline-first Artifact-driven Deterministic snapshot"
   },
   {
-    "objectID": "index.html#refresh-ui-artifacts",
-    "href": "index.html#refresh-ui-artifacts",
+    "objectID": "index.html#quick-start",
+    "href": "index.html#quick-start",
     "title": "Cold-Chain Freight Monte Carlo",
-    "section": "Refresh UI Artifacts",
-    "text": "Refresh UI Artifacts\nRscript tools/derive_ui_artifacts.R --top_n 200\nquarto render site/ --no-clean"
+    "section": "Quick Start",
+    "text": "Quick Start\ngit clone https://github.com/dMac716/coldchain-freight-montecarlo.git\ncd coldchain-freight-montecarlo\nbash tools/smoke_test.sh\nquarto render site/"
   },
   {
-    "objectID": "index.html#calculation-spec-what-feeds-what",
-    "href": "index.html#calculation-spec-what-feeds-what",
+    "objectID": "index.html#codespaces-path",
+    "href": "index.html#codespaces-path",
     "title": "Cold-Chain Freight Monte Carlo",
-    "section": "Calculation Spec (What Feeds What)",
-    "text": "Calculation Spec (What Feeds What)\n\n\n\n\n\nflowchart LR\n  A[data/inputs_local/*.csv] --&gt; B[R/01_validate.R]\n  B --&gt; C[R/03_model_core.R deterministic equations]\n  C --&gt; D[R/04_sampling.R Monte Carlo draws]\n  D --&gt; E[R/05_histogram.R]\n  E --&gt; F[R/06_analysis.R summary stats/quantiles]\n  F --&gt; G[outputs/* results_summary.csv + metadata]\n  G --&gt; H[tools/derive_ui_artifacts.R]\n  H --&gt; I[data/derived/faf_top_od_flows.csv]\n  H --&gt; J[data/derived/faf_zone_centroids.csv]\n  H --&gt; K[data/derived/scenario_summary.csv]\n  I --&gt; L[site/viz/flow_map.qmd]\n  J --&gt; L\n  K --&gt; M[site/viz/scenario_explorer.qmd]\n  G --&gt; M"
+    "section": "Codespaces Path",
+    "text": "Codespaces Path\n# postCreate installs core deps\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\nbash tools/build_presentation_artifacts.sh --skip-runs --with-animation\nbash tools/validate_final_artifacts.sh\nquarto render site/"
+  },
+  {
+    "objectID": "index.html#pipeline-overview",
+    "href": "index.html#pipeline-overview",
+    "title": "Cold-Chain Freight Monte Carlo",
+    "section": "Pipeline Overview",
+    "text": "Pipeline Overview\n\n\n\n\n\nflowchart LR\n  A[data/inputs_local/*.csv] --&gt; B[R/01_validate.R]\n  B --&gt; C[R/03_model_core.R deterministic equations]\n  C --&gt; D[R/04_sampling.R Monte Carlo draws]\n  D --&gt; E[R/06_analysis.R summary stats]\n  E --&gt; F[outputs/* run + analysis artifacts]\n  F --&gt; G[tools/build_presentation_artifacts.sh]\n  G --&gt; H[outputs/presentation/canonical/final_release_bundle]\n  H --&gt; I[artifacts/github_release/canonical_2026-03-08]\n  I --&gt; J[site/* + docs/* GitHub Pages]"
   },
   {
     "objectID": "team_runs.html",
@@ -116,42 +123,42 @@
     "href": "methodology_results.html",
     "title": "Methodology and Initial Results",
     "section": "",
-    "text": "This page summarizes the current canonical methodology and first validated artifact set committed on 2026-03-08."
+    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set."
   },
   {
-    "objectID": "methodology_results.html#methodology-current",
-    "href": "methodology_results.html#methodology-current",
+    "objectID": "methodology_results.html#canonical-snapshot-summary",
+    "href": "methodology_results.html#canonical-snapshot-summary",
     "title": "Methodology and Initial Results",
-    "section": "Methodology (Current)",
-    "text": "Methodology (Current)\n\nDefine canonical run families in config/canonical_run_matrix.csv.\nGenerate paired transport Monte Carlo bundles for dry and refrigerated analyses.\nBuild merged LCI outputs and completeness audits.\nBuild presentation artifacts (figures/tables/reduced-data + route animations).\nRun final validation (tools/validate_final_artifacts.sh) and release manifest generation.\n\nValidation gates (latest canonical snapshot): - Pair 2-member invariant: PASS - Figure quality checks: PASS - Required merged LCI files: PASS"
+    "section": "",
+    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set."
   },
   {
-    "objectID": "methodology_results.html#initial-results-snapshot",
-    "href": "methodology_results.html#initial-results-snapshot",
+    "objectID": "methodology_results.html#methodology",
+    "href": "methodology_results.html#methodology",
     "title": "Methodology and Initial Results",
-    "section": "Initial Results Snapshot",
-    "text": "Initial Results Snapshot\nRelease readiness source: - artifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md\nKey completeness counts: - LCI rows: 4160 - Placeholder rows: 2240 (non-transport unresolved placeholders remain explicit)\n\nCore Transport Metrics (co2_per_1000kcal)\n\n\n\nProduct Type\nOrigin Network\nTraffic\nCO2 per 1000 kcal\n\n\n\n\nDry\nDry factory set\nStochastic\n517.93\n\n\nDry\nRefrigerated factory set\nStochastic\n518.99\n\n\nRefrigerated\nDry factory set\nStochastic\n584.07\n\n\nRefrigerated\nRefrigerated factory set\nStochastic\n578.91"
+    "section": "Methodology",
+    "text": "Methodology\n\nDefine canonical runs in config/canonical_run_matrix.csv.\nGenerate paired transport Monte Carlo bundles for dry/refrigerated families.\nBuild merged LCI outputs and completeness audits.\nBuild presentation artifacts and route animations.\nValidate with tools/validate_final_artifacts.sh and emit release manifest/report.\n\n\nValidation Source\n\nartifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md"
   },
   {
-    "objectID": "methodology_results.html#figures-initial",
-    "href": "methodology_results.html#figures-initial",
+    "objectID": "methodology_results.html#initial-results-core-transport-metric",
+    "href": "methodology_results.html#initial-results-core-transport-metric",
     "title": "Methodology and Initial Results",
-    "section": "Figures (Initial)",
-    "text": "Figures (Initial)\n\nDry: Transport Emissions Comparison\n\n\n\nRefrigerated: Transport Emissions Comparison\n\n\n\nRefrigerated: Delivery Time by Scenario\n\n\n\nRoute Animation (Last Frame Preview)"
+    "section": "Initial Results (Core Transport Metric)",
+    "text": "Initial Results (Core Transport Metric)\nco2_per_1000kcal from canonical stochastic runs:\n\n\n\nProduct Type\nOrigin Network\nTraffic\nCO2 per 1000 kcal\n\n\n\n\nDry\nDry factory set\nStochastic\n517.93\n\n\nDry\nRefrigerated factory set\nStochastic\n518.99\n\n\nRefrigerated\nDry factory set\nStochastic\n584.07\n\n\nRefrigerated\nRefrigerated factory set\nStochastic\n578.91"
   },
   {
-    "objectID": "methodology_results.html#artifact-locations",
-    "href": "methodology_results.html#artifact-locations",
+    "objectID": "methodology_results.html#initial-figures",
+    "href": "methodology_results.html#initial-figures",
     "title": "Methodology and Initial Results",
-    "section": "Artifact Locations",
-    "text": "Artifact Locations\nTracked GitHub-ready snapshot: - artifacts/github_release/canonical_2026-03-08/"
+    "section": "Initial Figures",
+    "text": "Initial Figures\n\n\n\n\nDry: Transport Emissions Comparison\n\n\n\n\n\nRefrigerated: Transport Emissions Comparison\n\n\n\n\n\nRefrigerated: Delivery Time by Scenario\n\n\n\n\n\nRoute Animation Preview (Diesel vs BEV)"
   },
   {
-    "objectID": "methodology_results.html#roadmap-note",
-    "href": "methodology_results.html#roadmap-note",
+    "objectID": "methodology_results.html#artifact-links",
+    "href": "methodology_results.html#artifact-links",
     "title": "Methodology and Initial Results",
-    "section": "Roadmap Note",
-    "text": "Roadmap Note\nCurrent route animations are primarily latitude/longitude playback with cumulative counters.\nPlanned upgrades: - Add richer basemap/corridor context. - Add event overlays (charging, refuel, delays, stop windows). - Add stronger scenario and powertrain narrative callouts."
+    "section": "Artifact Links",
+    "text": "Artifact Links\n\nGitHub-ready snapshot: artifacts/github_release/canonical_2026-03-08/\nManifest/index/readiness: .../manifest/\nAnimations and previews: .../animations/\nMerged LCI and completeness tables: .../lci/\n\n\nRoadmap: Animation Upgrade\nCurrent route animations are mostly latitude/longitude playback with counters.\nNext iteration should add richer map context, event overlays (charging/refuel/delay windows), and stronger scenario callouts for presentation storytelling."
   },
   {
     "objectID": "viz/scenario_explorer.html",

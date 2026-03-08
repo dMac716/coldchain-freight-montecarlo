@@ -139,20 +139,17 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#methodology-current" id="toc-methodology-current" class="nav-link active" data-scroll-target="#methodology-current">Methodology (Current)</a></li>
-  <li><a href="#initial-results-snapshot" id="toc-initial-results-snapshot" class="nav-link" data-scroll-target="#initial-results-snapshot">Initial Results Snapshot</a>
+  <li><a href="#canonical-snapshot-summary" id="toc-canonical-snapshot-summary" class="nav-link active" data-scroll-target="#canonical-snapshot-summary">Canonical Snapshot Summary</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a>
   <ul class="collapse">
-  <li><a href="#core-transport-metrics-co2_per_1000kcal" id="toc-core-transport-metrics-co2_per_1000kcal" class="nav-link" data-scroll-target="#core-transport-metrics-co2_per_1000kcal">Core Transport Metrics (co2_per_1000kcal)</a></li>
+  <li><a href="#validation-source" id="toc-validation-source" class="nav-link" data-scroll-target="#validation-source">Validation Source</a></li>
   </ul></li>
-  <li><a href="#figures-initial" id="toc-figures-initial" class="nav-link" data-scroll-target="#figures-initial">Figures (Initial)</a>
+  <li><a href="#initial-results-core-transport-metric" id="toc-initial-results-core-transport-metric" class="nav-link" data-scroll-target="#initial-results-core-transport-metric">Initial Results (Core Transport Metric)</a></li>
+  <li><a href="#initial-figures" id="toc-initial-figures" class="nav-link" data-scroll-target="#initial-figures">Initial Figures</a></li>
+  <li><a href="#artifact-links" id="toc-artifact-links" class="nav-link" data-scroll-target="#artifact-links">Artifact Links</a>
   <ul class="collapse">
-  <li><a href="#dry-transport-emissions-comparison" id="toc-dry-transport-emissions-comparison" class="nav-link" data-scroll-target="#dry-transport-emissions-comparison">Dry: Transport Emissions Comparison</a></li>
-  <li><a href="#refrigerated-transport-emissions-comparison" id="toc-refrigerated-transport-emissions-comparison" class="nav-link" data-scroll-target="#refrigerated-transport-emissions-comparison">Refrigerated: Transport Emissions Comparison</a></li>
-  <li><a href="#refrigerated-delivery-time-by-scenario" id="toc-refrigerated-delivery-time-by-scenario" class="nav-link" data-scroll-target="#refrigerated-delivery-time-by-scenario">Refrigerated: Delivery Time by Scenario</a></li>
-  <li><a href="#route-animation-last-frame-preview" id="toc-route-animation-last-frame-preview" class="nav-link" data-scroll-target="#route-animation-last-frame-preview">Route Animation (Last Frame Preview)</a></li>
+  <li><a href="#roadmap-animation-upgrade" id="toc-roadmap-animation-upgrade" class="nav-link" data-scroll-target="#roadmap-animation-upgrade">Roadmap: Animation Upgrade</a></li>
   </ul></li>
-  <li><a href="#artifact-locations" id="toc-artifact-locations" class="nav-link" data-scroll-target="#artifact-locations">Artifact Locations</a></li>
-  <li><a href="#roadmap-note" id="toc-roadmap-note" class="nav-link" data-scroll-target="#roadmap-note">Roadmap Note</a></li>
   </ul>
 </nav>
     </div>
@@ -178,24 +175,67 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This page summarizes the current canonical methodology and first validated artifact set committed on <strong>2026-03-08</strong>.</p>
-<section id="methodology-current" class="level2">
-<h2 class="anchored" data-anchor-id="methodology-current">Methodology (Current)</h2>
-<ol type="1">
-<li>Define canonical run families in <code>config/canonical_run_matrix.csv</code>.</li>
-<li>Generate paired transport Monte Carlo bundles for dry and refrigerated analyses.</li>
-<li>Build merged LCI outputs and completeness audits.</li>
-<li>Build presentation artifacts (figures/tables/reduced-data + route animations).</li>
-<li>Run final validation (<code>tools/validate_final_artifacts.sh</code>) and release manifest generation.</li>
-</ol>
-<p>Validation gates (latest canonical snapshot): - Pair 2-member invariant: PASS - Figure quality checks: PASS - Required merged LCI files: PASS</p>
+<section id="canonical-snapshot-summary" class="level2 hero">
+<h2 class="anchored" data-anchor-id="canonical-snapshot-summary">Canonical Snapshot Summary</h2>
+<p>This page documents the validated canonical artifact build committed on <strong>2026-03-08</strong> and provides the first publishable results set.</p>
 </section>
-<section id="initial-results-snapshot" class="level2">
-<h2 class="anchored" data-anchor-id="initial-results-snapshot">Initial Results Snapshot</h2>
-<p>Release readiness source: - <code>artifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md</code></p>
-<p>Key completeness counts: - LCI rows: <code>4160</code> - Placeholder rows: <code>2240</code> (non-transport unresolved placeholders remain explicit)</p>
-<section id="core-transport-metrics-co2_per_1000kcal" class="level3">
-<h3 class="anchored" data-anchor-id="core-transport-metrics-co2_per_1000kcal">Core Transport Metrics (co2_per_1000kcal)</h3>
+<div class="kpi-grid">
+<div class="kpi-card">
+<div class="kpi-label">
+Validation
+</div>
+<div class="kpi-value">
+PASS
+</div>
+<p>Pair integrity, figure quality, and merged LCI files</p>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">
+LCI Total Rows
+</div>
+<div class="kpi-value">
+4160
+</div>
+<p>From merged full-LCA ledger</p>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">
+Placeholder Rows
+</div>
+<div class="kpi-value">
+2240
+</div>
+<p>Explicit unresolved <code>NEEDS_SOURCE_VALUE</code></p>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">
+Snapshot Path
+</div>
+<div class="kpi-value">
+Git Tracked
+</div>
+<p><code>artifacts/github_release/canonical_2026-03-08/</code></p>
+</div>
+</div>
+<section id="methodology" class="level2">
+<h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
+<ol type="1">
+<li>Define canonical runs in <code>config/canonical_run_matrix.csv</code>.</li>
+<li>Generate paired transport Monte Carlo bundles for dry/refrigerated families.</li>
+<li>Build merged LCI outputs and completeness audits.</li>
+<li>Build presentation artifacts and route animations.</li>
+<li>Validate with <code>tools/validate_final_artifacts.sh</code> and emit release manifest/report.</li>
+</ol>
+<section id="validation-source" class="level3 panel">
+<h3 class="anchored" data-anchor-id="validation-source">Validation Source</h3>
+<ul>
+<li><code>artifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md</code></li>
+</ul>
+</section>
+</section>
+<section id="initial-results-core-transport-metric" class="level2">
+<h2 class="anchored" data-anchor-id="initial-results-core-transport-metric">Initial Results (Core Transport Metric)</h2>
+<p><code>co2_per_1000kcal</code> from canonical stochastic runs:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -233,34 +273,48 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 </section>
+<section id="initial-figures" class="level2">
+<h2 class="anchored" data-anchor-id="initial-figures">Initial Figures</h2>
+<div class="figure-grid">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/canonical_2026-03-08/analysis_core_dry_fig_a_transport_emissions_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>Dry: Transport Emissions Comparison</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_a_transport_emissions_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>Refrigerated: Transport Emissions Comparison</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_c1_delivery_time_by_scenario.png" class="img-fluid figure-img"></p>
+<figcaption>Refrigerated: Delivery Time by Scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/canonical_2026-03-08/route_animation_diesel_vs_bev_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>Route Animation Preview (Diesel vs BEV)</figcaption>
+</figure>
+</div>
+</div>
 </section>
-<section id="figures-initial" class="level2">
-<h2 class="anchored" data-anchor-id="figures-initial">Figures (Initial)</h2>
-<section id="dry-transport-emissions-comparison" class="level3">
-<h3 class="anchored" data-anchor-id="dry-transport-emissions-comparison">Dry: Transport Emissions Comparison</h3>
-<p><img src="assets/transport/canonical_2026-03-08/analysis_core_dry_fig_a_transport_emissions_comparison.png" class="img-fluid"></p>
+<section id="artifact-links" class="level2">
+<h2 class="anchored" data-anchor-id="artifact-links">Artifact Links</h2>
+<ul>
+<li>GitHub-ready snapshot: <code>artifacts/github_release/canonical_2026-03-08/</code></li>
+<li>Manifest/index/readiness: <code>.../manifest/</code></li>
+<li>Animations and previews: <code>.../animations/</code></li>
+<li>Merged LCI and completeness tables: <code>.../lci/</code></li>
+</ul>
+<section id="roadmap-animation-upgrade" class="level3 roadmap">
+<h3 class="anchored" data-anchor-id="roadmap-animation-upgrade">Roadmap: Animation Upgrade</h3>
+<p>Current route animations are mostly latitude/longitude playback with counters.</p>
+<p>Next iteration should add richer map context, event overlays (charging/refuel/delay windows), and stronger scenario callouts for presentation storytelling.</p>
 </section>
-<section id="refrigerated-transport-emissions-comparison" class="level3">
-<h3 class="anchored" data-anchor-id="refrigerated-transport-emissions-comparison">Refrigerated: Transport Emissions Comparison</h3>
-<p><img src="assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_a_transport_emissions_comparison.png" class="img-fluid"></p>
-</section>
-<section id="refrigerated-delivery-time-by-scenario" class="level3">
-<h3 class="anchored" data-anchor-id="refrigerated-delivery-time-by-scenario">Refrigerated: Delivery Time by Scenario</h3>
-<p><img src="assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_c1_delivery_time_by_scenario.png" class="img-fluid"></p>
-</section>
-<section id="route-animation-last-frame-preview" class="level3">
-<h3 class="anchored" data-anchor-id="route-animation-last-frame-preview">Route Animation (Last Frame Preview)</h3>
-<p><img src="assets/transport/canonical_2026-03-08/route_animation_diesel_vs_bev_last_frame.png" class="img-fluid"></p>
-</section>
-</section>
-<section id="artifact-locations" class="level2">
-<h2 class="anchored" data-anchor-id="artifact-locations">Artifact Locations</h2>
-<p>Tracked GitHub-ready snapshot: - <code>artifacts/github_release/canonical_2026-03-08/</code></p>
-</section>
-<section id="roadmap-note" class="level2">
-<h2 class="anchored" data-anchor-id="roadmap-note">Roadmap Note</h2>
-<p>Current route animations are primarily latitude/longitude playback with cumulative counters.</p>
-<p>Planned upgrades: - Add richer basemap/corridor context. - Add event overlays (charging, refuel, delays, stop windows). - Add stronger scenario and powertrain narrative callouts.</p>
 
 
 </section>

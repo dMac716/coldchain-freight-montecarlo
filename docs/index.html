@@ -177,10 +177,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#host-setup-basics" id="toc-host-setup-basics" class="nav-link active" data-scroll-target="#host-setup-basics">Host Setup (Basics)</a></li>
-  <li><a href="#data-inputs" id="toc-data-inputs" class="nav-link" data-scroll-target="#data-inputs">Data Inputs</a></li>
-  <li><a href="#refresh-ui-artifacts" id="toc-refresh-ui-artifacts" class="nav-link" data-scroll-target="#refresh-ui-artifacts">Refresh UI Artifacts</a></li>
-  <li><a href="#calculation-spec-what-feeds-what" id="toc-calculation-spec-what-feeds-what" class="nav-link" data-scroll-target="#calculation-spec-what-feeds-what">Calculation Spec (What Feeds What)</a></li>
+  <li><a href="#cold-chain-freight-monte-carlo" id="toc-cold-chain-freight-monte-carlo" class="nav-link active" data-scroll-target="#cold-chain-freight-monte-carlo">Cold-Chain Freight Monte Carlo</a></li>
+  <li><a href="#explore" id="toc-explore" class="nav-link" data-scroll-target="#explore">Explore</a></li>
+  <li><a href="#reproducibility" id="toc-reproducibility" class="nav-link" data-scroll-target="#reproducibility">Reproducibility</a>
+  <ul class="collapse">
+  <li><a href="#runtime-model" id="toc-runtime-model" class="nav-link" data-scroll-target="#runtime-model">Runtime Model</a></li>
+  </ul></li>
+  <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick Start</a></li>
+  <li><a href="#codespaces-path" id="toc-codespaces-path" class="nav-link" data-scroll-target="#codespaces-path">Codespaces Path</a></li>
+  <li><a href="#pipeline-overview" id="toc-pipeline-overview" class="nav-link" data-scroll-target="#pipeline-overview">Pipeline Overview</a></li>
   </ul>
 </nav>
     </div>
@@ -206,39 +211,104 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This visualization layer is static-first and artifact-driven.</p>
+<section id="cold-chain-freight-monte-carlo" class="level1 hero">
+<h1>Cold-Chain Freight Monte Carlo</h1>
+<p>Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.</p>
+<p><code>Last canonical snapshot: 2026-03-08</code><br>
+<code>Validation gates: PASS</code></p>
+</section>
+<div class="kpi-grid">
+<div class="kpi-card">
+<div class="kpi-label">
+Canonical Families
+</div>
+<div class="kpi-value">
+2
+</div>
+<p><code>analysis_core_dry</code>, <code>analysis_core_refrigerated</code></p>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">
+LCI Rows
+</div>
+<div class="kpi-value">
+4,160
+</div>
+<p>Merged full LCA ledger rows</p>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">
+Tracked Release Snapshot
+</div>
+<div class="kpi-value">
+48 files
+</div>
+<p>GitHub-ready artifacts committed</p>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">
+Animation Bundle
+</div>
+<div class="kpi-value">
+6 files
+</div>
+<p>3 MP4 + 3 preview frames</p>
+</div>
+</div>
+<section id="explore" class="level2">
+<h2 class="anchored" data-anchor-id="explore">Explore</h2>
+<div class="grid-2">
+<section id="methodology-and-initial-results" class="level3 quick-card">
+<h3 class="anchored" data-anchor-id="methodology-and-initial-results">Methodology and Initial Results</h3>
+<p>Start here for model pipeline, validation status, and initial figures.</p>
+<p><a href="./methodology_results.html">Open Methodology &amp; Results</a></p>
+</section>
+<section id="scenario-explorer" class="level3 quick-card">
+<h3 class="anchored" data-anchor-id="scenario-explorer">Scenario Explorer</h3>
+<p>Interactive, artifact-driven scenario table and filters.</p>
+<p><a href="./viz/scenario_explorer.html">Open Scenario Explorer</a></p>
+</section>
+<section id="flow-map" class="level3 quick-card">
+<h3 class="anchored" data-anchor-id="flow-map">Flow Map</h3>
+<p>Static map from derived FAF flow artifacts.</p>
+<p><a href="./viz/flow_map.html">Open Flow Map</a></p>
+</section>
+<section id="transport-results" class="level3 quick-card">
+<h3 class="anchored" data-anchor-id="transport-results">Transport Results</h3>
+<p>Compiled transport outputs and supporting visuals.</p>
+<p><a href="./viz/transport_results.html">Open Transport Results</a></p>
+</section>
+</div>
+</section>
+<section id="reproducibility" class="level2">
+<h2 class="anchored" data-anchor-id="reproducibility">Reproducibility</h2>
+<section id="runtime-model" class="level3 panel">
+<h3 class="anchored" data-anchor-id="runtime-model">Runtime Model</h3>
 <ul>
-<li>No live services are queried at page render time.</li>
-<li>Map and scenario views read committed/generated CSVs from <code>data/derived/</code> and <code>outputs/</code>.</li>
-<li>Works with local <code>quarto render site/</code> and GitHub Pages deployment.</li>
+<li>No live services are queried during page rendering.</li>
+<li>Pages consume committed/generated artifacts from <code>data/derived/</code>, <code>artifacts/github_release/</code>, and generated site assets.</li>
+<li>Works for local render and GitHub Pages publishing.</li>
 </ul>
-<section id="host-setup-basics" class="level2">
-<h2 class="anchored" data-anchor-id="host-setup-basics">Host Setup (Basics)</h2>
-<p>Minimum setup for a contributor host (macOS/Linux/Windows with R + terminal):</p>
+<p><span class="badge-soft">Offline-first</span> <span class="badge-soft">Artifact-driven</span> <span class="badge-soft">Deterministic snapshot</span></p>
+</section>
+</section>
+<section id="quick-start" class="level2">
+<h2 class="anchored" data-anchor-id="quick-start">Quick Start</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/dMac716/coldchain-freight-montecarlo.git</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> coldchain-freight-montecarlo</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> config/gcp.example.env config/gcp.env</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pkgs &lt;- c("optparse","jsonlite","digest","testthat","leaflet"); missing &lt;- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) &gt; 0) install.packages(missing, repos = "https://cloud.r-project.org")'</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'testthat::test_dir("tests/testthat")'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/smoke_test.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Notes: - <code>quarto</code> is required only to render the static site locally. - <code>python3</code> is optional (used for FAF zone-name extraction when available). - <code>bq</code>/<code>gsutil</code> are optional (only for the BigQuery FAF pipeline). - Team viewing is browser-based, so PC users can use GitHub Pages output directly.</p>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/smoke_test.sh</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="data-inputs" class="level2">
-<h2 class="anchored" data-anchor-id="data-inputs">Data Inputs</h2>
-<ul>
-<li><code>data/derived/faf_top_od_flows.csv</code></li>
-<li><code>data/derived/faf_zone_centroids.csv</code></li>
-<li><code>data/derived/scenario_summary.csv</code> (preferred; generated from available run outputs)</li>
-<li><code>outputs/aggregate/results_summary.csv</code> (fallback if <code>scenario_summary.csv</code> is not available)</li>
-</ul>
+<section id="codespaces-path" class="level2">
+<h2 class="anchored" data-anchor-id="codespaces-path">Codespaces Path</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># postCreate installs core deps</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'testthat::test_dir("tests/testthat")'</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/build_presentation_artifacts.sh <span class="at">--skip-runs</span> <span class="at">--with-animation</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/validate_final_artifacts.sh</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="refresh-ui-artifacts" class="level2">
-<h2 class="anchored" data-anchor-id="refresh-ui-artifacts">Refresh UI Artifacts</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tools/derive_ui_artifacts.R <span class="at">--top_n</span> 200</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/ <span class="at">--no-clean</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="calculation-spec-what-feeds-what" class="level2">
-<h2 class="anchored" data-anchor-id="calculation-spec-what-feeds-what">Calculation Spec (What Feeds What)</h2>
+<section id="pipeline-overview" class="level2">
+<h2 class="anchored" data-anchor-id="pipeline-overview">Pipeline Overview</h2>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -248,17 +318,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   A[data/inputs_local/*.csv] --&gt; B[R/01_validate.R]
   B --&gt; C[R/03_model_core.R deterministic equations]
   C --&gt; D[R/04_sampling.R Monte Carlo draws]
-  D --&gt; E[R/05_histogram.R]
-  E --&gt; F[R/06_analysis.R summary stats/quantiles]
-  F --&gt; G[outputs/* results_summary.csv + metadata]
-  G --&gt; H[tools/derive_ui_artifacts.R]
-  H --&gt; I[data/derived/faf_top_od_flows.csv]
-  H --&gt; J[data/derived/faf_zone_centroids.csv]
-  H --&gt; K[data/derived/scenario_summary.csv]
-  I --&gt; L[site/viz/flow_map.qmd]
-  J --&gt; L
-  K --&gt; M[site/viz/scenario_explorer.qmd]
-  G --&gt; M
+  D --&gt; E[R/06_analysis.R summary stats]
+  E --&gt; F[outputs/* run + analysis artifacts]
+  F --&gt; G[tools/build_presentation_artifacts.sh]
+  G --&gt; H[outputs/presentation/canonical/final_release_bundle]
+  H --&gt; I[artifacts/github_release/canonical_2026-03-08]
+  I --&gt; J[site/* + docs/* GitHub Pages]
 </pre>
 </div>
 <p></p></figure><p></p>

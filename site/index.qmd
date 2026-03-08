@@ -2,61 +2,117 @@
 title: "Cold-Chain Freight Monte Carlo"
 ---
 
-This visualization layer is static-first and artifact-driven.
+::: {.hero}
+# Cold-Chain Freight Monte Carlo
 
-- No live services are queried at page render time.
-- Map and scenario views read committed/generated CSVs from `data/derived/` and `outputs/`.
-- Works with local `quarto render site/` and GitHub Pages deployment.
+Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.
 
-## Host Setup (Basics)
+`Last canonical snapshot: 2026-03-08`  
+`Validation gates: PASS`
+:::
 
-Minimum setup for a contributor host (macOS/Linux/Windows with R + terminal):
+::: {.kpi-grid}
+::: {.kpi-card}
+<div class="kpi-label">Canonical Families</div>
+<div class="kpi-value">2</div>
+`analysis_core_dry`, `analysis_core_refrigerated`
+:::
+
+::: {.kpi-card}
+<div class="kpi-label">LCI Rows</div>
+<div class="kpi-value">4,160</div>
+Merged full LCA ledger rows
+:::
+
+::: {.kpi-card}
+<div class="kpi-label">Tracked Release Snapshot</div>
+<div class="kpi-value">48 files</div>
+GitHub-ready artifacts committed
+:::
+
+::: {.kpi-card}
+<div class="kpi-label">Animation Bundle</div>
+<div class="kpi-value">6 files</div>
+3 MP4 + 3 preview frames
+:::
+:::
+
+## Explore
+
+::: {.grid-2}
+::: {.quick-card}
+### Methodology and Initial Results
+Start here for model pipeline, validation status, and initial figures.
+
+[Open Methodology & Results](methodology_results.qmd)
+:::
+
+::: {.quick-card}
+### Scenario Explorer
+Interactive, artifact-driven scenario table and filters.
+
+[Open Scenario Explorer](viz/scenario_explorer.qmd)
+:::
+
+::: {.quick-card}
+### Flow Map
+Static map from derived FAF flow artifacts.
+
+[Open Flow Map](viz/flow_map.qmd)
+:::
+
+::: {.quick-card}
+### Transport Results
+Compiled transport outputs and supporting visuals.
+
+[Open Transport Results](viz/transport_results.qmd)
+:::
+:::
+
+## Reproducibility
+
+::: {.panel}
+### Runtime Model
+
+- No live services are queried during page rendering.
+- Pages consume committed/generated artifacts from `data/derived/`, `artifacts/github_release/`, and generated site assets.
+- Works for local render and GitHub Pages publishing.
+
+<span class="badge-soft">Offline-first</span>
+<span class="badge-soft">Artifact-driven</span>
+<span class="badge-soft">Deterministic snapshot</span>
+:::
+
+## Quick Start
 
 ```bash
 git clone https://github.com/dMac716/coldchain-freight-montecarlo.git
 cd coldchain-freight-montecarlo
-cp config/gcp.example.env config/gcp.env
-Rscript -e 'pkgs <- c("optparse","jsonlite","digest","testthat","leaflet"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org")'
-Rscript -e 'testthat::test_dir("tests/testthat")'
 bash tools/smoke_test.sh
+quarto render site/
 ```
 
-Notes:
-- `quarto` is required only to render the static site locally.
-- `python3` is optional (used for FAF zone-name extraction when available).
-- `bq`/`gsutil` are optional (only for the BigQuery FAF pipeline).
-- Team viewing is browser-based, so PC users can use GitHub Pages output directly.
-
-## Data Inputs
-
-- `data/derived/faf_top_od_flows.csv`
-- `data/derived/faf_zone_centroids.csv`
-- `data/derived/scenario_summary.csv` (preferred; generated from available run outputs)
-- `outputs/aggregate/results_summary.csv` (fallback if `scenario_summary.csv` is not available)
-
-## Refresh UI Artifacts
+## Codespaces Path
 
 ```bash
-Rscript tools/derive_ui_artifacts.R --top_n 200
-quarto render site/ --no-clean
+# postCreate installs core deps
+Rscript -e 'testthat::test_dir("tests/testthat")'
+bash tools/build_presentation_artifacts.sh --skip-runs --with-animation
+bash tools/validate_final_artifacts.sh
+quarto render site/
 ```
 
-## Calculation Spec (What Feeds What)
+## Pipeline Overview
 
 ```{mermaid}
 flowchart LR
   A[data/inputs_local/*.csv] --> B[R/01_validate.R]
   B --> C[R/03_model_core.R deterministic equations]
   C --> D[R/04_sampling.R Monte Carlo draws]
-  D --> E[R/05_histogram.R]
-  E --> F[R/06_analysis.R summary stats/quantiles]
-  F --> G[outputs/* results_summary.csv + metadata]
-  G --> H[tools/derive_ui_artifacts.R]
-  H --> I[data/derived/faf_top_od_flows.csv]
-  H --> J[data/derived/faf_zone_centroids.csv]
-  H --> K[data/derived/scenario_summary.csv]
-  I --> L[site/viz/flow_map.qmd]
-  J --> L
-  K --> M[site/viz/scenario_explorer.qmd]
-  G --> M
+  D --> E[R/06_analysis.R summary stats]
+  E --> F[outputs/* run + analysis artifacts]
+  F --> G[tools/build_presentation_artifacts.sh]
+  G --> H[outputs/presentation/canonical/final_release_bundle]
+  H --> I[artifacts/github_release/canonical_2026-03-08]
+  I --> J[site/* + docs/* GitHub Pages]
 ```

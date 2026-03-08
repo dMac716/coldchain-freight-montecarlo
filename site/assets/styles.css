@@ -1,10 +1,139 @@
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --text: #17202a;
+  --muted: #5a6b7b;
+  --primary: #0f5ea8;
+  --primary-2: #2d88d8;
+  --accent: #e97a28;
+  --border: #dce4ee;
+  --shadow: 0 8px 24px rgba(16, 36, 64, 0.08);
+}
+
 body {
-  line-height: 1.55;
+  background: radial-gradient(circle at 8% 0%, #e9f2ff 0%, #f6f8fb 35%, #f6f8fb 100%);
+  color: var(--text);
+  line-height: 1.6;
 }
 
 .navbar-brand {
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.2px;
+}
+
+h1, h2, h3 {
+  color: #0f2f4d;
+  letter-spacing: -0.01em;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, #0f5ea8 0%, #2d88d8 100%);
+  border: 1px solid #1f73bf;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  color: #fff;
+  margin: 0.5rem 0 1.25rem;
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+.hero h1,
+.hero h2,
+.hero p,
+.hero li,
+.hero strong {
+  color: #fff;
+}
+
+.kpi-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 1rem 0 1.25rem;
+}
+
+.kpi-card,
+.panel,
+.quick-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 0.95rem 1rem;
+}
+
+.kpi-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-value {
+  color: #0f2f4d;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.grid-2 {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin: 1rem 0;
+}
+
+.quick-card h3,
+.panel h3 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+
+.badge-soft {
+  background: #e6f1ff;
+  border: 1px solid #b8d5f4;
+  border-radius: 999px;
+  color: #0f4f8f;
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin: 0 0.35rem 0.35rem 0;
+  padding: 0.15rem 0.55rem;
+}
+
+table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th {
+  background: #edf4fb;
+}
+
+img {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.figure-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.roadmap {
+  background: #fff8ef;
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
 }
 
 #scenario-filter {
