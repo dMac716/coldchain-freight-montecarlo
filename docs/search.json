@@ -70,6 +70,13 @@
     "text": "Route Animations\n\nDiesel representative: MP4\nBEV representative: MP4\nSide-by-side diesel vs BEV: MP4"
   },
   {
+    "objectID": "team_runs.html",
+    "href": "team_runs.html",
+    "title": "Team Runs",
+    "section": "",
+    "text": "Run `Rscript tools/refresh_site_from_bq.R --project &lt;GCP_PROJECT&gt; --dataset coldchain_sim --n 50` to refresh site/data CSVs."
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Cold-Chain Freight Monte Carlo",
