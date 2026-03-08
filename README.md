@@ -259,6 +259,23 @@ make derive-ui
 quarto render site/
 ```
 
+Methodology and initial-results page:
+- `site/methodology_results.qmd`
+- Published as `docs/methodology_results.html` via Quarto/GitHub Pages.
+
+## GitHub Codespaces + Pages
+- This repo can be used in GitHub Codespaces for reproducible docs/artifact workflows.
+- Recommended Codespaces flow:
+  1. Open repo in Codespaces.
+  2. Run canonical build and validation:
+     - `bash tools/build_presentation_artifacts.sh --skip-runs --with-animation`
+     - `bash tools/validate_final_artifacts.sh`
+  3. Duplicate selected outputs into tracked snapshot directory:
+     - `artifacts/github_release/<snapshot_id>/`
+  4. Render pages:
+     - `quarto render site/`
+  5. Commit changes under `site/`, `docs/`, and `artifacts/github_release/`.
+
 Data-driven map uses:
 - `data/derived/faf_top_od_flows.csv`
 - `data/derived/faf_zone_centroids.csv`
