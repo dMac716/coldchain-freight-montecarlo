@@ -216,6 +216,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.</p>
 <p><code>Last canonical snapshot: 2026-03-08</code><br>
 <code>Validation gates: PASS</code></p>
+<div class="cta-row">
+<p><a href="./methodology_results.html" class="btn-pill">Methodology &amp; Results</a> <a href="./viz/transport_results.html" class="btn-pill">Transport Results</a> <a href="./viz/scenario_explorer.html" class="btn-pill">Scenario Explorer</a></p>
+</div>
 </section>
 <div class="kpi-grid">
 <div class="kpi-card">
@@ -255,8 +258,8 @@ Animation Bundle
 <p>3 MP4 + 3 preview frames</p>
 </div>
 </div>
-<section id="explore" class="level2">
-<h2 class="anchored" data-anchor-id="explore">Explore</h2>
+<section id="explore" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="explore">Explore</h2>
 <div class="grid-2">
 <section id="methodology-and-initial-results" class="level3 quick-card">
 <h3 class="anchored" data-anchor-id="methodology-and-initial-results">Methodology and Initial Results</h3>
@@ -280,8 +283,8 @@ Animation Bundle
 </section>
 </div>
 </section>
-<section id="reproducibility" class="level2">
-<h2 class="anchored" data-anchor-id="reproducibility">Reproducibility</h2>
+<section id="reproducibility" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="reproducibility">Reproducibility</h2>
 <section id="runtime-model" class="level3 panel">
 <h3 class="anchored" data-anchor-id="runtime-model">Runtime Model</h3>
 <ul>
@@ -292,23 +295,23 @@ Animation Bundle
 <p><span class="badge-soft">Offline-first</span> <span class="badge-soft">Artifact-driven</span> <span class="badge-soft">Deterministic snapshot</span></p>
 </section>
 </section>
-<section id="quick-start" class="level2">
-<h2 class="anchored" data-anchor-id="quick-start">Quick Start</h2>
+<section id="quick-start" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="quick-start">Quick Start</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/dMac716/coldchain-freight-montecarlo.git</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> coldchain-freight-montecarlo</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/smoke_test.sh</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="codespaces-path" class="level2">
-<h2 class="anchored" data-anchor-id="codespaces-path">Codespaces Path</h2>
+<section id="codespaces-path" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="codespaces-path">Codespaces Path</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># postCreate installs core deps</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'testthat::test_dir("tests/testthat")'</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/build_presentation_artifacts.sh <span class="at">--skip-runs</span> <span class="at">--with-animation</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/validate_final_artifacts.sh</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="pipeline-overview" class="level2">
-<h2 class="anchored" data-anchor-id="pipeline-overview">Pipeline Overview</h2>
+<section id="pipeline-overview" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="pipeline-overview">Pipeline Overview</h2>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>

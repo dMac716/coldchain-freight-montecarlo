@@ -9,6 +9,12 @@ Static, reproducible analysis site for transport + LCI comparisons across dry vs
 
 `Last canonical snapshot: 2026-03-08`  
 `Validation gates: PASS`
+
+::: {.cta-row}
+[Methodology & Results](methodology_results.qmd){.btn-pill}
+[Transport Results](viz/transport_results.qmd){.btn-pill}
+[Scenario Explorer](viz/scenario_explorer.qmd){.btn-pill}
+:::
 :::
 
 ::: {.kpi-grid}
@@ -37,7 +43,7 @@ GitHub-ready artifacts committed
 :::
 :::
 
-## Explore
+## Explore { .section-title }
 
 ::: {.grid-2}
 ::: {.quick-card}
@@ -69,7 +75,7 @@ Compiled transport outputs and supporting visuals.
 :::
 :::
 
-## Reproducibility
+## Reproducibility { .section-title }
 
 ::: {.panel}
 ### Runtime Model
@@ -83,7 +89,7 @@ Compiled transport outputs and supporting visuals.
 <span class="badge-soft">Deterministic snapshot</span>
 :::
 
-## Quick Start
+## Quick Start { .section-title }
 
 ```bash
 git clone https://github.com/dMac716/coldchain-freight-montecarlo.git
@@ -92,7 +98,7 @@ bash tools/smoke_test.sh
 quarto render site/
 ```
 
-## Codespaces Path
+## Codespaces Path { .section-title }
 
 ```bash
 # postCreate installs core deps
@@ -102,7 +108,7 @@ bash tools/validate_final_artifacts.sh
 quarto render site/
 ```
 
-## Pipeline Overview
+## Pipeline Overview { .section-title }
 
 ```{mermaid}
 flowchart LR

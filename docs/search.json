@@ -74,7 +74,7 @@
     "href": "index.html",
     "title": "Cold-Chain Freight Monte Carlo",
     "section": "",
-    "text": "Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.\nLast canonical snapshot: 2026-03-08\nValidation gates: PASS"
+    "text": "Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.\nLast canonical snapshot: 2026-03-08\nValidation gates: PASS\n\nMethodology & Results Transport Results Scenario Explorer"
   },
   {
     "objectID": "index.html#explore",
@@ -123,14 +123,14 @@
     "href": "methodology_results.html",
     "title": "Methodology and Initial Results",
     "section": "",
-    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set."
+    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set.\n\nView Snapshot Directory Open Transport Results"
   },
   {
     "objectID": "methodology_results.html#canonical-snapshot-summary",
     "href": "methodology_results.html#canonical-snapshot-summary",
     "title": "Methodology and Initial Results",
     "section": "",
-    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set."
+    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set.\n\nView Snapshot Directory Open Transport Results"
   },
   {
     "objectID": "methodology_results.html#methodology",
