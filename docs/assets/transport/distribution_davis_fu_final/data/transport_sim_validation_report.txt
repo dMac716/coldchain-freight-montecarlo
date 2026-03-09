@@ -1,0 +1,3 @@
+VALIDATION: PASS (phase2_production)
+rows=80
+replicates=20

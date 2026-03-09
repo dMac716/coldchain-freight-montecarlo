@@ -145,7 +145,9 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#validation-source" id="toc-validation-source" class="nav-link" data-scroll-target="#validation-source">Validation Source</a></li>
   </ul></li>
   <li><a href="#initial-results-core-transport-metric" id="toc-initial-results-core-transport-metric" class="nav-link" data-scroll-target="#initial-results-core-transport-metric">Initial Results (Core Transport Metric)</a></li>
+  <li><a href="#latest-production-refresh-2026-03-09" id="toc-latest-production-refresh-2026-03-09" class="nav-link" data-scroll-target="#latest-production-refresh-2026-03-09">Latest Production Refresh (2026-03-09)</a></li>
   <li><a href="#initial-figures" id="toc-initial-figures" class="nav-link" data-scroll-target="#initial-figures">Initial Figures</a></li>
+  <li><a href="#updated-distribution-figures-2026-03-09" id="toc-updated-distribution-figures-2026-03-09" class="nav-link" data-scroll-target="#updated-distribution-figures-2026-03-09">Updated Distribution Figures (2026-03-09)</a></li>
   <li><a href="#artifact-links" id="toc-artifact-links" class="nav-link" data-scroll-target="#artifact-links">Artifact Links</a>
   <ul class="collapse">
   <li><a href="#roadmap-animation-upgrade" id="toc-roadmap-animation-upgrade" class="nav-link" data-scroll-target="#roadmap-animation-upgrade">Roadmap: Animation Upgrade</a></li>
@@ -177,7 +179,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="canonical-snapshot-summary" class="level2 hero">
 <h2 class="anchored" data-anchor-id="canonical-snapshot-summary">Canonical Snapshot Summary</h2>
-<p>This page documents the validated canonical artifact build committed on <strong>2026-03-08</strong> and provides the first publishable results set.</p>
+<p>This page documents the validated canonical artifact build committed on <strong>2026-03-08</strong> and the latest low-memory production refresh completed on <strong>2026-03-09</strong>.</p>
 <div class="cta-row">
 <p><a href="../artifacts/github_release/canonical_2026-03-08/" class="btn-pill">View Snapshot Directory</a> <a href="./viz/transport_results.html" class="btn-pill">Open Transport Results</a></p>
 </div>
@@ -276,6 +278,73 @@ Git Tracked
 </tbody>
 </table>
 </section>
+<section id="latest-production-refresh-2026-03-09" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="latest-production-refresh-2026-03-09">Latest Production Refresh (2026-03-09)</h2>
+<ul>
+<li>Run ID: <code>distribution_davis_fu_final</code></li>
+<li>Execution style: low-memory chunked run with checkpointing (<code>N_REPS=20</code>, <code>CHUNK_SIZE=2</code>)</li>
+<li>Status: validation passed; transport outputs published</li>
+<li>See updated figures, tables, and downloadable data on <a href="./viz/transport_results.html">Transport Results</a></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 25%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: right;">Mean CO2/1000kcal</th>
+<th style="text-align: right;">Median</th>
+<th style="text-align: right;">P05</th>
+<th style="text-align: right;">P95</th>
+<th style="text-align: right;">N</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">dry_bev</td>
+<td style="text-align: right;">0.0324562</td>
+<td style="text-align: right;">0.0320673</td>
+<td style="text-align: right;">0.0181026</td>
+<td style="text-align: right;">0.0481757</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dry_diesel</td>
+<td style="text-align: right;">0.0742900</td>
+<td style="text-align: right;">0.0736960</td>
+<td style="text-align: right;">0.0691054</td>
+<td style="text-align: right;">0.0831437</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">refrigerated_bev</td>
+<td style="text-align: right;">0.2883301</td>
+<td style="text-align: right;">0.2849093</td>
+<td style="text-align: right;">0.1405841</td>
+<td style="text-align: right;">0.4379447</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">refrigerated_diesel</td>
+<td style="text-align: right;">0.6683637</td>
+<td style="text-align: right;">0.6639232</td>
+<td style="text-align: right;">0.3253677</td>
+<td style="text-align: right;">1.0755316</td>
+<td style="text-align: right;">20</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
 <section id="initial-figures" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="initial-figures">Initial Figures</h2>
 <div class="figure-grid">
@@ -301,6 +370,35 @@ Git Tracked
 <figure class="figure">
 <p><img src="assets/transport/canonical_2026-03-08/route_animation_diesel_vs_bev_last_frame.png" class="img-fluid figure-img"></p>
 <figcaption>Route Animation Preview (Diesel vs BEV)</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="updated-distribution-figures-2026-03-09" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="updated-distribution-figures-2026-03-09">Updated Distribution Figures (2026-03-09)</h2>
+<div class="figure-grid">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/distribution_davis_fu_final/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
+<figcaption>CO2 per 1000 kcal by scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/distribution_davis_fu_final/figures/paired_delta_boxplot.png" class="img-fluid figure-img"></p>
+<figcaption>Paired deltas by powertrain</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/distribution_davis_fu_final/figures/trip_duration_by_scenario.png" class="img-fluid figure-img"></p>
+<figcaption>Trip duration by scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/distribution_davis_fu_final/figures/co2_vs_duration_scatter.png" class="img-fluid figure-img"></p>
+<figcaption>CO2 intensity vs trip duration</figcaption>
 </figure>
 </div>
 </div>

@@ -1,0 +1,61 @@
+---
+title: "Route Simulation Animation"
+format: html
+---
+
+This page publishes the latest route animation assets generated from the validated distribution transport run.
+
+- Run: `distribution_davis_fu_final`
+- Date: `2026-03-09`
+- Color mapping: `Diesel = blue`, `BEV = gold`
+
+## Downloads
+
+- [Animation bundle ZIP](assets/transport/downloads/animation_assets_full_n20_fix.zip)
+- [Diesel animation MP4](assets/transport/downloads/route_animation_diesel.mp4)
+- [BEV animation MP4](assets/transport/downloads/route_animation_bev.mp4)
+- [Diesel vs BEV animation MP4](assets/transport/downloads/route_animation_diesel_vs_bev.mp4)
+- [Monte Carlo evolution MP4](assets/transport/downloads/transport_mc_evolution.mp4)
+- [Monte Carlo evolution GIF](assets/transport/downloads/transport_mc_evolution.gif)
+
+## Route Animation Previews
+
+### Diesel (blue)
+
+<video controls preload="metadata" width="100%">
+  <source src="assets/transport/downloads/route_animation_diesel.mp4" type="video/mp4">
+</video>
+
+### BEV (gold)
+
+<video controls preload="metadata" width="100%">
+  <source src="assets/transport/downloads/route_animation_bev.mp4" type="video/mp4">
+</video>
+
+### Side-by-side Diesel vs BEV
+
+<video controls preload="metadata" width="100%">
+  <source src="assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+
+## Latest Route/Metric Sample
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+rows_path <- "assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv"
+if (file.exists(rows_path)) {
+  df <- utils::read.csv(rows_path, stringsAsFactors = FALSE)
+  keep <- c(
+    "replicate_id", "scenario_name", "powertrain", "origin_name", "destination_name",
+    "route_id", "base_route_distance_miles", "trip_distance_miles", "trip_duration_hours",
+    "congestion_delay_hours", "charging_events", "co2_per_1000kcal"
+  )
+  for (nm in keep) if (!(nm %in% names(df))) df[[nm]] <- NA
+  show <- df[df$replicate_id == min(df$replicate_id, na.rm = TRUE), keep, drop = FALSE]
+  knitr::kable(show)
+} else {
+  cat("<p><em>Rows CSV not found at <code>", rows_path, "</code>.</em></p>", sep = "")
+}
+```

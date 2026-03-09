@@ -8,107 +8,108 @@ pick_path <- function(paths) {
   ""
 }
 
-summary_path <- pick_path(c(
-  "../../data/derived/scenario_summary.csv",
-  "../data/derived/scenario_summary.csv",
-  "data/derived/scenario_summary.csv"
+fu_rows_path <- pick_path(c(
+  "../assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv",
+  "assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv",
+  "../../site/assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv",
+  "outputs/distribution/distribution_davis_fu_final/transport_sim_rows.csv"
 ))
 
-if (!nzchar(summary_path)) {
-  summary_path <- pick_path(c(
-    "../../outputs/aggregate/results_summary.csv",
-    "../outputs/aggregate/results_summary.csv",
-    "outputs/aggregate/results_summary.csv"
-  ))
-}
+if (nzchar(fu_rows_path)) {
+  df <- utils::read.csv(fu_rows_path, stringsAsFactors = FALSE)
+  if (nrow(df) == 0) {
+    cat("<p><em>Latest FU transport rows file exists but is empty.</em></p>")
+    knitr::knit_exit()
+  }
 
-if (!nzchar(summary_path)) {
-  cat("<p><em>Scenario summary not yet generated. Run <code>Rscript tools/derive_ui_artifacts.R</code> (or generate <code>outputs/aggregate/results_summary.csv</code>).</em></p>")
-  knitr::knit_exit()
-}
-
-df <- utils::read.csv(summary_path, stringsAsFactors = FALSE)
-if (!("scenario_id" %in% names(df))) df$scenario_id <- "AGGREGATE"
-if (nrow(df) == 0) {
-  cat("<p><em>Scenario summary is empty.</em></p>")
-  knitr::knit_exit()
-}
-if (!("metric" %in% names(df))) {
-  cat("<p><em>Scenario summary is missing required column <code>metric</code>. Regenerate artifacts via <code>Rscript tools/derive_ui_artifacts.R</code>.</em></p>")
-  knitr::knit_exit()
-}
-metric_vals <- trimws(as.character(df$metric))
-if (all(!nzchar(metric_vals))) {
-  cat("<p><em>Scenario summary has an empty/invalid <code>metric</code> column. Regenerate artifacts via <code>Rscript tools/derive_ui_artifacts.R</code>.</em></p>")
-  knitr::knit_exit()
-}
-if (!("powertrain" %in% names(df))) df$powertrain <- "unknown"
-if (!("trailer_type" %in% names(df))) df$trailer_type <- "unknown"
-if (!("variant_id" %in% names(df))) df$variant_id <- df$scenario_id
-
-for (nm in c("mean", "var", "p05", "p50", "p95")) {
-  if (!(nm %in% names(df))) df[[nm]] <- NA_real_
-}
-df <- df[order(df$scenario_id, df$powertrain, df$trailer_type, df$metric), c("scenario_id", "variant_id", "powertrain", "trailer_type", "metric", "mean", "var", "p05", "p50", "p95"), drop = FALSE]
-
-scenario_vals <- unique(df$scenario_id)
-power_vals <- unique(df$powertrain)
-trailer_vals <- unique(df$trailer_type)
-scenario_options <- paste(sprintf("<option value='%s'>%s</option>", scenario_vals, scenario_vals), collapse = "")
-power_options <- paste(sprintf("<option value='%s'>%s</option>", power_vals, power_vals), collapse = "")
-trailer_options <- paste(sprintf("<option value='%s'>%s</option>", trailer_vals, trailer_vals), collapse = "")
-
-row_html <- apply(df, 1, function(r) {
-  sprintf(
-    "<tr data-scenario='%s' data-power='%s' data-trailer='%s'><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%.6g</td><td>%.6g</td><td>%.6g</td><td>%.6g</td><td>%.6g</td></tr>",
-    toupper(r[["scenario_id"]]), toupper(r[["powertrain"]]), toupper(r[["trailer_type"]]),
-    r[["scenario_id"]], r[["variant_id"]], r[["powertrain"]], r[["metric"]],
-    as.numeric(r[["mean"]]), as.numeric(r[["var"]]),
-    as.numeric(r[["p05"]]), as.numeric(r[["p50"]]), as.numeric(r[["p95"]])
+  keep <- c(
+    "replicate_id", "scenario_name", "powertrain", "origin_name", "destination_name", "reefer_on",
+    "trip_distance_miles", "trip_duration_hours", "congestion_delay_hours", "diesel_gallons",
+    "traction_electricity_kwh", "charging_events", "total_trip_co2_kg", "co2_per_1000kcal"
   )
-})
+  for (nm in keep) if (!(nm %in% names(df))) df[[nm]] <- NA
+  df <- df[, keep, drop = FALSE]
 
-cat(
-  "<div style='display:flex; gap:16px; align-items:center;'>",
-  "<label for='scenario-filter'><b>Scenario:</b></label> ",
-  "<select id='scenario-filter'><option value='ALL'>ALL</option>", scenario_options, "</select>",
-  "<label for='power-filter'><b>Powertrain:</b></label> ",
-  "<select id='power-filter'><option value='ALL'>ALL</option>", power_options, "</select>",
-  "<label for='trailer-filter'><b>Trailer:</b></label> ",
-  "<select id='trailer-filter'><option value='ALL'>ALL</option>", trailer_options, "</select>",
-  "</div>",
-  "<table id='scenario-table' class='table table-striped' style='margin-top:12px;'>",
-  "<thead><tr><th>Scenario</th><th>Variant</th><th>Powertrain</th><th>Metric</th><th>Mean</th><th>Var</th><th>P05</th><th>P50</th><th>P95</th></tr></thead>",
-  "<tbody>", paste(row_html, collapse = "\n"), "</tbody></table>",
-  "<script>",
-  "const sSel=document.getElementById('scenario-filter');",
-  "const pSel=document.getElementById('power-filter');",
-  "const tSel=document.getElementById('trailer-filter');",
-  "const rows=[...document.querySelectorAll('#scenario-table tbody tr')];",
-  "function applyFilters(){",
-  " const s=sSel.value.toUpperCase(), p=pSel.value.toUpperCase(), t=tSel.value.toUpperCase();",
-  " rows.forEach(r=>{",
-  "   const keepS=(s==='ALL'||r.dataset.scenario===s);",
-  "   const keepP=(p==='ALL'||r.dataset.power===p);",
-  "   const keepT=(t==='ALL'||r.dataset.trailer===t);",
-  "   r.style.display=(keepS&&keepP&&keepT)?'':'none';",
-  " });",
-  "}",
-  "sSel.addEventListener('change', applyFilters);",
-  "pSel.addEventListener('change', applyFilters);",
-  "tSel.addEventListener('change', applyFilters);",
-  "applyFilters();",
-  "</script>",
-  sep = ""
-)
-```
+  scenario_vals <- sort(unique(df$scenario_name))
+  power_vals <- sort(unique(df$powertrain))
+  origin_vals <- sort(unique(df$origin_name))
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-plot_df <- subset(df, metric %in% c("gco2_dry", "gco2_reefer", "diff_gco2", "ratio"))
-if (nrow(plot_df) > 0) {
-  old_par <- par(mar = c(8, 4, 2, 1))
-  on.exit(par(old_par), add = TRUE)
-  labels <- paste(plot_df$scenario_id, plot_df$metric, sep = " | ")
-  barplot(plot_df$mean, names.arg = labels, las = 2, cex.names = 0.7, col = "#4C78A8", ylab = "Mean")
+  scenario_options <- paste(sprintf("<option value='%s'>%s</option>", scenario_vals, scenario_vals), collapse = "")
+  power_options <- paste(sprintf("<option value='%s'>%s</option>", power_vals, power_vals), collapse = "")
+  origin_options <- paste(sprintf("<option value='%s'>%s</option>", origin_vals, origin_vals), collapse = "")
+
+  row_html <- apply(df, 1, function(r) {
+    sprintf(
+      "<tr data-scenario='%s' data-power='%s' data-origin='%s'><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%.2f</td><td>%.2f</td><td>%.2f</td><td>%.2f</td><td>%.2f</td><td>%s</td><td>%.3f</td><td>%.6f</td></tr>",
+      toupper(r[["scenario_name"]]), toupper(r[["powertrain"]]), toupper(r[["origin_name"]]),
+      r[["replicate_id"]], r[["scenario_name"]], r[["powertrain"]], r[["origin_name"]], r[["destination_name"]],
+      as.numeric(r[["trip_distance_miles"]]), as.numeric(r[["trip_duration_hours"]]), as.numeric(r[["congestion_delay_hours"]]),
+      as.numeric(r[["diesel_gallons"]]), as.numeric(r[["traction_electricity_kwh"]]),
+      as.character(r[["charging_events"]]), as.numeric(r[["total_trip_co2_kg"]]), as.numeric(r[["co2_per_1000kcal"]])
+    )
+  })
+
+  cat(
+    "<p><strong>Data source:</strong> <code>", fu_rows_path, "</code></p>",
+    "<div style='display:flex; gap:16px; align-items:center; flex-wrap:wrap'>",
+    "<label for='scenario-filter'><b>Scenario:</b></label> ",
+    "<select id='scenario-filter'><option value='ALL'>ALL</option>", scenario_options, "</select>",
+    "<label for='power-filter'><b>Powertrain:</b></label> ",
+    "<select id='power-filter'><option value='ALL'>ALL</option>", power_options, "</select>",
+    "<label for='origin-filter'><b>Origin:</b></label> ",
+    "<select id='origin-filter'><option value='ALL'>ALL</option>", origin_options, "</select>",
+    "</div>",
+    "<table id='scenario-table' class='table table-striped' style='margin-top:12px;'>",
+    "<thead><tr><th>Rep</th><th>Scenario</th><th>Powertrain</th><th>Origin</th><th>Destination</th><th>Distance (mi)</th><th>Duration (h)</th><th>Congestion (h)</th><th>Diesel gal</th><th>BEV kWh</th><th>Charge stops</th><th>Total CO2 kg</th><th>CO2 / 1000 kcal</th></tr></thead>",
+    "<tbody>", paste(row_html, collapse = "\n"), "</tbody></table>",
+    "<script>",
+    "const sSel=document.getElementById('scenario-filter');",
+    "const pSel=document.getElementById('power-filter');",
+    "const oSel=document.getElementById('origin-filter');",
+    "const rows=[...document.querySelectorAll('#scenario-table tbody tr')];",
+    "function applyFilters(){",
+    " const s=sSel.value.toUpperCase(), p=pSel.value.toUpperCase(), o=oSel.value.toUpperCase();",
+    " rows.forEach(r=>{",
+    "   const keepS=(s==='ALL'||r.dataset.scenario===s);",
+    "   const keepP=(p==='ALL'||r.dataset.power===p);",
+    "   const keepO=(o==='ALL'||r.dataset.origin===o);",
+    "   r.style.display=(keepS&&keepP&&keepO)?'':'none';",
+    " });",
+    "}",
+    "sSel.addEventListener('change', applyFilters);",
+    "pSel.addEventListener('change', applyFilters);",
+    "oSel.addEventListener('change', applyFilters);",
+    "applyFilters();",
+    "</script>",
+    sep = ""
+  )
+} else {
+  summary_path <- pick_path(c(
+    "../../data/derived/scenario_summary.csv",
+    "../data/derived/scenario_summary.csv",
+    "data/derived/scenario_summary.csv"
+  ))
+
+  if (!nzchar(summary_path)) {
+    summary_path <- pick_path(c(
+      "../../outputs/aggregate/results_summary.csv",
+      "../outputs/aggregate/results_summary.csv",
+      "outputs/aggregate/results_summary.csv"
+    ))
+  }
+
+  if (!nzchar(summary_path)) {
+    cat("<p><em>No explorer data found. Generate either FU transport rows or aggregate scenario summaries.</em></p>")
+    knitr::knit_exit()
+  }
+
+  df <- utils::read.csv(summary_path, stringsAsFactors = FALSE)
+  if (!("scenario_id" %in% names(df))) df$scenario_id <- "AGGREGATE"
+  if (!("powertrain" %in% names(df))) df$powertrain <- "unknown"
+  if (!("metric" %in% names(df))) df$metric <- "unknown"
+  if (!("mean" %in% names(df))) df$mean <- NA_real_
+
+  cat("<p><strong>Fallback data source:</strong> <code>", summary_path, "</code></p>", sep = "")
+  knitr::kable(utils::head(df, 100))
 }
 ```

@@ -214,7 +214,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cold-chain-freight-monte-carlo" class="level1 hero">
 <h1>Cold-Chain Freight Monte Carlo</h1>
 <p>Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.</p>
-<p><code>Last canonical snapshot: 2026-03-08</code><br>
+<p><code>Latest validated transport refresh: 2026-03-09</code><br>
 <code>Validation gates: PASS</code></p>
 <div class="cta-row">
 <p><a href="./methodology_results.html" class="btn-pill">Methodology &amp; Results</a> <a href="./viz/transport_results.html" class="btn-pill">Transport Results</a> <a href="./viz/scenario_explorer.html" class="btn-pill">Scenario Explorer</a></p>
@@ -223,30 +223,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="kpi-grid">
 <div class="kpi-card">
 <div class="kpi-label">
-Canonical Families
+Latest Run ID
 </div>
 <div class="kpi-value">
-2
+distribution_davis_fu_final
 </div>
-<p><code>analysis_core_dry</code>, <code>analysis_core_refrigerated</code></p>
+<p>Low-memory chunked production</p>
 </div>
 <div class="kpi-card">
 <div class="kpi-label">
-LCI Rows
+Replicates
 </div>
 <div class="kpi-value">
-4,160
+20
 </div>
-<p>Merged full LCA ledger rows</p>
+<p>Validated + checkpointed (<code>CHUNK_SIZE=2</code>)</p>
 </div>
 <div class="kpi-card">
 <div class="kpi-label">
-Tracked Release Snapshot
+Scenario Rows
 </div>
 <div class="kpi-value">
-48 files
+80
 </div>
-<p>GitHub-ready artifacts committed</p>
+<p>4 scenarios x 20 replicates</p>
 </div>
 <div class="kpi-card">
 <div class="kpi-label">
@@ -289,7 +289,7 @@ Animation Bundle
 <h3 class="anchored" data-anchor-id="runtime-model">Runtime Model</h3>
 <ul>
 <li>No live services are queried during page rendering.</li>
-<li>Pages consume committed/generated artifacts from <code>data/derived/</code>, <code>artifacts/github_release/</code>, and generated site assets.</li>
+<li>Pages consume committed/generated artifacts from <code>outputs/distribution/distribution_davis_fu_final/</code> and generated site assets.</li>
 <li>Works for local render and GitHub Pages publishing.</li>
 </ul>
 <p><span class="badge-soft">Offline-first</span> <span class="badge-soft">Artifact-driven</span> <span class="badge-soft">Deterministic snapshot</span></p>
@@ -319,14 +319,13 @@ Animation Bundle
 <div>
 <pre class="mermaid mermaid-js">flowchart LR
   A[data/inputs_local/*.csv] --&gt; B[R/01_validate.R]
-  B --&gt; C[R/03_model_core.R deterministic equations]
-  C --&gt; D[R/04_sampling.R Monte Carlo draws]
-  D --&gt; E[R/06_analysis.R summary stats]
-  E --&gt; F[outputs/* run + analysis artifacts]
-  F --&gt; G[tools/build_presentation_artifacts.sh]
-  G --&gt; H[outputs/presentation/canonical/final_release_bundle]
-  H --&gt; I[artifacts/github_release/canonical_2026-03-08]
-  I --&gt; J[site/* + docs/* GitHub Pages]
+  B --&gt; C[R/sim/* route simulation + paired uncertainty]
+  C --&gt; D[tools/run_distribution_fu_pipeline.sh]
+  D --&gt; E[outputs/distribution/distribution_davis_fu_final]
+  E --&gt; F[tools/generate_distribution_fu_site_figures.R]
+  F --&gt; G[site/assets/transport/*]
+  G --&gt; H[site/*]
+  H --&gt; I[docs/* GitHub Pages]
 </pre>
 </div>
 <p></p></figure><p></p>

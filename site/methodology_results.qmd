@@ -5,7 +5,7 @@ title: "Methodology and Initial Results"
 ::: {.hero}
 ## Canonical Snapshot Summary
 
-This page documents the validated canonical artifact build committed on **2026-03-08** and provides the first publishable results set.
+This page documents the validated canonical artifact build committed on **2026-03-08** and the latest low-memory production refresh completed on **2026-03-09**.
 
 ::: {.cta-row}
 [View Snapshot Directory](../artifacts/github_release/canonical_2026-03-08/){.btn-pill}
@@ -63,6 +63,26 @@ Explicit unresolved `NEEDS_SOURCE_VALUE`
 | Refrigerated | Dry factory set | Stochastic | 584.07 |
 | Refrigerated | Refrigerated factory set | Stochastic | 578.91 |
 
+## Latest Production Refresh (2026-03-09) { .section-title }
+
+- Run ID: `distribution_davis_fu_final`
+- Execution style: low-memory chunked run with checkpointing (`N_REPS=20`, `CHUNK_SIZE=2`)
+- Status: validation passed; transport outputs published
+- See updated figures, tables, and downloadable data on [Transport Results](viz/transport_results.qmd)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+pt_path <- "assets/transport/distribution_davis_fu_final/data/transport_sim_powertrain_summary.csv"
+if (file.exists(pt_path)) {
+  pt <- utils::read.csv(pt_path, stringsAsFactors = FALSE)
+  pt <- pt[, c("scenario_name", "mean", "median", "p05", "p95", "n")]
+  names(pt) <- c("Scenario", "Mean CO2/1000kcal", "Median", "P05", "P95", "N")
+  knitr::kable(pt)
+}
+```
+
 ## Initial Figures { .section-title }
 
 ::: {.figure-grid}
@@ -73,6 +93,18 @@ Explicit unresolved `NEEDS_SOURCE_VALUE`
 ![Refrigerated: Delivery Time by Scenario](assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_c1_delivery_time_by_scenario.png)
 
 ![Route Animation Preview (Diesel vs BEV)](assets/transport/canonical_2026-03-08/route_animation_diesel_vs_bev_last_frame.png)
+:::
+
+## Updated Distribution Figures (2026-03-09) { .section-title }
+
+::: {.figure-grid}
+![CO2 per 1000 kcal by scenario](assets/transport/distribution_davis_fu_final/figures/co2_per_1000kcal_by_scenario.png)
+
+![Paired deltas by powertrain](assets/transport/distribution_davis_fu_final/figures/paired_delta_boxplot.png)
+
+![Trip duration by scenario](assets/transport/distribution_davis_fu_final/figures/trip_duration_by_scenario.png)
+
+![CO2 intensity vs trip duration](assets/transport/distribution_davis_fu_final/figures/co2_vs_duration_scatter.png)
 :::
 
 ## Artifact Links { .section-title }

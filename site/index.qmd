@@ -7,7 +7,7 @@ title: "Cold-Chain Freight Monte Carlo"
 
 Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.
 
-`Last canonical snapshot: 2026-03-08`  
+`Latest validated transport refresh: 2026-03-09`  
 `Validation gates: PASS`
 
 ::: {.cta-row}
@@ -19,21 +19,21 @@ Static, reproducible analysis site for transport + LCI comparisons across dry vs
 
 ::: {.kpi-grid}
 ::: {.kpi-card}
-<div class="kpi-label">Canonical Families</div>
-<div class="kpi-value">2</div>
-`analysis_core_dry`, `analysis_core_refrigerated`
+<div class="kpi-label">Latest Run ID</div>
+<div class="kpi-value">distribution_davis_fu_final</div>
+Low-memory chunked production
 :::
 
 ::: {.kpi-card}
-<div class="kpi-label">LCI Rows</div>
-<div class="kpi-value">4,160</div>
-Merged full LCA ledger rows
+<div class="kpi-label">Replicates</div>
+<div class="kpi-value">20</div>
+Validated + checkpointed (`CHUNK_SIZE=2`)
 :::
 
 ::: {.kpi-card}
-<div class="kpi-label">Tracked Release Snapshot</div>
-<div class="kpi-value">48 files</div>
-GitHub-ready artifacts committed
+<div class="kpi-label">Scenario Rows</div>
+<div class="kpi-value">80</div>
+4 scenarios x 20 replicates
 :::
 
 ::: {.kpi-card}
@@ -81,7 +81,7 @@ Compiled transport outputs and supporting visuals.
 ### Runtime Model
 
 - No live services are queried during page rendering.
-- Pages consume committed/generated artifacts from `data/derived/`, `artifacts/github_release/`, and generated site assets.
+- Pages consume committed/generated artifacts from `outputs/distribution/distribution_davis_fu_final/` and generated site assets.
 - Works for local render and GitHub Pages publishing.
 
 <span class="badge-soft">Offline-first</span>
@@ -113,12 +113,11 @@ quarto render site/
 ```{mermaid}
 flowchart LR
   A[data/inputs_local/*.csv] --> B[R/01_validate.R]
-  B --> C[R/03_model_core.R deterministic equations]
-  C --> D[R/04_sampling.R Monte Carlo draws]
-  D --> E[R/06_analysis.R summary stats]
-  E --> F[outputs/* run + analysis artifacts]
-  F --> G[tools/build_presentation_artifacts.sh]
-  G --> H[outputs/presentation/canonical/final_release_bundle]
-  H --> I[artifacts/github_release/canonical_2026-03-08]
-  I --> J[site/* + docs/* GitHub Pages]
+  B --> C[R/sim/* route simulation + paired uncertainty]
+  C --> D[tools/run_distribution_fu_pipeline.sh]
+  D --> E[outputs/distribution/distribution_davis_fu_final]
+  E --> F[tools/generate_distribution_fu_site_figures.R]
+  F --> G[site/assets/transport/*]
+  G --> H[site/*]
+  H --> I[docs/* GitHub Pages]
 ```

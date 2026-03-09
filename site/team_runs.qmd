@@ -6,12 +6,28 @@ title: "Team Runs"
 #| echo: false
 runs_path <- "site/data/runs_latest.csv"
 summ_path <- "site/data/summaries_latest.csv"
+fu_rows_path <- "site/assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv"
+fu_powertrain_path <- "site/assets/transport/distribution_davis_fu_final/data/transport_sim_powertrain_summary.csv"
 
 has_runs <- file.exists(runs_path)
 has_summ <- file.exists(summ_path)
 
 if (!has_runs || !has_summ) {
-  cat("Run `Rscript tools/refresh_site_from_bq.R --project <GCP_PROJECT> --dataset coldchain_sim --n 50` to refresh site/data CSVs.\n")
+  if (file.exists(fu_rows_path) && file.exists(fu_powertrain_path)) {
+    rows <- utils::read.csv(fu_rows_path, stringsAsFactors = FALSE)
+    pt <- utils::read.csv(fu_powertrain_path, stringsAsFactors = FALSE)
+
+    cat("## Latest Local Distribution Run (`distribution_davis_fu_final`)\n\n")
+    knitr::kable(pt)
+
+    cat("\n\n## Sample Rows (first 25)\n\n")
+    keep <- c("replicate_id", "scenario_name", "powertrain", "origin_name", "destination_name",
+              "trip_distance_miles", "trip_duration_hours", "congestion_delay_hours", "co2_per_1000kcal")
+    keep <- keep[keep %in% names(rows)]
+    knitr::kable(utils::head(rows[, keep, drop = FALSE], 25))
+  } else {
+    cat("Run `Rscript tools/refresh_site_from_bq.R --project <GCP_PROJECT> --dataset coldchain_sim --n 50` to refresh site/data CSVs.\n")
+  }
 } else {
   runs <- utils::read.csv(runs_path, stringsAsFactors = FALSE)
   summ <- utils::read.csv(summ_path, stringsAsFactors = FALSE)
