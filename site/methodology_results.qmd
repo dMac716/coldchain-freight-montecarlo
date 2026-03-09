@@ -2,6 +2,7 @@
 title: "Methodology and Scientific Results"
 ---
 
+::: {.hero}
 ## Executive Summary
 
 This release documents the distribution-stage transport LCI run `local_chunked_run` completed on **2026-03-09**.
@@ -9,9 +10,10 @@ This release documents the distribution-stage transport LCI run `local_chunked_r
 - Scope: transport/distribution stage only
 - Functional unit: `kg CO2e / 1000 kcal delivered to retail`
 - Design: matched-pair uncertainty within powertrain
-- Scenario rows: `dry_diesel`, `refrigerated_diesel`, `dry_bev`, `refrigerated_bev`
+- Scenarios: dry/refrigerated x diesel/BEV
 - Replicates: 20
-- Validation outcome: PASS
+- Validation: PASS
+:::
 
 ## Study Design
 
@@ -22,13 +24,13 @@ This release documents the distribution-stage transport LCI run `local_chunked_r
 3. `dry_bev`: Kansas origin, reefer OFF, BEV powertrain
 4. `refrigerated_bev`: Texas origin, reefer ON, BEV powertrain
 
-### Paired Uncertainty Strategy
+### Paired-Uncertainty Strategy
 
-Within each powertrain, dry/refrigerated rows share operating-condition draws (traffic, departure, ambient, stochastic delay), so paired deltas isolate refrigeration + origin effects under comparable operating states.
+Within each powertrain, dry/refrigerated rows share operating-condition draws (traffic, departure, ambient, stochastic delay). Paired deltas therefore isolate refrigeration + origin effects under matched operating environments.
 
 ### Reporting Metric
 
-For each scenario row:
+For each row:
 
 - `total_kcal_delivered = payload_kg_delivered * energy_density_kcal_per_kg`
 - `co2_per_1000kcal = total_trip_co2_kg / total_kcal_delivered * 1000`
@@ -43,21 +45,21 @@ For each scenario row:
 
 ### Packaging Assumptions Used
 
-- Dry product primary packaging: measured `0.1653 kg` per `13.6 kg` bag (`0.0121` fraction)
-- Refrigerated primary packaging: measured mean `0.029 kg/package` (27–31 g sensitivity range)
-- Secondary refrigerated cardboard packaging: kept separate as unmeasured assumption (not silently added to measured primary mass)
+- Dry primary packaging: measured `0.1653 kg` per `13.6 kg` bag (`0.0121` fraction)
+- Refrigerated primary packaging: measured mean `0.029 kg/package` (27–31 g sensitivity)
+- Secondary refrigerated cardboard: treated as separate unmeasured term (not silently added)
 
 ## Validation and QA Gates
 
-The run enforces fail-fast checks for:
+Fail-fast checks enforce:
 
 - scenario completeness (4 rows per replicate)
 - paired-uncertainty consistency within powertrain
 - dry reefer disabled (`tru_kwh=0`, `tru_gal=0`, `refrigeration_runtime_hours=0`)
-- route completion required before FU export
-- finite, positive `total_kcal_delivered`
+- route completion before FU export
+- finite positive `total_kcal_delivered`
 - finite `co2_per_1000kcal`
-- finite congestion/traffic fields
+- finite traffic metrics
 - plausible route distance/time
 
 Validation artifact:
@@ -106,7 +108,13 @@ if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
 - Figure bundle: [ZIP](assets/transport/downloads/local_chunked_run_figures.zip)
 - Animation bundle: [ZIP](assets/transport/downloads/local_chunked_run_animations.zip)
 
-## Methods Reproduction Steps
+## Codespaces Validation Lane Status
+
+- Codespaces validation (`N_REPS=1`) passed with expected paired structure and route identity checks.
+- Last confirmed chunked production checkpoint from Codespaces logs: `chunk_done id=1 reps_done=2/20`, then `chunk_start id=2`.
+- Additional live status polling was intermittently blocked by GitHub SSH/API instability from this host.
+
+## Methods Reproduction
 
 ```bash
 # 1) Merge run batches for reporting
@@ -115,12 +123,13 @@ Rscript tools/merge_mc_batches.R \
   --runs_out outputs/summaries/local_chunked_run_runs_merged.csv \
   --summary_out outputs/summaries/local_chunked_run_summary_merged.csv
 
-# 2) Build presentation/scientific graphics
+# 2) Build presentation/scientific graphics + route animations
 RUN_BEV_VALIDATION=false RUN_ADVANCED_DIAGNOSTICS=true RUN_SCIENTIFIC_GRAPHICS=true \
-RUN_BEV_GROUPING_DIAGNOSTIC=false RUN_ROUTE_ANIMATION=false \
+RUN_BEV_GROUPING_DIAGNOSTIC=false RUN_ROUTE_ANIMATION=true \
 BUNDLE_ROOT=outputs/distribution/local_chunked_run/phase2 \
 OUTDIR=outputs/presentation/transport_graphics_local_chunked_run \
 RUNS_CSV=outputs/summaries/local_chunked_run_runs_merged.csv \
+ANIM_OUTDIR=docs/assets/transport/animations/local_chunked_run \
 bash tools/regenerate_transport_graphics.sh local_chunked_run
 
 # 3) Render site

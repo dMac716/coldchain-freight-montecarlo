@@ -2,16 +2,22 @@
 title: "Transport Monte Carlo Results"
 ---
 
-This page publishes the latest full transport reporting bundle for the validated run `local_chunked_run` (2026-03-09).
+::: {.hero}
+## Transport Results Snapshot
+
+Validated run: `local_chunked_run` (2026-03-09)  
+Functional unit: `kg CO2e / 1000 kcal delivered to retail`  
+Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates
+:::
 
 ## Run Metadata
 
 - Run ID: `local_chunked_run`
-- Functional unit: `kg CO2e / 1000 kcal delivered to retail`
-- Design: paired-within-powertrain uncertainty; 4 scenarios x 20 reps
+- Scenario rows: `dry_diesel`, `refrigerated_diesel`, `dry_bev`, `refrigerated_bev`
 - Validation status: PASS
+- Reporting basis: distribution-stage transport only
 
-## Core Result Table
+## Core Scenario Results
 
 ```{r}
 #| echo: false
@@ -23,7 +29,7 @@ names(pt) <- c("Scenario", "N", "Mean", "Median", "P05", "P95")
 knitr::kable(pt, digits = 6)
 ```
 
-## Paired Delta Summary
+## Paired Delta Results
 
 ```{r}
 #| echo: false
@@ -38,7 +44,7 @@ if (all(keep %in% names(ps))) {
 }
 ```
 
-## Distribution and Uncertainty Graphics
+## Distribution and Sensitivity Diagnostics
 
 ![CO2 per 1000 kcal by scenario](../assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png)
 
@@ -52,19 +58,33 @@ if (all(keep %in% names(ps))) {
 
 ![Refrigerated split diagnostic](../assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png)
 
-## Animation Assets
+## Animation Outputs
 
-![MC animation final frame](../assets/transport/local_chunked_run/figures/transport_mc_animation_last_frame.png)
+### Monte Carlo Dynamics
 
-![MC evolution final frame](../assets/transport/local_chunked_run/figures/transport_mc_evolution_last_frame.png)
+<video controls preload="metadata" width="100%">
+  <source src="../assets/transport/local_chunked_run/figures/transport_mc_animation.mp4" type="video/mp4">
+</video>
 
-- [Transport MC animation (MP4)](../assets/transport/local_chunked_run/figures/transport_mc_animation.mp4)
-- [Transport MC animation (GIF)](../assets/transport/local_chunked_run/figures/transport_mc_animation.gif)
-- [Evolution animation (MP4)](../assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4)
-- [Evolution animation (GIF)](../assets/transport/local_chunked_run/figures/transport_mc_evolution.gif)
-- [Route animation diesel (MP4)](../assets/transport/downloads/route_animation_diesel.mp4)
-- [Route animation BEV (MP4)](../assets/transport/downloads/route_animation_bev.mp4)
-- [Route animation diesel vs BEV (MP4)](../assets/transport/downloads/route_animation_diesel_vs_bev.mp4)
+<video controls preload="metadata" width="100%">
+  <source src="../assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4" type="video/mp4">
+</video>
+
+### Route Comparison (Diesel vs BEV)
+
+<video controls preload="metadata" width="100%">
+  <source src="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+
+<video controls preload="metadata" width="100%">
+  <source src="../assets/transport/downloads/route_animation_diesel.mp4" type="video/mp4">
+</video>
+
+<video controls preload="metadata" width="100%">
+  <source src="../assets/transport/downloads/route_animation_bev.mp4" type="video/mp4">
+</video>
+
+If your browser blocks inline playback from GitHub Pages, use the direct download bundle below.
 
 ## Download Bundles
 

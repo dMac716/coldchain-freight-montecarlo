@@ -139,11 +139,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#run-metadata" id="toc-run-metadata" class="nav-link active" data-scroll-target="#run-metadata">Run Metadata</a></li>
-  <li><a href="#core-result-table" id="toc-core-result-table" class="nav-link" data-scroll-target="#core-result-table">Core Result Table</a></li>
-  <li><a href="#paired-delta-summary" id="toc-paired-delta-summary" class="nav-link" data-scroll-target="#paired-delta-summary">Paired Delta Summary</a></li>
-  <li><a href="#distribution-and-uncertainty-graphics" id="toc-distribution-and-uncertainty-graphics" class="nav-link" data-scroll-target="#distribution-and-uncertainty-graphics">Distribution and Uncertainty Graphics</a></li>
-  <li><a href="#animation-assets" id="toc-animation-assets" class="nav-link" data-scroll-target="#animation-assets">Animation Assets</a></li>
+  <li><a href="#transport-results-snapshot" id="toc-transport-results-snapshot" class="nav-link active" data-scroll-target="#transport-results-snapshot">Transport Results Snapshot</a></li>
+  <li><a href="#run-metadata" id="toc-run-metadata" class="nav-link" data-scroll-target="#run-metadata">Run Metadata</a></li>
+  <li><a href="#core-scenario-results" id="toc-core-scenario-results" class="nav-link" data-scroll-target="#core-scenario-results">Core Scenario Results</a></li>
+  <li><a href="#paired-delta-results" id="toc-paired-delta-results" class="nav-link" data-scroll-target="#paired-delta-results">Paired Delta Results</a></li>
+  <li><a href="#distribution-and-sensitivity-diagnostics" id="toc-distribution-and-sensitivity-diagnostics" class="nav-link" data-scroll-target="#distribution-and-sensitivity-diagnostics">Distribution and Sensitivity Diagnostics</a></li>
+  <li><a href="#animation-outputs" id="toc-animation-outputs" class="nav-link" data-scroll-target="#animation-outputs">Animation Outputs</a>
+  <ul class="collapse">
+  <li><a href="#monte-carlo-dynamics" id="toc-monte-carlo-dynamics" class="nav-link" data-scroll-target="#monte-carlo-dynamics">Monte Carlo Dynamics</a></li>
+  <li><a href="#route-comparison-diesel-vs-bev" id="toc-route-comparison-diesel-vs-bev" class="nav-link" data-scroll-target="#route-comparison-diesel-vs-bev">Route Comparison (Diesel vs BEV)</a></li>
+  </ul></li>
   <li><a href="#download-bundles" id="toc-download-bundles" class="nav-link" data-scroll-target="#download-bundles">Download Bundles</a></li>
   </ul>
 </nav>
@@ -170,18 +175,23 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This page publishes the latest full transport reporting bundle for the validated run <code>local_chunked_run</code> (2026-03-09).</p>
+<section id="transport-results-snapshot" class="level2 hero">
+<h2 class="anchored" data-anchor-id="transport-results-snapshot">Transport Results Snapshot</h2>
+<p>Validated run: <code>local_chunked_run</code> (2026-03-09)<br>
+Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code><br>
+Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
+</section>
 <section id="run-metadata" class="level2">
 <h2 class="anchored" data-anchor-id="run-metadata">Run Metadata</h2>
 <ul>
 <li>Run ID: <code>local_chunked_run</code></li>
-<li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code></li>
-<li>Design: paired-within-powertrain uncertainty; 4 scenarios x 20 reps</li>
+<li>Scenario rows: <code>dry_diesel</code>, <code>refrigerated_diesel</code>, <code>dry_bev</code>, <code>refrigerated_bev</code></li>
 <li>Validation status: PASS</li>
+<li>Reporting basis: distribution-stage transport only</li>
 </ul>
 </section>
-<section id="core-result-table" class="level2">
-<h2 class="anchored" data-anchor-id="core-result-table">Core Result Table</h2>
+<section id="core-scenario-results" class="level2">
+<h2 class="anchored" data-anchor-id="core-scenario-results">Core Scenario Results</h2>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -233,11 +243,11 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </section>
-<section id="paired-delta-summary" class="level2">
-<h2 class="anchored" data-anchor-id="paired-delta-summary">Paired Delta Summary</h2>
+<section id="paired-delta-results" class="level2">
+<h2 class="anchored" data-anchor-id="paired-delta-results">Paired Delta Results</h2>
 </section>
-<section id="distribution-and-uncertainty-graphics" class="level2">
-<h2 class="anchored" data-anchor-id="distribution-and-uncertainty-graphics">Distribution and Uncertainty Graphics</h2>
+<section id="distribution-and-sensitivity-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="distribution-and-sensitivity-diagnostics">Distribution and Sensitivity Diagnostics</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
@@ -275,29 +285,30 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </section>
-<section id="animation-assets" class="level2">
-<h2 class="anchored" data-anchor-id="animation-assets">Animation Assets</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/local_chunked_run/figures/transport_mc_animation_last_frame.png" class="img-fluid figure-img"></p>
-<figcaption>MC animation final frame</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/local_chunked_run/figures/transport_mc_evolution_last_frame.png" class="img-fluid figure-img"></p>
-<figcaption>MC evolution final frame</figcaption>
-</figure>
-</div>
-<ul>
-<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_animation.mp4">Transport MC animation (MP4)</a></li>
-<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_animation.gif">Transport MC animation (GIF)</a></li>
-<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4">Evolution animation (MP4)</a></li>
-<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_evolution.gif">Evolution animation (GIF)</a></li>
-<li><a href="../assets/transport/downloads/route_animation_diesel.mp4">Route animation diesel (MP4)</a></li>
-<li><a href="../assets/transport/downloads/route_animation_bev.mp4">Route animation BEV (MP4)</a></li>
-<li><a href="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4">Route animation diesel vs BEV (MP4)</a></li>
-</ul>
+<section id="animation-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="animation-outputs">Animation Outputs</h2>
+<section id="monte-carlo-dynamics" class="level3">
+<h3 class="anchored" data-anchor-id="monte-carlo-dynamics">Monte Carlo Dynamics</h3>
+<video controls="" preload="metadata" width="100%">
+<source src="../assets/transport/local_chunked_run/figures/transport_mc_animation.mp4" type="video/mp4">
+</video>
+<video controls="" preload="metadata" width="100%">
+<source src="../assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4" type="video/mp4">
+</video>
+</section>
+<section id="route-comparison-diesel-vs-bev" class="level3">
+<h3 class="anchored" data-anchor-id="route-comparison-diesel-vs-bev">Route Comparison (Diesel vs BEV)</h3>
+<video controls="" preload="metadata" width="100%">
+<source src="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+<video controls="" preload="metadata" width="100%">
+<source src="../assets/transport/downloads/route_animation_diesel.mp4" type="video/mp4">
+</video>
+<video controls="" preload="metadata" width="100%">
+<source src="../assets/transport/downloads/route_animation_bev.mp4" type="video/mp4">
+</video>
+<p>If your browser blocks inline playback from GitHub Pages, use the direct download bundle below.</p>
+</section>
 </section>
 <section id="download-bundles" class="level2">
 <h2 class="anchored" data-anchor-id="download-bundles">Download Bundles</h2>

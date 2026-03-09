@@ -3,36 +3,49 @@ title: "Route and Evolution Animations"
 format: html
 ---
 
+::: {.hero}
+## Animation Gallery
+
 Latest animation assets for `local_chunked_run`.
 
-## Download Bundles
+- All videos are linked as direct MP4 files.
+- If inline playback fails in GitHub Pages, download the animation ZIP.
+:::
 
-- [Full report bundle ZIP](assets/transport/downloads/local_chunked_run_report_bundle.zip)
+## Download Options
+
 - [Animations ZIP](assets/transport/downloads/local_chunked_run_animations.zip)
+- [Full report bundle ZIP](assets/transport/downloads/local_chunked_run_report_bundle.zip)
 
-## New Run Animations (local_chunked_run)
+## Transport MC Animations
 
-### Transport MC Animation
+### Distribution Animation
 
 <video controls preload="metadata" width="100%">
   <source src="assets/transport/local_chunked_run/figures/transport_mc_animation.mp4" type="video/mp4">
 </video>
 
-### Transport MC Evolution
+### Evolution Animation
 
 <video controls preload="metadata" width="100%">
   <source src="assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4" type="video/mp4">
 </video>
 
-## Route Animations (latest available route-track set)
+## Route Animations
+
+### Diesel Route
 
 <video controls preload="metadata" width="100%">
   <source src="assets/transport/downloads/route_animation_diesel.mp4" type="video/mp4">
 </video>
 
+### BEV Route
+
 <video controls preload="metadata" width="100%">
   <source src="assets/transport/downloads/route_animation_bev.mp4" type="video/mp4">
 </video>
+
+### Diesel vs BEV Route Comparison
 
 <video controls preload="metadata" width="100%">
   <source src="assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
