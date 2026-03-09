@@ -13,6 +13,7 @@ Static, reproducible analysis site for transport + LCI comparisons across dry vs
 ::: {.cta-row}
 [Methodology & Results](methodology_results.qmd){.btn-pill}
 [Transport Results](viz/transport_results.qmd){.btn-pill}
+[Animation Gallery](route_sim_animation.qmd){.btn-pill}
 [Scenario Explorer](viz/scenario_explorer.qmd){.btn-pill}
 :::
 :::
@@ -73,7 +74,22 @@ Compiled transport outputs and supporting visuals.
 
 [Open Transport Results](viz/transport_results.qmd)
 :::
+
+::: {.quick-card}
+### Animation Gallery
+Play route and evolution animations directly in-page with download fallback bundles.
+
+[Open Animation Gallery](route_sim_animation.qmd)
 :::
+:::
+
+## Direct Links { .section-title }
+
+If a browser cache or stale tab blocks navigation, open pages directly:
+
+- [Methodology & Results](methodology_results.qmd)
+- [Transport Results](viz/transport_results.qmd)
+- [Animation Gallery](route_sim_animation.qmd)
 
 ## Reproducibility { .section-title }
 
