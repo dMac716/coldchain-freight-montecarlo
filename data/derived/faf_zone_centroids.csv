@@ -1,90 +1,10 @@
-"zone_id","name","lat","lon"
-"019","Remainder of Alabama",32.5901,-86.7509
-"020","Alaska",49.25,-127.25
-"041","Phoenix-Mesa-Scottsdale, AZ CFS Area",34.2192,-111.625
-"042","Tucson-Nogales, AZ CFS Area",34.2192,-111.625
-"049","Remainder of Arizona",34.2192,-111.625
-"050","Arkansas",34.7336,-92.2992
-"061","Los Angeles-Long Beach, CA CFS Area",36.5341,-119.773
-"062","Sacramento-Roseville, CA CFS Area",36.5341,-119.773
-"063","San Diego-Carlsbad, CA CFS Area",36.5341,-119.773
-"064","San Jose-San Francisco-Oakland, CA CFS Area",36.5341,-119.773
-"065","Fresno-Madera, CA CFS Area",36.5341,-119.773
-"069","Remainder of California",36.5341,-119.773
-"081","Denver-Aurora, CO CFS Area",38.6777,-105.513
-"089","Remainder of Colorado",38.6777,-105.513
-"122","Miami-Fort Lauderdale-Port St. Lucie, FL CFS Area",27.8744,-81.685
-"123","Orlando-Deltona-Daytona Beach, FL CFS Area",27.8744,-81.685
-"124","Tampa-St. Petersburg-Clearwater, FL CFS Area",27.8744,-81.685
-"129","Remainder of Florida",27.8744,-81.685
-"131","Atlanta-Athens-Clarke County-Sandy Springs, GA CFS Area",32.3329,-83.3736
-"132","Savannah-Hinesville-Statesboro, GA CFS Area",32.3329,-83.3736
-"139","Remainder of Georgia",32.3329,-83.3736
-"160","Idaho",43.5648,-113.93
-"171","Chicago-Naperville, IL-IN-WI CFS Area (IL Part)",40.0495,-89.3776
-"172","St. Louis-St. Charles-Farmington, MO-IL CFS Area (IL Part)",38.3347,-92.5137
-"179","Remainder of Illinois",40.0495,-89.3776
-"181","Chicago-Naperville, IL-IN-WI CFS Area (IN Part)",40.0495,-89.3776
-"182","Indianapolis-Carmel-Muncie, IN CFS Area",40.0495,-86.0808
-"183","Fort Wayne-Huntington-Auburn, IN CFS Area",40.0495,-86.0808
-"189","Remainder of Indiana",40.0495,-86.0808
-"190","Iowa",41.9358,-93.3714
-"201","Kansas City-Overland Park-Kansas City, MO-KS CFS Area (KS Part)",38.3347,-92.5137
-"202","Wichita-Arkansas City-Winfield, KS CFS Area",38.4204,-98.1156
-"209","Remainder of Kansas",38.4204,-98.1156
-"219","Remainder of Kentucky",37.3915,-84.7674
-"221","Baton Rouge, LA CFS Area",30.6181,-92.2724
-"222","Lake Charles-Jennings, LA CFS Area",30.6181,-92.2724
-"223","New Orleans-Metairie-Hammond, LA-MS CFS Area (LA Part)",30.6181,-92.2724
-"229","Remainder of Louisiana",30.6181,-92.2724
-"230","Maine",45.6226,-68.9801
-"249","Remainder of Maryland",39.2778,-76.6459
-"261","Detroit-Warren-Ann Arbor, MI CFS Area",43.1361,-84.687
-"262","Grand Rapids-Wyoming-Muskegon, MI CFS Area",43.1361,-84.687
-"269","Remainder of Michigan",43.1361,-84.687
-"271","Minneapolis-St. Paul, MN-WI CFS Area (MN Part)",46.3943,-94.6043
-"279","Remainder of Minnesota",46.3943,-94.6043
-"280","Mississippi",32.6758,-89.8065
-"291","Kansas City-Overland Park-Kansas City, MO-KS CFS Area (MO Part)",38.3347,-92.5137
-"292","St. Louis-St. Charles-Farmington, MO-IL CFS Area (MO Part)",38.3347,-92.5137
-"299","Remainder of Missouri",38.3347,-92.5137
-"300","Montana",46.823,-109.32
-"311","Omaha-Council Bluffs-Fremont, NE-IA CFS Area (NE Part)",41.3356,-99.5898
-"319","Remainder of Nebraska",41.3356,-99.5898
-"321","Las Vegas-Henderson, NV-AZ CFS Area (NV Part)",39.1063,-116.851
-"341","New York-Newark, NY-NJ-CT-PA CFS Area (NJ Part)",43.1361,-75.1449
-"350","New Mexico",34.4764,-105.942
-"363","New York-Newark, NY-NJ-CT-PA CFS Area (NY Part)",43.1361,-75.1449
-"364","Rochester-Batavia-Seneca Falls, NY CFS Area",43.1361,-75.1449
-"369","Remainder of New York",43.1361,-75.1449
-"371","Charlotte-Concord, NC-SC CFS Area (NC Part)",35.4195,-78.4686
-"379","Remainder of North Carolina",35.4195,-78.4686
-"380","North Dakota",47.2517,-100.099
-"392","Cleveland-Akron-Canton, OH CFS Area",40.221,-82.5963
-"393","Columbus-Marion-Zanesville, OH CFS Area",40.221,-82.5963
-"394","Dayton-Springfield-Sidney, OH CFS Area",40.221,-82.5963
-"399","Remainder of Ohio",40.221,-82.5963
-"402","Tulsa-Muskogee-Bartlesville, OK CFS Area",35.5053,-97.1239
-"409","Remainder of Oklahoma",35.5053,-97.1239
-"411","Portland-Vancouver-Salem, OR-WA CFS Area (OR Part)",43.9078,-120.068
-"419","Remainder of Oregon",43.9078,-120.068
-"423","New York-Newark, NY-NJ-CT-PA CFS Area (PA Part)",43.1361,-75.1449
-"429","Remainder of Pennsylvania",40.9069,-77.45
-"459","Remainder of South Carolina",33.619,-80.5056
-"460","South Dakota",44.3365,-99.7238
-"471","Memphis-Forrest City, TN-MS-AR CFS Area (TN Part)",35.6767,-86.456
-"472","Nashville-Davidson--Murfreesboro, TN CFS Area",35.6767,-86.456
-"479","Remainder of Tennessee",35.6767,-86.456
-"484","Dallas-Fort Worth, TX-OK CFS Area (TX Part)",31.3897,-98.7857
-"486","Houston-The Woodlands, TX CFS Area",31.3897,-98.7857
-"487","Laredo, TX CFS Area",31.3897,-98.7857
-"488","San Antonio-New Braunfels, TX CFS Area",31.3897,-98.7857
-"489","Remainder of Texas",31.3897,-98.7857
-"491","Salt Lake City-Provo-Orem, UT CFS Area",39.1063,-111.33
-"513","Washington-Arlington-Alexandria, DC-VA-MD-WV CFS Area (VA Part)",38.9072,-77.0369
-"519","Remainder of Virginia",37.563,-78.2005
-"531","Seattle-Tacoma, WA CFS Area",47.4231,-119.746
-"539","Remainder of Washington",47.4231,-119.746
-"551","Milwaukee-Racine-Waukesha, WI CFS Area",44.5937,-89.9941
-"559","Remainder of Wisconsin",44.5937,-89.9941
-"560","Wyoming",43.0504,-107.256
+zone_id,name,lat,lon
+484,"Dallas-Fort Worth, TX",32.7767,-96.797
+486,"Houston, TX",29.7604,-95.3698
+487,"Laredo, TX",27.5064,-99.5075
+488,"San Antonio, TX",29.4241,-98.4936
+489,Remainder of Texas,31.0,-100.0
+201,"Kansas City, KS",39.0997,-94.5786
+202,"Wichita, KS",37.6872,-97.3301
+209,Remainder of Kansas,38.5,-98.5
+062,"Davis, CA",38.5449,-121.7405
