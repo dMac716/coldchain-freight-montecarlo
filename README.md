@@ -271,17 +271,19 @@ Methodology and initial-results page:
 - Recommended Codespaces flow:
   1. Open repo in Codespaces.
   2. Wait for `postCreate` setup to finish (R/Python/Quarto + ffmpeg/ImageMagick).
-  3. Run smoke/tests:
+  3. Run incremental checks while iterating:
+     - `bash tools/codespaces_incremental_check.sh SMOKE_LOCAL`
+  4. Run smoke/tests directly if needed:
      - `Rscript -e 'testthat::test_dir(\"tests/testthat\")'`
      - `bash tools/smoke_test.sh`
-  4. Run canonical build and validation:
+  5. Run canonical build and validation:
      - `bash tools/build_presentation_artifacts.sh --skip-runs --with-animation`
      - `bash tools/validate_final_artifacts.sh`
-  4. Duplicate selected outputs into tracked snapshot directory:
+  6. Duplicate selected outputs into tracked snapshot directory:
      - `artifacts/github_release/<snapshot_id>/`
-  5. Render pages:
+  7. Render pages:
      - `quarto render site/`
-  6. Commit changes under `site/`, `docs/`, and `artifacts/github_release/`.
+  8. Commit changes under `site/`, `docs/`, and `artifacts/github_release/`.
 
 Data-driven map uses:
 - `data/derived/faf_top_od_flows.csv`
