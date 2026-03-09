@@ -1,73 +1,45 @@
 [
   {
-    "objectID": "route_sim_animation.html",
-    "href": "route_sim_animation.html",
-    "title": "Route Simulation Animation",
+    "objectID": "methodology_results.html",
+    "href": "methodology_results.html",
+    "title": "Methodology and Initial Results",
     "section": "",
-    "text": "if (!requireNamespace(\"jsonlite\", quietly = TRUE)) {\n  cat(\"&lt;p&gt;&lt;em&gt;jsonlite package is required to render this page.&lt;/em&gt;&lt;/p&gt;\")\n} else if (!requireNamespace(\"leaflet\", quietly = TRUE)) {\n  cat(\"&lt;p&gt;&lt;em&gt;leaflet package is required to render this page.&lt;/em&gt;&lt;/p&gt;\")\n} else {\n  tracks_dir &lt;- \"outputs/sim_tracks\"\n  events_dir &lt;- \"outputs/sim_events\"\n  runs &lt;- list.files(tracks_dir, pattern = \"\\\\.csv$\", full.names = TRUE)\n  run_names &lt;- sub(\"\\\\.csv$\", \"\", basename(runs))\n  tracks &lt;- list()\n  for (i in seq_along(runs)) {\n    d &lt;- utils::read.csv(runs[[i]], stringsAsFactors = FALSE)\n    if (nrow(d) == 0) next\n    tracks[[run_names[[i]]]] &lt;- d\n  }\n\n  chargers &lt;- data.frame()\n  if (file.exists(\"data/chargers_cached.csv\")) {\n    chargers &lt;- utils::read.csv(\"data/chargers_cached.csv\", stringsAsFactors = FALSE)\n  }\n\n  payload &lt;- list(\n    runs = tracks,\n    chargers = chargers\n  )\n\n  cat('&lt;div id=\"sim-controls\" style=\"display:flex;gap:12px;align-items:center;flex-wrap:wrap\"&gt;')\n  cat('&lt;label&gt;Run &lt;select id=\"run-picker\"&gt;&lt;/select&gt;&lt;/label&gt;')\n  cat('&lt;button id=\"play-btn\"&gt;Play&lt;/button&gt;')\n  cat('&lt;label&gt;Speed &lt;input id=\"speed-range\" type=\"range\" min=\"1\" max=\"100\" value=\"20\"&gt;&lt;/label&gt;')\n  cat('&lt;span id=\"speed-label\"&gt;20x&lt;/span&gt;')\n  cat('&lt;/div&gt;')\n  cat('&lt;div style=\"display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px\"&gt;')\n  cat('&lt;div id=\"map\" style=\"height:600px\"&gt;&lt;/div&gt;')\n  cat('&lt;div id=\"counters\" style=\"font-family:monospace\"&gt;&lt;/div&gt;')\n  cat('&lt;/div&gt;')\n  cat(sprintf('&lt;script&gt;window.routeSimPayload=%s;&lt;/script&gt;', jsonlite::toJSON(payload, dataframe = \"rows\", auto_unbox = TRUE, na = \"null\")))\n  cat('&lt;script src=\"assets/route_sim_animation.js\"&gt;&lt;/script&gt;')\n}\n\n&lt;div id=\"sim-controls\" style=\"display:flex;gap:12px;align-items:center;flex-wrap:wrap\"&gt;&lt;label&gt;Run &lt;select id=\"run-picker\"&gt;&lt;/select&gt;&lt;/label&gt;&lt;button id=\"play-btn\"&gt;Play&lt;/button&gt;&lt;label&gt;Speed &lt;input id=\"speed-range\" type=\"range\" min=\"1\" max=\"100\" value=\"20\"&gt;&lt;/label&gt;&lt;span id=\"speed-label\"&gt;20x&lt;/span&gt;&lt;/div&gt;&lt;div style=\"display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px\"&gt;&lt;div id=\"map\" style=\"height:600px\"&gt;&lt;/div&gt;&lt;div id=\"counters\" style=\"font-family:monospace\"&gt;&lt;/div&gt;&lt;/div&gt;&lt;script&gt;window.routeSimPayload={\"runs\":[],\"chargers\":[]};&lt;/script&gt;&lt;script src=\"assets/route_sim_animation.js\"&gt;&lt;/script&gt;"
+    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set.\n\nView Snapshot Directory Open Transport Results"
   },
   {
-    "objectID": "repo_system_guide.html",
-    "href": "repo_system_guide.html",
-    "title": "Repository System Guide",
+    "objectID": "methodology_results.html#canonical-snapshot-summary",
+    "href": "methodology_results.html#canonical-snapshot-summary",
+    "title": "Methodology and Initial Results",
     "section": "",
-    "text": "This page embeds the full repository system guide.\n\nOpen directly: repo_system_guide.html"
+    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set.\n\nView Snapshot Directory Open Transport Results"
   },
   {
-    "objectID": "viz/transport_results.html",
-    "href": "viz/transport_results.html",
-    "title": "Transport Monte Carlo Results",
-    "section": "",
-    "text": "This page publishes slide-ready transport Monte Carlo outputs for refrigerated-vs-dry comparison."
+    "objectID": "methodology_results.html#methodology",
+    "href": "methodology_results.html#methodology",
+    "title": "Methodology and Initial Results",
+    "section": "Methodology",
+    "text": "Methodology\n\nDefine canonical runs in config/canonical_run_matrix.csv.\nGenerate paired transport Monte Carlo bundles for dry/refrigerated families.\nBuild merged LCI outputs and completeness audits.\nBuild presentation artifacts and route animations.\nValidate with tools/validate_final_artifacts.sh and emit release manifest/report.\n\n\nValidation Source\n\nartifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md"
   },
   {
-    "objectID": "viz/transport_results.html#case",
-    "href": "viz/transport_results.html#case",
-    "title": "Transport Monte Carlo Results",
-    "section": "Case",
-    "text": "Case\n\nRun ID: full_n20_fix\nFilter context: CENTRALIZED | diesel | stochastic | matched-pair analysis\nFunctional basis: kg CO2 per 1000 kcal delivered"
+    "objectID": "methodology_results.html#initial-results-core-transport-metric",
+    "href": "methodology_results.html#initial-results-core-transport-metric",
+    "title": "Methodology and Initial Results",
+    "section": "Initial Results (Core Transport Metric)",
+    "text": "Initial Results (Core Transport Metric)\nco2_per_1000kcal from canonical stochastic runs:\n\n\n\nProduct Type\nOrigin Network\nTraffic\nCO2 per 1000 kcal\n\n\n\n\nDry\nDry factory set\nStochastic\n517.93\n\n\nDry\nRefrigerated factory set\nStochastic\n518.99\n\n\nRefrigerated\nDry factory set\nStochastic\n584.07\n\n\nRefrigerated\nRefrigerated factory set\nStochastic\n578.91"
   },
   {
-    "objectID": "viz/transport_results.html#distribution-and-breakdown",
-    "href": "viz/transport_results.html#distribution-and-breakdown",
-    "title": "Transport Monte Carlo Results",
-    "section": "Distribution and Breakdown",
-    "text": "Distribution and Breakdown\n\n\n\nTransport MC distribution\n\n\n\n\n\nTransport burden breakdown"
+    "objectID": "methodology_results.html#initial-figures",
+    "href": "methodology_results.html#initial-figures",
+    "title": "Methodology and Initial Results",
+    "section": "Initial Figures",
+    "text": "Initial Figures\n\n\n\n\nDry: Transport Emissions Comparison\n\n\n\n\n\nRefrigerated: Transport Emissions Comparison\n\n\n\n\n\nRefrigerated: Delivery Time by Scenario\n\n\n\n\n\nRoute Animation Preview (Diesel vs BEV)"
   },
   {
-    "objectID": "viz/transport_results.html#trip-time-and-regime-diagnostics",
-    "href": "viz/transport_results.html#trip-time-and-regime-diagnostics",
-    "title": "Transport Monte Carlo Results",
-    "section": "Trip-Time and Regime Diagnostics",
-    "text": "Trip-Time and Regime Diagnostics\n\n\n\nTrip-time diagnostic (3-panel)\n\n\n\n\n\nRefrigerated split diagnostic"
-  },
-  {
-    "objectID": "viz/transport_results.html#evolution-animation",
-    "href": "viz/transport_results.html#evolution-animation",
-    "title": "Transport Monte Carlo Results",
-    "section": "Evolution Animation",
-    "text": "Evolution Animation\nFinal frame:\n\n\n\nMC evolution last frame\n\n\nAnimation files:\n\nMP4\nGIF"
-  },
-  {
-    "objectID": "viz/transport_results.html#source-artifacts",
-    "href": "viz/transport_results.html#source-artifacts",
-    "title": "Transport Monte Carlo Results",
-    "section": "Source Artifacts",
-    "text": "Source Artifacts\n\nFilter metadata JSON\nGeneration notes"
-  },
-  {
-    "objectID": "viz/transport_results.html#scientific-graphics-package",
-    "href": "viz/transport_results.html#scientific-graphics-package",
-    "title": "Transport Monte Carlo Results",
-    "section": "Scientific Graphics Package",
-    "text": "Scientific Graphics Package\nDistribution comparisons:\n\n\n\nDiesel vs BEV\n\n\n\n\n\nDry vs Refrigerated Product\n\n\nConvergence:\n\n\n\nConvergence: CO2 per 1000 kcal\n\n\nSensitivity:\n\n\n\nSensitivity ranked\n\n\nGeography comparison (paired-origin GSI):\n\n\n\nGSI p05/p50/p95"
-  },
-  {
-    "objectID": "viz/transport_results.html#route-animations",
-    "href": "viz/transport_results.html#route-animations",
-    "title": "Transport Monte Carlo Results",
-    "section": "Route Animations",
-    "text": "Route Animations\n\nDiesel representative: MP4\nBEV representative: MP4\nSide-by-side diesel vs BEV: MP4"
+    "objectID": "methodology_results.html#artifact-links",
+    "href": "methodology_results.html#artifact-links",
+    "title": "Methodology and Initial Results",
+    "section": "Artifact Links",
+    "text": "Artifact Links\n\nGitHub-ready snapshot: artifacts/github_release/canonical_2026-03-08/\nManifest/index/readiness: .../manifest/\nAnimations and previews: .../animations/\nMerged LCI and completeness tables: .../lci/\n\n\nRoadmap: Animation Upgrade\nCurrent route animations are mostly latitude/longitude playback with counters.\nNext iteration should add richer map context, event overlays (charging/refuel/delay windows), and stronger scenario callouts for presentation storytelling."
   },
   {
     "objectID": "index.html",
@@ -119,122 +91,10 @@
     "text": "Run `Rscript tools/refresh_site_from_bq.R --project &lt;GCP_PROJECT&gt; --dataset coldchain_sim --n 50` to refresh site/data CSVs."
   },
   {
-    "objectID": "methodology_results.html",
-    "href": "methodology_results.html",
-    "title": "Methodology and Initial Results",
-    "section": "",
-    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set.\n\nView Snapshot Directory Open Transport Results"
-  },
-  {
-    "objectID": "methodology_results.html#canonical-snapshot-summary",
-    "href": "methodology_results.html#canonical-snapshot-summary",
-    "title": "Methodology and Initial Results",
-    "section": "",
-    "text": "This page documents the validated canonical artifact build committed on 2026-03-08 and provides the first publishable results set.\n\nView Snapshot Directory Open Transport Results"
-  },
-  {
-    "objectID": "methodology_results.html#methodology",
-    "href": "methodology_results.html#methodology",
-    "title": "Methodology and Initial Results",
-    "section": "Methodology",
-    "text": "Methodology\n\nDefine canonical runs in config/canonical_run_matrix.csv.\nGenerate paired transport Monte Carlo bundles for dry/refrigerated families.\nBuild merged LCI outputs and completeness audits.\nBuild presentation artifacts and route animations.\nValidate with tools/validate_final_artifacts.sh and emit release manifest/report.\n\n\nValidation Source\n\nartifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md"
-  },
-  {
-    "objectID": "methodology_results.html#initial-results-core-transport-metric",
-    "href": "methodology_results.html#initial-results-core-transport-metric",
-    "title": "Methodology and Initial Results",
-    "section": "Initial Results (Core Transport Metric)",
-    "text": "Initial Results (Core Transport Metric)\nco2_per_1000kcal from canonical stochastic runs:\n\n\n\nProduct Type\nOrigin Network\nTraffic\nCO2 per 1000 kcal\n\n\n\n\nDry\nDry factory set\nStochastic\n517.93\n\n\nDry\nRefrigerated factory set\nStochastic\n518.99\n\n\nRefrigerated\nDry factory set\nStochastic\n584.07\n\n\nRefrigerated\nRefrigerated factory set\nStochastic\n578.91"
-  },
-  {
-    "objectID": "methodology_results.html#initial-figures",
-    "href": "methodology_results.html#initial-figures",
-    "title": "Methodology and Initial Results",
-    "section": "Initial Figures",
-    "text": "Initial Figures\n\n\n\n\nDry: Transport Emissions Comparison\n\n\n\n\n\nRefrigerated: Transport Emissions Comparison\n\n\n\n\n\nRefrigerated: Delivery Time by Scenario\n\n\n\n\n\nRoute Animation Preview (Diesel vs BEV)"
-  },
-  {
-    "objectID": "methodology_results.html#artifact-links",
-    "href": "methodology_results.html#artifact-links",
-    "title": "Methodology and Initial Results",
-    "section": "Artifact Links",
-    "text": "Artifact Links\n\nGitHub-ready snapshot: artifacts/github_release/canonical_2026-03-08/\nManifest/index/readiness: .../manifest/\nAnimations and previews: .../animations/\nMerged LCI and completeness tables: .../lci/\n\n\nRoadmap: Animation Upgrade\nCurrent route animations are mostly latitude/longitude playback with counters.\nNext iteration should add richer map context, event overlays (charging/refuel/delay windows), and stronger scenario callouts for presentation storytelling."
-  },
-  {
     "objectID": "viz/scenario_explorer.html",
     "href": "viz/scenario_explorer.html",
     "title": "Scenario Explorer",
     "section": "",
-    "text": "Scenario: ALLAGGREGATECENTRALIZEDREGIONALIZEDSMOKE_LOCALPowertrain: ALLNAbevdieselTrailer: ALLNAdry_vanrefrigerated"
-  },
-  {
-    "objectID": "viz/scenario_explorer.html#proposal-comparison",
-    "href": "viz/scenario_explorer.html#proposal-comparison",
-    "title": "Scenario Explorer",
-    "section": "Proposal Comparison",
-    "text": "Proposal Comparison\n\n\n   scenario_id spatial_structure powertrain_config dry_mean    dry_p05  dry_p50\n1  CENTRALIZED       CENTRALIZED  BEV_TRU_ELECTRIC 2.908052  0.2682992 2.767532\n2  CENTRALIZED       CENTRALIZED DIESEL_TRU_DIESEL 5.040984  1.5156534 4.697491\n3 REGIONALIZED      REGIONALIZED  BEV_TRU_ELECTRIC 1.894516 -0.2406561 1.843734\n4 REGIONALIZED      REGIONALIZED DIESEL_TRU_DIESEL 3.281429  0.3368415 3.018032\n   dry_p95 refrigerated_mean refrigerated_p05 refrigerated_p50 refrigerated_p95\n1 6.017539          4.842146        1.5716153         4.454548         9.036534\n2 9.802812          8.221402        2.3103125         7.728996        15.890469\n3 4.055724          3.182909        0.3841745         2.937333         6.506599\n4 6.608894          5.381540        1.6331058         5.025557        10.261130\n  delta_mean delta_p05 delta_p50 delta_p95 p_refrigerated_gt_dry\n1   1.936617 0.6831096  1.761497  3.697971                     1\n2   3.299028 1.0772919  3.023491  6.433900                     1\n3   1.264495 0.4091887  1.139372  2.502995                     1\n4   2.186564 0.7708846  2.009891  4.228487                     1"
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "bundle_root: /Users/dMac/Repos/coldchain-freight-montecarlo/outputs/run_bundle/full_n20_fix\npair summaries scanned: 200\nvalidation_root: /Users/dMac/Repos/coldchain-freight-montecarlo/outputs/validation/full_n20_fix\n\n\n\n\n\nscenario = CENTRALIZED\npowertrain = diesel\ntraffic_mode = stochastic\nstatus in {OK, blank, missing/NA}\norigin_network in {dry_factory_set, refrigerated_factory_set}\nmatched pair_id enforced (both origins required per pair)\nfunctional_unit_basis = per_1000kcal\n\n\n\n\n\ncandidate valid rows before case selection: 400\nrows in selected case before pair matching: 40\nrows after matched-pair enforcement: 40\nmatched pairs used: 20\n\n\n\n\n\nGraphic 1 metric: co2_per_1000kcal (kg CO2 / 1000 kcal delivered)\nGraphic 2 basis: diesel gal / 1000 kcal\nGraphic 2 uses propulsion and TRU components normalized per 1000 kcal from run-level values\n\n\n\n\n\nPaired-comparison logic preserved using pair_id matching.\nNo cross-scenario/powertrain mixing inside the selected case.\nFor Graphic 2, direct CO2 propulsion/TRU split was not used when not cleanly populated; direct fuel/energy components were used per FU basis.\n\n\n\n\n\nGIF created: yes\nMP4 created: yes\nLast frame PNG exported for static-slide fallback.\n\n\n\n\n\nAdded transport_trip_time_diagnostic.png/.svg (3-panel story figure).\nAdded refrigerated_split_diagnostic.png/.svg (compact cause check).\nAdded transport_mc_evolution.mp4/.gif and final frame PNG emphasizing convergence and refrigerated regime emergence.\n\n\n\n\n\nAdded transport_trip_time_diagnostic.png/.svg (3-panel story figure).\nAdded refrigerated_split_diagnostic.png/.svg (compact cause check).\nAdded transport_mc_evolution.mp4/.gif and final frame PNG emphasizing convergence and refrigerated regime emergence."
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#sources-used",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#sources-used",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "bundle_root: /Users/dMac/Repos/coldchain-freight-montecarlo/outputs/run_bundle/full_n20_fix\npair summaries scanned: 200\nvalidation_root: /Users/dMac/Repos/coldchain-freight-montecarlo/outputs/validation/full_n20_fix"
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#filter-logic-applied",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#filter-logic-applied",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "scenario = CENTRALIZED\npowertrain = diesel\ntraffic_mode = stochastic\nstatus in {OK, blank, missing/NA}\norigin_network in {dry_factory_set, refrigerated_factory_set}\nmatched pair_id enforced (both origins required per pair)\nfunctional_unit_basis = per_1000kcal"
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#rows-inout",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#rows-inout",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "candidate valid rows before case selection: 400\nrows in selected case before pair matching: 40\nrows after matched-pair enforcement: 40\nmatched pairs used: 20"
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#metric-and-units",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#metric-and-units",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "Graphic 1 metric: co2_per_1000kcal (kg CO2 / 1000 kcal delivered)\nGraphic 2 basis: diesel gal / 1000 kcal\nGraphic 2 uses propulsion and TRU components normalized per 1000 kcal from run-level values"
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#pairing-and-assumptions",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#pairing-and-assumptions",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "Paired-comparison logic preserved using pair_id matching.\nNo cross-scenario/powertrain mixing inside the selected case.\nFor Graphic 2, direct CO2 propulsion/TRU split was not used when not cleanly populated; direct fuel/energy components were used per FU basis."
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#animation",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#animation",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "GIF created: yes\nMP4 created: yes\nLast frame PNG exported for static-slide fallback."
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#advanced-diagnostics",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#advanced-diagnostics",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "Added transport_trip_time_diagnostic.png/.svg (3-panel story figure).\nAdded refrigerated_split_diagnostic.png/.svg (compact cause check).\nAdded transport_mc_evolution.mp4/.gif and final frame PNG emphasizing convergence and refrigerated regime emergence."
-  },
-  {
-    "objectID": "assets/transport/full_n20_fix/transport_graphics_README.html#advanced-diagnostics-1",
-    "href": "assets/transport/full_n20_fix/transport_graphics_README.html#advanced-diagnostics-1",
-    "title": "Transport Presentation Graphics Notes",
-    "section": "",
-    "text": "Added transport_trip_time_diagnostic.png/.svg (3-panel story figure).\nAdded refrigerated_split_diagnostic.png/.svg (compact cause check).\nAdded transport_mc_evolution.mp4/.gif and final frame PNG emphasizing convergence and refrigerated regime emergence."
+    "text": "Scenario: ALLAGGREGATECENTRALIZEDREGIONALIZEDPowertrain: ALLNAbevdieselTrailer: ALLNAdry_vanrefrigerated\n\n\n\n\n\nScenario\n\n\nVariant\n\n\nPowertrain\n\n\nMetric\n\n\nMean\n\n\nVar\n\n\nP05\n\n\nP50\n\n\nP95\n\n\n\n\n\n\nAGGREGATE\n\n\naggregate\n\n\nNA\n\n\ndiff_gco2\n\n\n1.63909\n\n\n0.713316\n\n\n0.345154\n\n\n1.74594\n\n\n4.0139\n\n\n\n\nAGGREGATE\n\n\naggregate\n\n\nNA\n\n\ndiff_gco2_gt_zero\n\n\n0.958445\n\n\nNA\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nAGGREGATE\n\n\naggregate\n\n\nNA\n\n\ngco2_dry\n\n\n2.90471\n\n\n2.01885\n\n\n0.163914\n\n\n2.75951\n\n\n5.91145\n\n\n\n\nAGGREGATE\n\n\naggregate\n\n\nNA\n\n\ngco2_reefer\n\n\n4.5438\n\n\n4.96516\n\n\n1.48947\n\n\n4.24092\n\n\n8.76023\n\n\n\n\nAGGREGATE\n\n\naggregate\n\n\nNA\n\n\nratio\n\n\n1.56675\n\n\n0.00937741\n\n\n1.41187\n\n\n1.56125\n\n\n1.73304\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.37153\n\n\n0.503178\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.63207\n\n\n0.707097\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.63909\n\n\n0.713316\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.37153\n\n\n0.503178\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n3.10813\n\n\n2.6365\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.64997\n\n\n0.752119\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.65937\n\n\n0.68705\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.42089\n\n\n1.35637\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.90805\n\n\n2.07704\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.90471\n\n\n2.01885\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.42089\n\n\n1.35637\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n4.94294\n\n\n6.12847\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.90541\n\n\n2.01791\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.92907\n\n\n1.82957\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n3.79242\n\n\n3.39583\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n4.54012\n\n\n5.02303\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n4.5438\n\n\n4.96516\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n3.79242\n\n\n3.39583\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n8.05107\n\n\n16.3028\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n4.55538\n\n\n5.06561\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n4.58844\n\n\n4.58352\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.56919\n\n\n0.0105401\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.566\n\n\n0.00977837\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.56675\n\n\n0.00937744\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.56919\n\n\n0.0105401\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.63078\n\n\n0.0103699\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.56636\n\n\n0.00913175\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.56919\n\n\n0.0105401\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ndiff_gco2\n\n\n1.93662\n\n\n0.954744\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ndiff_gco2\n\n\n1.90471\n\n\n0.968715\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ndiff_gco2\n\n\n1.5402\n\n\n0.594139\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ndiff_gco2\n\n\n3.1212\n\n\n2.65745\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ndiff_gco2\n\n\n1.88157\n\n\n0.895237\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_dry\n\n\n2.90553\n\n\n1.99053\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_dry\n\n\n2.89493\n\n\n2.0687\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_dry\n\n\n2.40962\n\n\n1.46383\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_dry\n\n\n5.00623\n\n\n6.36986\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_dry\n\n\n2.8675\n\n\n1.92311\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_reefer\n\n\n4.84215\n\n\n5.53293\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_reefer\n\n\n4.79964\n\n\n5.70101\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_reefer\n\n\n3.94982\n\n\n3.81073\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_reefer\n\n\n8.12744\n\n\n16.7259\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_reefer\n\n\n4.74907\n\n\n5.27014\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\nratio\n\n\n1.6681\n\n\n0.0105586\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\nratio\n\n\n1.66047\n\n\n0.0107446\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\nratio\n\n\n1.64601\n\n\n0.0109697\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\nratio\n\n\n1.62684\n\n\n0.0106532\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_BEV_REEFER\n\n\nbev\n\n\nratio\n\n\n1.65989\n\n\n0.0110084\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ndiff_gco2\n\n\n2.82785\n\n\n2.08687\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ndiff_gco2\n\n\n2.82226\n\n\n2.06305\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ndiff_gco2\n\n\n2.83007\n\n\n2.13894\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ndiff_gco2\n\n\n3.15708\n\n\n2.5121\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ndiff_gco2\n\n\n2.79529\n\n\n2.09643\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_dry\n\n\n5.04098\n\n\n6.09237\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.99405\n\n\n5.96038\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_dry\n\n\n5.10352\n\n\n6.06911\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.99576\n\n\n5.84798\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.91578\n\n\n5.89826\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_reefer\n\n\n7.86883\n\n\n14.8274\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_reefer\n\n\n7.81631\n\n\n14.5348\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_reefer\n\n\n7.93359\n\n\n14.8771\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_reefer\n\n\n8.15284\n\n\n15.5103\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_reefer\n\n\n7.71106\n\n\n14.5386\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\nratio\n\n\n1.56649\n\n\n0.00850346\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\nratio\n\n\n1.56905\n\n\n0.00977595\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\nratio\n\n\n1.55689\n\n\n0.0101013\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\nratio\n\n\n1.6366\n\n\n0.0108598\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_DRY\n\n\ndiesel\n\n\nratio\n\n\n1.57079\n\n\n0.00967331\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ndiff_gco2\n\n\n2.75144\n\n\n2.10105\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ndiff_gco2\n\n\n2.80076\n\n\n2.12185\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ndiff_gco2\n\n\n3.17606\n\n\n2.24969\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ndiff_gco2\n\n\n3.1058\n\n\n2.57894\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ndiff_gco2\n\n\n3.15093\n\n\n2.60524\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.92237\n\n\n5.84592\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.96748\n\n\n6.01384\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_dry\n\n\n5.03584\n\n\n5.27546\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.91287\n\n\n5.85537\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_dry\n\n\n4.98648\n\n\n5.95569\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_reefer\n\n\n7.67382\n\n\n14.4421\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_reefer\n\n\n7.76825\n\n\n14.7752\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_reefer\n\n\n8.2119\n\n\n13.9744\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_reefer\n\n\n8.01867\n\n\n15.7252\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_reefer\n\n\n8.13741\n\n\n15.9299\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\nratio\n\n\n1.56047\n\n\n0.00921769\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\nratio\n\n\n1.56644\n\n\n0.00969412\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\nratio\n\n\n1.63434\n\n\n0.0100554\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\nratio\n\n\n1.634\n\n\n0.0104132\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nCENTRALIZED\n\n\nCENTRALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\nratio\n\n\n1.63447\n\n\n0.0109259\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_DRY\n\n\nbev\n\n\ndiff_gco2\n\n\n1.80051\n\n\n0.462419\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_dry\n\n\n2.86486\n\n\n1.00657\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_DRY\n\n\nbev\n\n\ngco2_reefer\n\n\n4.66538\n\n\n2.68487\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_DRY\n\n\nbev\n\n\nratio\n\n\n1.63078\n\n\n0.0103699\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_REEFER\n\n\nbev\n\n\ndiff_gco2\n\n\n1.80237\n\n\n0.464528\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_dry\n\n\n2.89012\n\n\n1.04409\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_REEFER\n\n\nbev\n\n\ngco2_reefer\n\n\n4.6925\n\n\n2.74481\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_BEV_REEFER\n\n\nbev\n\n\nratio\n\n\n1.62684\n\n\n0.0106532\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ndiff_gco2\n\n\n1.82733\n\n\n0.436993\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_dry\n\n\n2.88962\n\n\n0.955969\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_DRY\n\n\ndiesel\n\n\ngco2_reefer\n\n\n4.71695\n\n\n2.53137\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_DRY\n\n\ndiesel\n\n\nratio\n\n\n1.6366\n\n\n0.0108598\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ndiff_gco2\n\n\n1.80382\n\n\n0.456111\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_dry\n\n\n2.85464\n\n\n0.969576\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\ngco2_reefer\n\n\n4.65845\n\n\n2.61146\n\n\nNA\n\n\nNA\n\n\nNA\n\n\n\n\nREGIONALIZED\n\n\nREGIONALIZED_DIESEL_REEFER\n\n\ndiesel\n\n\nratio\n\n\n1.634\n\n\n0.0104132\n\n\nNA\n\n\nNA\n\n\nNA"
   }
 ]
