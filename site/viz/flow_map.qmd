@@ -76,7 +76,7 @@ edges$class_name <- paste0(
   "rt-", edges$rank_tons, " ",
   "rm-", edges$rank_tmiles
 )
-pal <- colorFactor(c("#1b9e77", "#d95f02"), domain = unique(edges$scenario_id))
+pal <- colorFactor(c("#d95f02", "#1b9e77"), domain = c("Texas", "Kansas"))
 
 # Approximate great-circle arc between OD centroids for geographic-looking paths.
 great_circle_points <- function(lat1, lon1, lat2, lon2, n = 24L) {
@@ -107,7 +107,7 @@ great_circle_points <- function(lat1, lon1, lat2, lon2, n = 24L) {
 }
 
 map <- leaflet() |>
-  addProviderTiles("OpenStreetMap.Mapnik")
+  addProviderTiles("Esri.WorldStreetMap")
 
 for (i in seq_len(nrow(edges))) {
   e <- edges[i, , drop = FALSE]
@@ -129,28 +129,7 @@ for (i in seq_len(nrow(edges))) {
 }
 
 map <- map |>
-  addLegend("bottomright", pal = pal, values = unique(edges$scenario_id), title = "Scenario", opacity = 1)
-
-google_maps_api_key <- trimws(Sys.getenv("GOOGLE_MAPS_API_KEY", unset = ""))
-if (nzchar(google_maps_api_key)) {
-  map <- map |>
-    prependContent(
-      tags$script(src = paste0("https://maps.googleapis.com/maps/api/js?key=", google_maps_api_key)),
-      tags$script(src = "https://unpkg.com/leaflet.gridlayer.googlemutant@0.14.1/Leaflet.GoogleMutant.js")
-    ) |>
-    onRender(
-      "function(el, x) {
-         var m = this;
-         if (!(window.google && L && L.gridLayer && L.gridLayer.googleMutant)) return;
-         var osm = [];
-         m.eachLayer(function(layer) {
-           if (layer && layer._url && layer._url.indexOf('openstreetmap') !== -1) osm.push(layer);
-         });
-         osm.forEach(function(layer) { m.removeLayer(layer); });
-         L.gridLayer.googleMutant({ type: 'roadmap' }).addTo(m);
-       }"
-    )
-}
+  addLegend("bottomright", pal = pal, values = c("Texas", "Kansas"), title = "Origin State", opacity = 1)
 
 map
 ```
