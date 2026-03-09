@@ -1,0 +1,83 @@
+---
+title: "Transport Monte Carlo Results"
+---
+
+This page publishes the latest full transport reporting bundle for the validated run `local_chunked_run` (2026-03-09).
+
+## Run Metadata
+
+- Run ID: `local_chunked_run`
+- Functional unit: `kg CO2e / 1000 kcal delivered to retail`
+- Design: paired-within-powertrain uncertainty; 4 scenarios x 20 reps
+- Validation status: PASS
+
+## Core Result Table
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+pt <- utils::read.csv("../assets/transport/local_chunked_run/data/transport_sim_powertrain_summary.csv", stringsAsFactors = FALSE)
+pt <- pt[, c("scenario_name", "n", "mean", "median", "p05", "p95")]
+names(pt) <- c("Scenario", "N", "Mean", "Median", "P05", "P95")
+knitr::kable(pt, digits = 6)
+```
+
+## Paired Delta Summary
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+ps <- utils::read.csv("../assets/transport/local_chunked_run/data/transport_sim_paired_summary.csv", stringsAsFactors = FALSE)
+keep <- c("powertrain", "n", "mean", "median", "p05", "p95")
+if (all(keep %in% names(ps))) {
+  out <- unique(ps[, keep])
+  names(out) <- c("Powertrain", "N", "Mean Delta", "Median Delta", "P05", "P95")
+  knitr::kable(out, digits = 6)
+}
+```
+
+## Distribution and Uncertainty Graphics
+
+![CO2 per 1000 kcal by scenario](../assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png)
+
+![Paired deltas by powertrain](../assets/transport/local_chunked_run/figures/paired_delta_boxplot.png)
+
+![Trip duration by scenario](../assets/transport/local_chunked_run/figures/trip_duration_by_scenario.png)
+
+![CO2 intensity vs trip duration](../assets/transport/local_chunked_run/figures/co2_vs_duration_scatter.png)
+
+![Trip-time diagnostic](../assets/transport/local_chunked_run/figures/transport_trip_time_diagnostic.png)
+
+![Refrigerated split diagnostic](../assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png)
+
+## Animation Assets
+
+![MC animation final frame](../assets/transport/local_chunked_run/figures/transport_mc_animation_last_frame.png)
+
+![MC evolution final frame](../assets/transport/local_chunked_run/figures/transport_mc_evolution_last_frame.png)
+
+- [Transport MC animation (MP4)](../assets/transport/local_chunked_run/figures/transport_mc_animation.mp4)
+- [Transport MC animation (GIF)](../assets/transport/local_chunked_run/figures/transport_mc_animation.gif)
+- [Evolution animation (MP4)](../assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4)
+- [Evolution animation (GIF)](../assets/transport/local_chunked_run/figures/transport_mc_evolution.gif)
+- [Route animation diesel (MP4)](../assets/transport/downloads/route_animation_diesel.mp4)
+- [Route animation BEV (MP4)](../assets/transport/downloads/route_animation_bev.mp4)
+- [Route animation diesel vs BEV (MP4)](../assets/transport/downloads/route_animation_diesel_vs_bev.mp4)
+
+## Download Bundles
+
+- [Full report bundle ZIP](../assets/transport/downloads/local_chunked_run_report_bundle.zip)
+- [Data ZIP](../assets/transport/downloads/local_chunked_run_data.zip)
+- [Figures ZIP](../assets/transport/downloads/local_chunked_run_figures.zip)
+- [Animations ZIP](../assets/transport/downloads/local_chunked_run_animations.zip)
+
+Raw files:
+
+- [Rows CSV](../assets/transport/local_chunked_run/data/transport_sim_rows.csv)
+- [Paired summary CSV](../assets/transport/local_chunked_run/data/transport_sim_paired_summary.csv)
+- [Powertrain summary CSV](../assets/transport/local_chunked_run/data/transport_sim_powertrain_summary.csv)
+- [Graphics input CSV](../assets/transport/local_chunked_run/data/transport_sim_graphics_inputs.csv)
+- [Validation report](../assets/transport/local_chunked_run/data/transport_sim_validation_report.txt)
+- [Merged runs CSV](../assets/transport/local_chunked_run/data/local_chunked_run_runs_merged.csv)

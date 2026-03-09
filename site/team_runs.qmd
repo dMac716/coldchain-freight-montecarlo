@@ -6,8 +6,8 @@ title: "Team Runs"
 #| echo: false
 runs_path <- "site/data/runs_latest.csv"
 summ_path <- "site/data/summaries_latest.csv"
-fu_rows_path <- "site/assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv"
-fu_powertrain_path <- "site/assets/transport/distribution_davis_fu_final/data/transport_sim_powertrain_summary.csv"
+fu_rows_path <- "site/assets/transport/local_chunked_run/data/transport_sim_rows.csv"
+fu_powertrain_path <- "site/assets/transport/local_chunked_run/data/transport_sim_powertrain_summary.csv"
 
 has_runs <- file.exists(runs_path)
 has_summ <- file.exists(summ_path)
@@ -17,7 +17,7 @@ if (!has_runs || !has_summ) {
     rows <- utils::read.csv(fu_rows_path, stringsAsFactors = FALSE)
     pt <- utils::read.csv(fu_powertrain_path, stringsAsFactors = FALSE)
 
-    cat("## Latest Local Distribution Run (`distribution_davis_fu_final`)\n\n")
+    cat("## Latest Local Distribution Run (`local_chunked_run`)\n\n")
     knitr::kable(pt)
 
     cat("\n\n## Sample Rows (first 25)\n\n")

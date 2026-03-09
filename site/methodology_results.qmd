@@ -1,122 +1,128 @@
 ---
-title: "Methodology and Initial Results"
+title: "Methodology and Scientific Results"
 ---
 
-::: {.hero}
-## Canonical Snapshot Summary
+## Executive Summary
 
-This page documents the validated canonical artifact build committed on **2026-03-08** and the latest low-memory production refresh completed on **2026-03-09**.
+This release documents the distribution-stage transport LCI run `local_chunked_run` completed on **2026-03-09**.
 
-::: {.cta-row}
-[View Snapshot Directory](../artifacts/github_release/canonical_2026-03-08/){.btn-pill}
-[Open Transport Results](viz/transport_results.qmd){.btn-pill}
-:::
-:::
+- Scope: transport/distribution stage only
+- Functional unit: `kg CO2e / 1000 kcal delivered to retail`
+- Design: matched-pair uncertainty within powertrain
+- Scenario rows: `dry_diesel`, `refrigerated_diesel`, `dry_bev`, `refrigerated_bev`
+- Replicates: 20
+- Validation outcome: PASS
 
-::: {.kpi-grid}
-::: {.kpi-card}
-<div class="kpi-label">Validation</div>
-<div class="kpi-value">PASS</div>
-Pair integrity, figure quality, and merged LCI files
-:::
+## Study Design
 
-::: {.kpi-card}
-<div class="kpi-label">LCI Total Rows</div>
-<div class="kpi-value">4160</div>
-From merged full-LCA ledger
-:::
+### Scenario Structure
 
-::: {.kpi-card}
-<div class="kpi-label">Placeholder Rows</div>
-<div class="kpi-value">2240</div>
-Explicit unresolved `NEEDS_SOURCE_VALUE`
-:::
+1. `dry_diesel`: Kansas origin, reefer OFF, diesel powertrain
+2. `refrigerated_diesel`: Texas origin, reefer ON, diesel powertrain
+3. `dry_bev`: Kansas origin, reefer OFF, BEV powertrain
+4. `refrigerated_bev`: Texas origin, reefer ON, BEV powertrain
 
-::: {.kpi-card}
-<div class="kpi-label">Snapshot Path</div>
-<div class="kpi-value">Git Tracked</div>
-`artifacts/github_release/canonical_2026-03-08/`
-:::
-:::
+### Paired Uncertainty Strategy
 
-## Methodology { .section-title }
+Within each powertrain, dry/refrigerated rows share operating-condition draws (traffic, departure, ambient, stochastic delay), so paired deltas isolate refrigeration + origin effects under comparable operating states.
 
-1. Define canonical runs in `config/canonical_run_matrix.csv`.
-2. Generate paired transport Monte Carlo bundles for dry/refrigerated families.
-3. Build merged LCI outputs and completeness audits.
-4. Build presentation artifacts and route animations.
-5. Validate with `tools/validate_final_artifacts.sh` and emit release manifest/report.
+### Reporting Metric
 
-::: {.panel}
-### Validation Source
-- `artifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md`
-:::
+For each scenario row:
 
-## Initial Results (Core Transport Metric) { .section-title }
+- `total_kcal_delivered = payload_kg_delivered * energy_density_kcal_per_kg`
+- `co2_per_1000kcal = total_trip_co2_kg / total_kcal_delivered * 1000`
 
-`co2_per_1000kcal` from canonical stochastic runs:
+## Input Data and Assumptions
 
-| Product Type | Origin Network | Traffic | CO2 per 1000 kcal |
-|---|---|---:|---:|
-| Dry | Dry factory set | Stochastic | 517.93 |
-| Dry | Refrigerated factory set | Stochastic | 518.99 |
-| Refrigerated | Dry factory set | Stochastic | 584.07 |
-| Refrigerated | Refrigerated factory set | Stochastic | 578.91 |
+### Primary Inputs
 
-## Latest Production Refresh (2026-03-09) { .section-title }
+- Route/run outputs from `outputs/distribution/local_chunked_run/phase2/*`
+- Functional-unit transformed rows in `transport_sim_rows.csv`
+- Scenario and product assumptions from `data/inputs_local/*.csv`
 
-- Run ID: `distribution_davis_fu_final`
-- Execution style: low-memory chunked run with checkpointing (`N_REPS=20`, `CHUNK_SIZE=2`)
-- Status: validation passed; transport outputs published
-- See updated figures, tables, and downloadable data on [Transport Results](viz/transport_results.qmd)
+### Packaging Assumptions Used
+
+- Dry product primary packaging: measured `0.1653 kg` per `13.6 kg` bag (`0.0121` fraction)
+- Refrigerated primary packaging: measured mean `0.029 kg/package` (27–31 g sensitivity range)
+- Secondary refrigerated cardboard packaging: kept separate as unmeasured assumption (not silently added to measured primary mass)
+
+## Validation and QA Gates
+
+The run enforces fail-fast checks for:
+
+- scenario completeness (4 rows per replicate)
+- paired-uncertainty consistency within powertrain
+- dry reefer disabled (`tru_kwh=0`, `tru_gal=0`, `refrigeration_runtime_hours=0`)
+- route completion required before FU export
+- finite, positive `total_kcal_delivered`
+- finite `co2_per_1000kcal`
+- finite congestion/traffic fields
+- plausible route distance/time
+
+Validation artifact:
+
+- [Validation report](assets/transport/local_chunked_run/data/transport_sim_validation_report.txt)
+
+## Results
+
+### Scenario-Level Summary
 
 ```{r}
 #| echo: false
-#| warning: false
-#| message: false
-pt_path <- "assets/transport/distribution_davis_fu_final/data/transport_sim_powertrain_summary.csv"
-if (file.exists(pt_path)) {
-  pt <- utils::read.csv(pt_path, stringsAsFactors = FALSE)
-  pt <- pt[, c("scenario_name", "mean", "median", "p05", "p95", "n")]
-  names(pt) <- c("Scenario", "Mean CO2/1000kcal", "Median", "P05", "P95", "N")
-  knitr::kable(pt)
+pt <- utils::read.csv("assets/transport/local_chunked_run/data/transport_sim_powertrain_summary.csv", stringsAsFactors = FALSE)
+pt <- pt[, c("scenario_name", "n", "mean", "median", "p05", "p95")]
+names(pt) <- c("Scenario", "N", "Mean CO2/1000kcal", "Median", "P05", "P95")
+knitr::kable(pt, digits = 6)
+```
+
+### Paired Delta Summary
+
+```{r}
+#| echo: false
+ps <- utils::read.csv("assets/transport/local_chunked_run/data/transport_sim_paired_summary.csv", stringsAsFactors = FALSE)
+if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
+  out <- unique(ps[, c("powertrain", "n", "mean", "median", "p05", "p95")])
+  names(out) <- c("Powertrain", "N", "Mean Delta", "Median Delta", "P05", "P95")
+  knitr::kable(out, digits = 6)
 }
 ```
 
-## Initial Figures { .section-title }
+### Diagnostic Figures
 
-::: {.figure-grid}
-![Dry: Transport Emissions Comparison](assets/transport/canonical_2026-03-08/analysis_core_dry_fig_a_transport_emissions_comparison.png)
+![CO2 per 1000 kcal by scenario](assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png)
 
-![Refrigerated: Transport Emissions Comparison](assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_a_transport_emissions_comparison.png)
+![Paired delta distributions](assets/transport/local_chunked_run/figures/paired_delta_boxplot.png)
 
-![Refrigerated: Delivery Time by Scenario](assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_c1_delivery_time_by_scenario.png)
+![Trip-time diagnostic](assets/transport/local_chunked_run/figures/transport_trip_time_diagnostic.png)
 
-![Route Animation Preview (Diesel vs BEV)](assets/transport/canonical_2026-03-08/route_animation_diesel_vs_bev_last_frame.png)
-:::
+![Refrigerated split diagnostic](assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png)
 
-## Updated Distribution Figures (2026-03-09) { .section-title }
+## Scientific Package and Reproducibility
 
-::: {.figure-grid}
-![CO2 per 1000 kcal by scenario](assets/transport/distribution_davis_fu_final/figures/co2_per_1000kcal_by_scenario.png)
+- Scientific graphics package: `docs/assets/transport/scientific/local_chunked_run/`
+- Full report bundle: [ZIP](assets/transport/downloads/local_chunked_run_report_bundle.zip)
+- Data-only bundle: [ZIP](assets/transport/downloads/local_chunked_run_data.zip)
+- Figure bundle: [ZIP](assets/transport/downloads/local_chunked_run_figures.zip)
+- Animation bundle: [ZIP](assets/transport/downloads/local_chunked_run_animations.zip)
 
-![Paired deltas by powertrain](assets/transport/distribution_davis_fu_final/figures/paired_delta_boxplot.png)
+## Methods Reproduction Steps
 
-![Trip duration by scenario](assets/transport/distribution_davis_fu_final/figures/trip_duration_by_scenario.png)
+```bash
+# 1) Merge run batches for reporting
+Rscript tools/merge_mc_batches.R \
+  --bundle_roots outputs/distribution/local_chunked_run/phase2/diesel,outputs/distribution/local_chunked_run/phase2/bev \
+  --runs_out outputs/summaries/local_chunked_run_runs_merged.csv \
+  --summary_out outputs/summaries/local_chunked_run_summary_merged.csv
 
-![CO2 intensity vs trip duration](assets/transport/distribution_davis_fu_final/figures/co2_vs_duration_scatter.png)
-:::
+# 2) Build presentation/scientific graphics
+RUN_BEV_VALIDATION=false RUN_ADVANCED_DIAGNOSTICS=true RUN_SCIENTIFIC_GRAPHICS=true \
+RUN_BEV_GROUPING_DIAGNOSTIC=false RUN_ROUTE_ANIMATION=false \
+BUNDLE_ROOT=outputs/distribution/local_chunked_run/phase2 \
+OUTDIR=outputs/presentation/transport_graphics_local_chunked_run \
+RUNS_CSV=outputs/summaries/local_chunked_run_runs_merged.csv \
+bash tools/regenerate_transport_graphics.sh local_chunked_run
 
-## Artifact Links { .section-title }
-
-- GitHub-ready snapshot: `artifacts/github_release/canonical_2026-03-08/`
-- Manifest/index/readiness: `.../manifest/`
-- Animations and previews: `.../animations/`
-- Merged LCI and completeness tables: `.../lci/`
-
-::: {.roadmap}
-### Roadmap: Animation Upgrade
-Current route animations are mostly latitude/longitude playback with counters.
-
-Next iteration should add richer map context, event overlays (charging/refuel/delay windows), and stronger scenario callouts for presentation storytelling.
-:::
+# 3) Render site
+quarto render site/
+```

@@ -1,0 +1,46 @@
+{
+  "source": {
+    "bundle_root": "/Users/dMac/Repos/coldchain-freight-montecarlo/outputs/distribution/local_chunked_run/phase2",
+    "validation_root": "/Users/dMac/Repos/coldchain-freight-montecarlo/outputs/distribution/local_chunked_run",
+    "pair_summary_files": [
+      "outputs/distribution/local_chunked_run/phase2/chunk_01/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4600/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_01/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4601/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_02/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4602/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_02/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4603/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_03/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4604/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_03/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4605/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_04/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4606/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_04/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4607/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_05/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4608/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_05/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4609/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_06/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4610/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_06/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4611/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_07/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4612/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_07/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4613/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_08/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4614/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_08/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4615/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_09/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4616/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_09/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4617/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_10/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4618/summaries.csv",
+      "outputs/distribution/local_chunked_run/phase2/chunk_10/diesel/pair_DISTRIBUTION_DAVIS_diesel_seed_4619/summaries.csv"
+    ]
+  },
+  "filter": {
+    "scenario": "DISTRIBUTION_DAVIS",
+    "powertrain": "diesel",
+    "traffic_mode": "stochastic",
+    "status": "OK_or_blank_or_missing",
+    "origin_network": ["dry_factory_set", "refrigerated_factory_set"],
+    "matched_pairs_enforced": true,
+    "functional_unit_basis": "per_1000kcal",
+    "metric_main": "co2_per_1000kcal"
+  },
+  "counts": {
+    "n_rows_selected": 40,
+    "n_pairs_matched": 20,
+    "n_by_origin": [
+      20,
+      20
+    ]
+  }
+}

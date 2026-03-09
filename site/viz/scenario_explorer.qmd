@@ -9,10 +9,14 @@ pick_path <- function(paths) {
 }
 
 fu_rows_path <- pick_path(c(
+  "../assets/transport/local_chunked_run/data/transport_sim_rows.csv",
+  "assets/transport/local_chunked_run/data/transport_sim_rows.csv",
   "../assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv",
   "assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv",
   "../../site/assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv",
+  "../../site/assets/transport/local_chunked_run/data/transport_sim_rows.csv",
   "outputs/distribution/distribution_davis_fu_final/transport_sim_rows.csv"
+  ,"outputs/distribution/local_chunked_run/transport_sim_rows.csv"
 ))
 
 if (nzchar(fu_rows_path)) {

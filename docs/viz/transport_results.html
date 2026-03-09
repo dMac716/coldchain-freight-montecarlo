@@ -139,17 +139,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#case" id="toc-case" class="nav-link active" data-scroll-target="#case">Case</a></li>
-  <li><a href="#latest-results-distribution-lci" id="toc-latest-results-distribution-lci" class="nav-link" data-scroll-target="#latest-results-distribution-lci">Latest Results (Distribution LCI)</a>
-  <ul class="collapse">
-  <li><a href="#updated-figures" id="toc-updated-figures" class="nav-link" data-scroll-target="#updated-figures">Updated Figures</a></li>
-  </ul></li>
-  <li><a href="#download-data-and-animations" id="toc-download-data-and-animations" class="nav-link" data-scroll-target="#download-data-and-animations">Download Data and Animations</a></li>
-  <li><a href="#trip-time-and-regime-diagnostics" id="toc-trip-time-and-regime-diagnostics" class="nav-link" data-scroll-target="#trip-time-and-regime-diagnostics">Trip-Time and Regime Diagnostics</a></li>
-  <li><a href="#evolution-animation" id="toc-evolution-animation" class="nav-link" data-scroll-target="#evolution-animation">Evolution Animation</a></li>
-  <li><a href="#source-artifacts" id="toc-source-artifacts" class="nav-link" data-scroll-target="#source-artifacts">Source Artifacts</a></li>
-  <li><a href="#scientific-graphics-package" id="toc-scientific-graphics-package" class="nav-link" data-scroll-target="#scientific-graphics-package">Scientific Graphics Package</a></li>
-  <li><a href="#route-animations" id="toc-route-animations" class="nav-link" data-scroll-target="#route-animations">Route Animations</a></li>
+  <li><a href="#run-metadata" id="toc-run-metadata" class="nav-link active" data-scroll-target="#run-metadata">Run Metadata</a></li>
+  <li><a href="#core-result-table" id="toc-core-result-table" class="nav-link" data-scroll-target="#core-result-table">Core Result Table</a></li>
+  <li><a href="#paired-delta-summary" id="toc-paired-delta-summary" class="nav-link" data-scroll-target="#paired-delta-summary">Paired Delta Summary</a></li>
+  <li><a href="#distribution-and-uncertainty-graphics" id="toc-distribution-and-uncertainty-graphics" class="nav-link" data-scroll-target="#distribution-and-uncertainty-graphics">Distribution and Uncertainty Graphics</a></li>
+  <li><a href="#animation-assets" id="toc-animation-assets" class="nav-link" data-scroll-target="#animation-assets">Animation Assets</a></li>
+  <li><a href="#download-bundles" id="toc-download-bundles" class="nav-link" data-scroll-target="#download-bundles">Download Bundles</a></li>
   </ul>
 </nav>
     </div>
@@ -175,195 +170,151 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This page publishes the latest distribution-stage transport Monte Carlo outputs and downloadable assets.</p>
-<section id="case" class="level2">
-<h2 class="anchored" data-anchor-id="case">Case</h2>
+<p>This page publishes the latest full transport reporting bundle for the validated run <code>local_chunked_run</code> (2026-03-09).</p>
+<section id="run-metadata" class="level2">
+<h2 class="anchored" data-anchor-id="run-metadata">Run Metadata</h2>
 <ul>
-<li>Latest validated run: <code>distribution_davis_fu_final</code> (2026-03-09)</li>
-<li>Execution mode: low-memory, chunked checkpoints (<code>N_REPS=20</code>, <code>CHUNK_SIZE=2</code>)</li>
-<li>Functional basis: <code>kg CO2e / 1000 kcal delivered</code></li>
+<li>Run ID: <code>local_chunked_run</code></li>
+<li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code></li>
+<li>Design: paired-within-powertrain uncertainty; 4 scenarios x 20 reps</li>
+<li>Validation status: PASS</li>
 </ul>
 </section>
-<section id="latest-results-distribution-lci" class="level2">
-<h2 class="anchored" data-anchor-id="latest-results-distribution-lci">Latest Results (Distribution LCI)</h2>
+<section id="core-result-table" class="level2">
+<h2 class="anchored" data-anchor-id="core-result-table">Core Result Table</h2>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Scenario</th>
+<th style="text-align: right;">N</th>
 <th style="text-align: right;">Mean</th>
 <th style="text-align: right;">Median</th>
 <th style="text-align: right;">P05</th>
 <th style="text-align: right;">P95</th>
-<th style="text-align: right;">N</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">dry_bev</td>
-<td style="text-align: right;">0.0325</td>
-<td style="text-align: right;">0.0321</td>
-<td style="text-align: right;">0.0181</td>
-<td style="text-align: right;">0.0482</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.032456</td>
+<td style="text-align: right;">0.032067</td>
+<td style="text-align: right;">0.018103</td>
+<td style="text-align: right;">0.048176</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">dry_diesel</td>
-<td style="text-align: right;">0.0743</td>
-<td style="text-align: right;">0.0737</td>
-<td style="text-align: right;">0.0691</td>
-<td style="text-align: right;">0.0831</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.074290</td>
+<td style="text-align: right;">0.073696</td>
+<td style="text-align: right;">0.069105</td>
+<td style="text-align: right;">0.083144</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refrigerated_bev</td>
-<td style="text-align: right;">0.2883</td>
-<td style="text-align: right;">0.2849</td>
-<td style="text-align: right;">0.1406</td>
-<td style="text-align: right;">0.4379</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.288330</td>
+<td style="text-align: right;">0.284909</td>
+<td style="text-align: right;">0.140584</td>
+<td style="text-align: right;">0.437945</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">refrigerated_diesel</td>
-<td style="text-align: right;">0.6684</td>
-<td style="text-align: right;">0.6639</td>
-<td style="text-align: right;">0.3254</td>
-<td style="text-align: right;">1.0755</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.668364</td>
+<td style="text-align: right;">0.663923</td>
+<td style="text-align: right;">0.325368</td>
+<td style="text-align: right;">1.075532</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<section id="updated-figures" class="level3">
-<h3 class="anchored" data-anchor-id="updated-figures">Updated Figures</h3>
+</section>
+<section id="paired-delta-summary" class="level2">
+<h2 class="anchored" data-anchor-id="paired-delta-summary">Paired Delta Summary</h2>
+</section>
+<section id="distribution-and-uncertainty-graphics" class="level2">
+<h2 class="anchored" data-anchor-id="distribution-and-uncertainty-graphics">Distribution and Uncertainty Graphics</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/distribution_davis_fu_final/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
+<p><img src="../assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
 <figcaption>CO2 per 1000 kcal by scenario</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/distribution_davis_fu_final/figures/paired_delta_boxplot.png" class="img-fluid figure-img"></p>
+<p><img src="../assets/transport/local_chunked_run/figures/paired_delta_boxplot.png" class="img-fluid figure-img"></p>
 <figcaption>Paired deltas by powertrain</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/distribution_davis_fu_final/figures/trip_duration_by_scenario.png" class="img-fluid figure-img"></p>
+<p><img src="../assets/transport/local_chunked_run/figures/trip_duration_by_scenario.png" class="img-fluid figure-img"></p>
 <figcaption>Trip duration by scenario</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/distribution_davis_fu_final/figures/co2_vs_duration_scatter.png" class="img-fluid figure-img"></p>
+<p><img src="../assets/transport/local_chunked_run/figures/co2_vs_duration_scatter.png" class="img-fluid figure-img"></p>
 <figcaption>CO2 intensity vs trip duration</figcaption>
 </figure>
 </div>
-</section>
-</section>
-<section id="download-data-and-animations" class="level2">
-<h2 class="anchored" data-anchor-id="download-data-and-animations">Download Data and Animations</h2>
-<p>Latest run data:</p>
-<ul>
-<li><a href="../assets/transport/downloads/distribution_davis_fu_final_data.zip">CSV bundle (latest run)</a></li>
-<li><a href="../assets/transport/distribution_davis_fu_final/data/transport_sim_rows.csv">Rows CSV</a></li>
-<li><a href="../assets/transport/distribution_davis_fu_final/data/transport_sim_paired_summary.csv">Paired summary CSV</a></li>
-<li><a href="../assets/transport/distribution_davis_fu_final/data/transport_sim_powertrain_summary.csv">Powertrain summary CSV</a></li>
-<li><a href="../assets/transport/distribution_davis_fu_final/data/transport_sim_validation_report.txt">Validation report</a></li>
-</ul>
-<p>Animation assets (downloadable):</p>
-<ul>
-<li><a href="../assets/transport/downloads/animation_assets_full_n20_fix.zip">Animation bundle ZIP</a></li>
-<li><a href="../assets/transport/downloads/transport_mc_evolution.mp4">Evolution MP4</a></li>
-<li><a href="../assets/transport/downloads/transport_mc_evolution.gif">Evolution GIF</a></li>
-<li><a href="../assets/transport/downloads/route_animation_diesel.mp4">Route animation diesel MP4</a></li>
-<li><a href="../assets/transport/downloads/route_animation_bev.mp4">Route animation BEV MP4</a></li>
-<li><a href="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4">Route animation diesel vs BEV MP4</a></li>
-</ul>
-</section>
-<section id="trip-time-and-regime-diagnostics" class="level2">
-<h2 class="anchored" data-anchor-id="trip-time-and-regime-diagnostics">Trip-Time and Regime Diagnostics</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/full_n20_fix/transport_trip_time_diagnostic.png" class="img-fluid figure-img"></p>
-<figcaption>Trip-time diagnostic (3-panel)</figcaption>
+<p><img src="../assets/transport/local_chunked_run/figures/transport_trip_time_diagnostic.png" class="img-fluid figure-img"></p>
+<figcaption>Trip-time diagnostic</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/full_n20_fix/refrigerated_split_diagnostic.png" class="img-fluid figure-img"></p>
+<p><img src="../assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png" class="img-fluid figure-img"></p>
 <figcaption>Refrigerated split diagnostic</figcaption>
 </figure>
 </div>
 </section>
-<section id="evolution-animation" class="level2">
-<h2 class="anchored" data-anchor-id="evolution-animation">Evolution Animation</h2>
-<p>Final frame:</p>
+<section id="animation-assets" class="level2">
+<h2 class="anchored" data-anchor-id="animation-assets">Animation Assets</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/transport/full_n20_fix/transport_mc_evolution_last_frame.png" class="img-fluid figure-img"></p>
-<figcaption>MC evolution last frame</figcaption>
+<p><img src="../assets/transport/local_chunked_run/figures/transport_mc_animation_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>MC animation final frame</figcaption>
 </figure>
 </div>
-<p>Animation files:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/local_chunked_run/figures/transport_mc_evolution_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>MC evolution final frame</figcaption>
+</figure>
+</div>
 <ul>
-<li><a href="../assets/transport/full_n20_fix/transport_mc_evolution.mp4">MP4</a></li>
-<li><a href="../assets/transport/full_n20_fix/transport_mc_evolution.gif">GIF</a></li>
+<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_animation.mp4">Transport MC animation (MP4)</a></li>
+<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_animation.gif">Transport MC animation (GIF)</a></li>
+<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4">Evolution animation (MP4)</a></li>
+<li><a href="../assets/transport/local_chunked_run/figures/transport_mc_evolution.gif">Evolution animation (GIF)</a></li>
+<li><a href="../assets/transport/downloads/route_animation_diesel.mp4">Route animation diesel (MP4)</a></li>
+<li><a href="../assets/transport/downloads/route_animation_bev.mp4">Route animation BEV (MP4)</a></li>
+<li><a href="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4">Route animation diesel vs BEV (MP4)</a></li>
 </ul>
 </section>
-<section id="source-artifacts" class="level2">
-<h2 class="anchored" data-anchor-id="source-artifacts">Source Artifacts</h2>
+<section id="download-bundles" class="level2">
+<h2 class="anchored" data-anchor-id="download-bundles">Download Bundles</h2>
 <ul>
-<li><a href="../assets/transport/full_n20_fix/transport_graphics_filter_metadata.json">Filter metadata JSON</a></li>
-<li><a href="../assets/transport/full_n20_fix/transport_graphics_README.html">Generation notes</a></li>
+<li><a href="../assets/transport/downloads/local_chunked_run_report_bundle.zip">Full report bundle ZIP</a></li>
+<li><a href="../assets/transport/downloads/local_chunked_run_data.zip">Data ZIP</a></li>
+<li><a href="../assets/transport/downloads/local_chunked_run_figures.zip">Figures ZIP</a></li>
+<li><a href="../assets/transport/downloads/local_chunked_run_animations.zip">Animations ZIP</a></li>
 </ul>
-</section>
-<section id="scientific-graphics-package" class="level2">
-<h2 class="anchored" data-anchor-id="scientific-graphics-package">Scientific Graphics Package</h2>
-<p>Distribution comparisons:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/scientific/full_n20_fix/dist_powertrain.png" class="img-fluid figure-img"></p>
-<figcaption>Diesel vs BEV</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/scientific/full_n20_fix/dist_product_type.png" class="img-fluid figure-img"></p>
-<figcaption>Dry vs Refrigerated Product</figcaption>
-</figure>
-</div>
-<p>Convergence:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/scientific/full_n20_fix/convergence_co2_per_1000kcal.png" class="img-fluid figure-img"></p>
-<figcaption>Convergence: CO2 per 1000 kcal</figcaption>
-</figure>
-</div>
-<p>Sensitivity:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/scientific/full_n20_fix/sensitivity_ranked.png" class="img-fluid figure-img"></p>
-<figcaption>Sensitivity ranked</figcaption>
-</figure>
-</div>
-<p>Geography comparison (paired-origin GSI):</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/transport/scientific/full_n20_fix/geography_gsi_p05_p50_p95.png" class="img-fluid figure-img"></p>
-<figcaption>GSI p05/p50/p95</figcaption>
-</figure>
-</div>
-</section>
-<section id="route-animations" class="level2">
-<h2 class="anchored" data-anchor-id="route-animations">Route Animations</h2>
+<p>Raw files:</p>
 <ul>
-<li>Diesel representative: <a href="../assets/transport/downloads/route_animation_diesel.mp4">MP4</a></li>
-<li>BEV representative: <a href="../assets/transport/downloads/route_animation_bev.mp4">MP4</a></li>
-<li>Side-by-side diesel vs BEV: <a href="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4">MP4</a></li>
+<li><a href="../assets/transport/local_chunked_run/data/transport_sim_rows.csv">Rows CSV</a></li>
+<li><a href="../assets/transport/local_chunked_run/data/transport_sim_paired_summary.csv">Paired summary CSV</a></li>
+<li><a href="../assets/transport/local_chunked_run/data/transport_sim_powertrain_summary.csv">Powertrain summary CSV</a></li>
+<li><a href="../assets/transport/local_chunked_run/data/transport_sim_graphics_inputs.csv">Graphics input CSV</a></li>
+<li><a href="../assets/transport/local_chunked_run/data/transport_sim_validation_report.txt">Validation report</a></li>
+<li><a href="../assets/transport/local_chunked_run/data/local_chunked_run_runs_merged.csv">Merged runs CSV</a></li>
 </ul>
 
 

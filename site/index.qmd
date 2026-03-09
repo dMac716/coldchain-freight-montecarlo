@@ -7,7 +7,7 @@ title: "Cold-Chain Freight Monte Carlo"
 
 Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.
 
-`Latest validated transport refresh: 2026-03-09`  
+`Latest validated transport refresh: 2026-03-09 (local_chunked_run)`  
 `Validation gates: PASS`
 
 ::: {.cta-row}
@@ -20,7 +20,7 @@ Static, reproducible analysis site for transport + LCI comparisons across dry vs
 ::: {.kpi-grid}
 ::: {.kpi-card}
 <div class="kpi-label">Latest Run ID</div>
-<div class="kpi-value">distribution_davis_fu_final</div>
+<div class="kpi-value">local_chunked_run</div>
 Low-memory chunked production
 :::
 

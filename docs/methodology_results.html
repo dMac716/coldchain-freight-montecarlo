@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Methodology and Initial Results – Cold-Chain Freight Monte Carlo</title>
+<title>Methodology and Scientific Results – Cold-Chain Freight Monte Carlo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -139,19 +174,27 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#canonical-snapshot-summary" id="toc-canonical-snapshot-summary" class="nav-link active" data-scroll-target="#canonical-snapshot-summary">Canonical Snapshot Summary</a></li>
-  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary">Executive Summary</a></li>
+  <li><a href="#study-design" id="toc-study-design" class="nav-link" data-scroll-target="#study-design">Study Design</a>
   <ul class="collapse">
-  <li><a href="#validation-source" id="toc-validation-source" class="nav-link" data-scroll-target="#validation-source">Validation Source</a></li>
+  <li><a href="#scenario-structure" id="toc-scenario-structure" class="nav-link" data-scroll-target="#scenario-structure">Scenario Structure</a></li>
+  <li><a href="#paired-uncertainty-strategy" id="toc-paired-uncertainty-strategy" class="nav-link" data-scroll-target="#paired-uncertainty-strategy">Paired Uncertainty Strategy</a></li>
+  <li><a href="#reporting-metric" id="toc-reporting-metric" class="nav-link" data-scroll-target="#reporting-metric">Reporting Metric</a></li>
   </ul></li>
-  <li><a href="#initial-results-core-transport-metric" id="toc-initial-results-core-transport-metric" class="nav-link" data-scroll-target="#initial-results-core-transport-metric">Initial Results (Core Transport Metric)</a></li>
-  <li><a href="#latest-production-refresh-2026-03-09" id="toc-latest-production-refresh-2026-03-09" class="nav-link" data-scroll-target="#latest-production-refresh-2026-03-09">Latest Production Refresh (2026-03-09)</a></li>
-  <li><a href="#initial-figures" id="toc-initial-figures" class="nav-link" data-scroll-target="#initial-figures">Initial Figures</a></li>
-  <li><a href="#updated-distribution-figures-2026-03-09" id="toc-updated-distribution-figures-2026-03-09" class="nav-link" data-scroll-target="#updated-distribution-figures-2026-03-09">Updated Distribution Figures (2026-03-09)</a></li>
-  <li><a href="#artifact-links" id="toc-artifact-links" class="nav-link" data-scroll-target="#artifact-links">Artifact Links</a>
+  <li><a href="#input-data-and-assumptions" id="toc-input-data-and-assumptions" class="nav-link" data-scroll-target="#input-data-and-assumptions">Input Data and Assumptions</a>
   <ul class="collapse">
-  <li><a href="#roadmap-animation-upgrade" id="toc-roadmap-animation-upgrade" class="nav-link" data-scroll-target="#roadmap-animation-upgrade">Roadmap: Animation Upgrade</a></li>
+  <li><a href="#primary-inputs" id="toc-primary-inputs" class="nav-link" data-scroll-target="#primary-inputs">Primary Inputs</a></li>
+  <li><a href="#packaging-assumptions-used" id="toc-packaging-assumptions-used" class="nav-link" data-scroll-target="#packaging-assumptions-used">Packaging Assumptions Used</a></li>
   </ul></li>
+  <li><a href="#validation-and-qa-gates" id="toc-validation-and-qa-gates" class="nav-link" data-scroll-target="#validation-and-qa-gates">Validation and QA Gates</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#scenario-level-summary" id="toc-scenario-level-summary" class="nav-link" data-scroll-target="#scenario-level-summary">Scenario-Level Summary</a></li>
+  <li><a href="#paired-delta-summary" id="toc-paired-delta-summary" class="nav-link" data-scroll-target="#paired-delta-summary">Paired Delta Summary</a></li>
+  <li><a href="#diagnostic-figures" id="toc-diagnostic-figures" class="nav-link" data-scroll-target="#diagnostic-figures">Diagnostic Figures</a></li>
+  </ul></li>
+  <li><a href="#scientific-package-and-reproducibility" id="toc-scientific-package-and-reproducibility" class="nav-link" data-scroll-target="#scientific-package-and-reproducibility">Scientific Package and Reproducibility</a></li>
+  <li><a href="#methods-reproduction-steps" id="toc-methods-reproduction-steps" class="nav-link" data-scroll-target="#methods-reproduction-steps">Methods Reproduction Steps</a></li>
   </ul>
 </nav>
     </div>
@@ -160,7 +203,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Methodology and Initial Results</h1>
+<h1 class="title">Methodology and Scientific Results</h1>
 </div>
 
 
@@ -177,245 +220,201 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="canonical-snapshot-summary" class="level2 hero">
-<h2 class="anchored" data-anchor-id="canonical-snapshot-summary">Canonical Snapshot Summary</h2>
-<p>This page documents the validated canonical artifact build committed on <strong>2026-03-08</strong> and the latest low-memory production refresh completed on <strong>2026-03-09</strong>.</p>
-<div class="cta-row">
-<p><a href="../artifacts/github_release/canonical_2026-03-08/" class="btn-pill">View Snapshot Directory</a> <a href="./viz/transport_results.html" class="btn-pill">Open Transport Results</a></p>
-</div>
+<section id="executive-summary" class="level2">
+<h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
+<p>This release documents the distribution-stage transport LCI run <code>local_chunked_run</code> completed on <strong>2026-03-09</strong>.</p>
+<ul>
+<li>Scope: transport/distribution stage only</li>
+<li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code></li>
+<li>Design: matched-pair uncertainty within powertrain</li>
+<li>Scenario rows: <code>dry_diesel</code>, <code>refrigerated_diesel</code>, <code>dry_bev</code>, <code>refrigerated_bev</code></li>
+<li>Replicates: 20</li>
+<li>Validation outcome: PASS</li>
+</ul>
 </section>
-<div class="kpi-grid">
-<div class="kpi-card">
-<div class="kpi-label">
-Validation
-</div>
-<div class="kpi-value">
-PASS
-</div>
-<p>Pair integrity, figure quality, and merged LCI files</p>
-</div>
-<div class="kpi-card">
-<div class="kpi-label">
-LCI Total Rows
-</div>
-<div class="kpi-value">
-4160
-</div>
-<p>From merged full-LCA ledger</p>
-</div>
-<div class="kpi-card">
-<div class="kpi-label">
-Placeholder Rows
-</div>
-<div class="kpi-value">
-2240
-</div>
-<p>Explicit unresolved <code>NEEDS_SOURCE_VALUE</code></p>
-</div>
-<div class="kpi-card">
-<div class="kpi-label">
-Snapshot Path
-</div>
-<div class="kpi-value">
-Git Tracked
-</div>
-<p><code>artifacts/github_release/canonical_2026-03-08/</code></p>
-</div>
-</div>
-<section id="methodology" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="methodology">Methodology</h2>
+<section id="study-design" class="level2">
+<h2 class="anchored" data-anchor-id="study-design">Study Design</h2>
+<section id="scenario-structure" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-structure">Scenario Structure</h3>
 <ol type="1">
-<li>Define canonical runs in <code>config/canonical_run_matrix.csv</code>.</li>
-<li>Generate paired transport Monte Carlo bundles for dry/refrigerated families.</li>
-<li>Build merged LCI outputs and completeness audits.</li>
-<li>Build presentation artifacts and route animations.</li>
-<li>Validate with <code>tools/validate_final_artifacts.sh</code> and emit release manifest/report.</li>
+<li><code>dry_diesel</code>: Kansas origin, reefer OFF, diesel powertrain</li>
+<li><code>refrigerated_diesel</code>: Texas origin, reefer ON, diesel powertrain</li>
+<li><code>dry_bev</code>: Kansas origin, reefer OFF, BEV powertrain</li>
+<li><code>refrigerated_bev</code>: Texas origin, reefer ON, BEV powertrain</li>
 </ol>
-<section id="validation-source" class="level3 panel">
-<h3 class="anchored" data-anchor-id="validation-source">Validation Source</h3>
+</section>
+<section id="paired-uncertainty-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="paired-uncertainty-strategy">Paired Uncertainty Strategy</h3>
+<p>Within each powertrain, dry/refrigerated rows share operating-condition draws (traffic, departure, ambient, stochastic delay), so paired deltas isolate refrigeration + origin effects under comparable operating states.</p>
+</section>
+<section id="reporting-metric" class="level3">
+<h3 class="anchored" data-anchor-id="reporting-metric">Reporting Metric</h3>
+<p>For each scenario row:</p>
 <ul>
-<li><code>artifacts/github_release/canonical_2026-03-08/manifest/release_readiness_report.md</code></li>
+<li><code>total_kcal_delivered = payload_kg_delivered * energy_density_kcal_per_kg</code></li>
+<li><code>co2_per_1000kcal = total_trip_co2_kg / total_kcal_delivered * 1000</code></li>
 </ul>
 </section>
 </section>
-<section id="initial-results-core-transport-metric" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="initial-results-core-transport-metric">Initial Results (Core Transport Metric)</h2>
-<p><code>co2_per_1000kcal</code> from canonical stochastic runs:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Product Type</th>
-<th>Origin Network</th>
-<th style="text-align: right;">Traffic</th>
-<th style="text-align: right;">CO2 per 1000 kcal</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Dry</td>
-<td>Dry factory set</td>
-<td style="text-align: right;">Stochastic</td>
-<td style="text-align: right;">517.93</td>
-</tr>
-<tr class="even">
-<td>Dry</td>
-<td>Refrigerated factory set</td>
-<td style="text-align: right;">Stochastic</td>
-<td style="text-align: right;">518.99</td>
-</tr>
-<tr class="odd">
-<td>Refrigerated</td>
-<td>Dry factory set</td>
-<td style="text-align: right;">Stochastic</td>
-<td style="text-align: right;">584.07</td>
-</tr>
-<tr class="even">
-<td>Refrigerated</td>
-<td>Refrigerated factory set</td>
-<td style="text-align: right;">Stochastic</td>
-<td style="text-align: right;">578.91</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="latest-production-refresh-2026-03-09" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="latest-production-refresh-2026-03-09">Latest Production Refresh (2026-03-09)</h2>
+<section id="input-data-and-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="input-data-and-assumptions">Input Data and Assumptions</h2>
+<section id="primary-inputs" class="level3">
+<h3 class="anchored" data-anchor-id="primary-inputs">Primary Inputs</h3>
 <ul>
-<li>Run ID: <code>distribution_davis_fu_final</code></li>
-<li>Execution style: low-memory chunked run with checkpointing (<code>N_REPS=20</code>, <code>CHUNK_SIZE=2</code>)</li>
-<li>Status: validation passed; transport outputs published</li>
-<li>See updated figures, tables, and downloadable data on <a href="./viz/transport_results.html">Transport Results</a></li>
+<li>Route/run outputs from <code>outputs/distribution/local_chunked_run/phase2/*</code></li>
+<li>Functional-unit transformed rows in <code>transport_sim_rows.csv</code></li>
+<li>Scenario and product assumptions from <code>data/inputs_local/*.csv</code></li>
 </ul>
+</section>
+<section id="packaging-assumptions-used" class="level3">
+<h3 class="anchored" data-anchor-id="packaging-assumptions-used">Packaging Assumptions Used</h3>
+<ul>
+<li>Dry product primary packaging: measured <code>0.1653 kg</code> per <code>13.6 kg</code> bag (<code>0.0121</code> fraction)</li>
+<li>Refrigerated primary packaging: measured mean <code>0.029 kg/package</code> (27–31 g sensitivity range)</li>
+<li>Secondary refrigerated cardboard packaging: kept separate as unmeasured assumption (not silently added to measured primary mass)</li>
+</ul>
+</section>
+</section>
+<section id="validation-and-qa-gates" class="level2">
+<h2 class="anchored" data-anchor-id="validation-and-qa-gates">Validation and QA Gates</h2>
+<p>The run enforces fail-fast checks for:</p>
+<ul>
+<li>scenario completeness (4 rows per replicate)</li>
+<li>paired-uncertainty consistency within powertrain</li>
+<li>dry reefer disabled (<code>tru_kwh=0</code>, <code>tru_gal=0</code>, <code>refrigeration_runtime_hours=0</code>)</li>
+<li>route completion required before FU export</li>
+<li>finite, positive <code>total_kcal_delivered</code></li>
+<li>finite <code>co2_per_1000kcal</code></li>
+<li>finite congestion/traffic fields</li>
+<li>plausible route distance/time</li>
+</ul>
+<p>Validation artifact:</p>
+<ul>
+<li><a href="assets/transport/local_chunked_run/data/transport_sim_validation_report.txt">Validation report</a></li>
+</ul>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="scenario-level-summary" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-level-summary">Scenario-Level Summary</h3>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 28%">
-<col style="width: 25%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
+<col style="width: 29%">
 <col style="width: 4%">
+<col style="width: 26%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 13%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Scenario</th>
+<th style="text-align: right;">N</th>
 <th style="text-align: right;">Mean CO2/1000kcal</th>
 <th style="text-align: right;">Median</th>
 <th style="text-align: right;">P05</th>
 <th style="text-align: right;">P95</th>
-<th style="text-align: right;">N</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">dry_bev</td>
-<td style="text-align: right;">0.0324562</td>
-<td style="text-align: right;">0.0320673</td>
-<td style="text-align: right;">0.0181026</td>
-<td style="text-align: right;">0.0481757</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.032456</td>
+<td style="text-align: right;">0.032067</td>
+<td style="text-align: right;">0.018103</td>
+<td style="text-align: right;">0.048176</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">dry_diesel</td>
-<td style="text-align: right;">0.0742900</td>
-<td style="text-align: right;">0.0736960</td>
-<td style="text-align: right;">0.0691054</td>
-<td style="text-align: right;">0.0831437</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.074290</td>
+<td style="text-align: right;">0.073696</td>
+<td style="text-align: right;">0.069105</td>
+<td style="text-align: right;">0.083144</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refrigerated_bev</td>
-<td style="text-align: right;">0.2883301</td>
-<td style="text-align: right;">0.2849093</td>
-<td style="text-align: right;">0.1405841</td>
-<td style="text-align: right;">0.4379447</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.288330</td>
+<td style="text-align: right;">0.284909</td>
+<td style="text-align: right;">0.140584</td>
+<td style="text-align: right;">0.437945</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">refrigerated_diesel</td>
-<td style="text-align: right;">0.6683637</td>
-<td style="text-align: right;">0.6639232</td>
-<td style="text-align: right;">0.3253677</td>
-<td style="text-align: right;">1.0755316</td>
 <td style="text-align: right;">20</td>
+<td style="text-align: right;">0.668364</td>
+<td style="text-align: right;">0.663923</td>
+<td style="text-align: right;">0.325368</td>
+<td style="text-align: right;">1.075532</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </section>
-<section id="initial-figures" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="initial-figures">Initial Figures</h2>
-<div class="figure-grid">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="assets/transport/canonical_2026-03-08/analysis_core_dry_fig_a_transport_emissions_comparison.png" class="img-fluid figure-img"></p>
-<figcaption>Dry: Transport Emissions Comparison</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_a_transport_emissions_comparison.png" class="img-fluid figure-img"></p>
-<figcaption>Refrigerated: Transport Emissions Comparison</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="assets/transport/canonical_2026-03-08/analysis_core_refrigerated_fig_c1_delivery_time_by_scenario.png" class="img-fluid figure-img"></p>
-<figcaption>Refrigerated: Delivery Time by Scenario</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="assets/transport/canonical_2026-03-08/route_animation_diesel_vs_bev_last_frame.png" class="img-fluid figure-img"></p>
-<figcaption>Route Animation Preview (Diesel vs BEV)</figcaption>
-</figure>
-</div>
-</div>
+<section id="paired-delta-summary" class="level3">
+<h3 class="anchored" data-anchor-id="paired-delta-summary">Paired Delta Summary</h3>
 </section>
-<section id="updated-distribution-figures-2026-03-09" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="updated-distribution-figures-2026-03-09">Updated Distribution Figures (2026-03-09)</h2>
-<div class="figure-grid">
+<section id="diagnostic-figures" class="level3">
+<h3 class="anchored" data-anchor-id="diagnostic-figures">Diagnostic Figures</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="assets/transport/distribution_davis_fu_final/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
+<p><img src="assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
 <figcaption>CO2 per 1000 kcal by scenario</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="assets/transport/distribution_davis_fu_final/figures/paired_delta_boxplot.png" class="img-fluid figure-img"></p>
-<figcaption>Paired deltas by powertrain</figcaption>
+<p><img src="assets/transport/local_chunked_run/figures/paired_delta_boxplot.png" class="img-fluid figure-img"></p>
+<figcaption>Paired delta distributions</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="assets/transport/distribution_davis_fu_final/figures/trip_duration_by_scenario.png" class="img-fluid figure-img"></p>
-<figcaption>Trip duration by scenario</figcaption>
+<p><img src="assets/transport/local_chunked_run/figures/transport_trip_time_diagnostic.png" class="img-fluid figure-img"></p>
+<figcaption>Trip-time diagnostic</figcaption>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="assets/transport/distribution_davis_fu_final/figures/co2_vs_duration_scatter.png" class="img-fluid figure-img"></p>
-<figcaption>CO2 intensity vs trip duration</figcaption>
+<p><img src="assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png" class="img-fluid figure-img"></p>
+<figcaption>Refrigerated split diagnostic</figcaption>
 </figure>
-</div>
 </div>
 </section>
-<section id="artifact-links" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="artifact-links">Artifact Links</h2>
+</section>
+<section id="scientific-package-and-reproducibility" class="level2">
+<h2 class="anchored" data-anchor-id="scientific-package-and-reproducibility">Scientific Package and Reproducibility</h2>
 <ul>
-<li>GitHub-ready snapshot: <code>artifacts/github_release/canonical_2026-03-08/</code></li>
-<li>Manifest/index/readiness: <code>.../manifest/</code></li>
-<li>Animations and previews: <code>.../animations/</code></li>
-<li>Merged LCI and completeness tables: <code>.../lci/</code></li>
+<li>Scientific graphics package: <code>docs/assets/transport/scientific/local_chunked_run/</code></li>
+<li>Full report bundle: <a href="assets/transport/downloads/local_chunked_run_report_bundle.zip">ZIP</a></li>
+<li>Data-only bundle: <a href="assets/transport/downloads/local_chunked_run_data.zip">ZIP</a></li>
+<li>Figure bundle: <a href="assets/transport/downloads/local_chunked_run_figures.zip">ZIP</a></li>
+<li>Animation bundle: <a href="assets/transport/downloads/local_chunked_run_animations.zip">ZIP</a></li>
 </ul>
-<section id="roadmap-animation-upgrade" class="level3 roadmap">
-<h3 class="anchored" data-anchor-id="roadmap-animation-upgrade">Roadmap: Animation Upgrade</h3>
-<p>Current route animations are mostly latitude/longitude playback with counters.</p>
-<p>Next iteration should add richer map context, event overlays (charging/refuel/delay windows), and stronger scenario callouts for presentation storytelling.</p>
 </section>
+<section id="methods-reproduction-steps" class="level2">
+<h2 class="anchored" data-anchor-id="methods-reproduction-steps">Methods Reproduction Steps</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Merge run batches for reporting</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tools/merge_mc_batches.R <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bundle_roots</span> outputs/distribution/local_chunked_run/phase2/diesel,outputs/distribution/local_chunked_run/phase2/bev <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--runs_out</span> outputs/summaries/local_chunked_run_runs_merged.csv <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--summary_out</span> outputs/summaries/local_chunked_run_summary_merged.csv</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Build presentation/scientific graphics</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="va">RUN_BEV_VALIDATION</span><span class="op">=</span>false <span class="va">RUN_ADVANCED_DIAGNOSTICS</span><span class="op">=</span>true <span class="va">RUN_SCIENTIFIC_GRAPHICS</span><span class="op">=</span>true <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="va">RUN_BEV_GROUPING_DIAGNOSTIC</span><span class="op">=</span>false <span class="va">RUN_ROUTE_ANIMATION</span><span class="op">=</span>false <span class="dt">\</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="va">BUNDLE_ROOT</span><span class="op">=</span>outputs/distribution/local_chunked_run/phase2 <span class="dt">\</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="va">OUTDIR</span><span class="op">=</span>outputs/presentation/transport_graphics_local_chunked_run <span class="dt">\</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="va">RUNS_CSV</span><span class="op">=</span>outputs/summaries/local_chunked_run_runs_merged.csv <span class="dt">\</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/regenerate_transport_graphics.sh local_chunked_run</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Render site</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>

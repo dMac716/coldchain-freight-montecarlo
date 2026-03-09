@@ -1,0 +1,5 @@
+scenario,powertrain,origin_network,traffic_mode,n_runs,co2_kg_mean,co2_kg_p50,diesel_gal_total_mean,energy_kwh_total_mean
+DISTRIBUTION_DAVIS,diesel,dry_factory_set,stochastic,20,3885.31487080308,3844.56049553356,0,0
+DISTRIBUTION_DAVIS,diesel,refrigerated_factory_set,stochastic,20,4451.59199993477,4285.15462390343,0,0
+DISTRIBUTION_DAVIS,bev,dry_factory_set,stochastic,20,1688.91571766253,1750.23396664408,0,0
+DISTRIBUTION_DAVIS,bev,refrigerated_factory_set,stochastic,20,1935.9183860323,2043.34696537374,0,0
