@@ -57,11 +57,14 @@ missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace,
 
 if (length(missing_pkgs) > 0) {
   log_msg("INFO", paste("Installing packages:", paste(missing_pkgs, collapse = ", ")))
+  # F14 FIX: detectCores() can return NA in containers; guard against that.
+  n_cores <- tryCatch(parallel::detectCores(logical = FALSE), error = function(e) NA_integer_)
+  n_cpus  <- max(1L, if (is.na(n_cores)) 1L else as.integer(n_cores) - 1L, 1L)
   install.packages(
     missing_pkgs,
     repos    = "https://cloud.r-project.org",
     quiet    = TRUE,
-    Ncpus    = max(1L, parallel::detectCores() - 1L)
+    Ncpus    = n_cpus
   )
 } else {
   log_msg("INFO", "All required R packages already installed.")

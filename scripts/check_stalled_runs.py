@@ -190,6 +190,9 @@ def main() -> int:
     args = parser.parse_args()
 
     check_stalled(args.threshold_seconds, args.dry_run)
+    # F12 FIX: do not exit non-zero just because stalls were found —
+    # that would break CI pipelines that run this as a periodic monitor.
+    # The stall count is logged; callers can grep run.log for WARN lines.
     return 0
 
 

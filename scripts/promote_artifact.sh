@@ -42,6 +42,11 @@ if [[ -z "$RUN_DIR" ]]; then
   exit 1
 fi
 
+# Validate run dir exists before cd (promote always requires an existing dir)
+if [[ ! -d "$RUN_DIR" ]]; then
+  log "ERROR" "Run directory does not exist: $RUN_DIR"
+  exit 1
+fi
 RUN_DIR="$(cd "$RUN_DIR" && pwd)"
 RUN_ID="$(basename "$RUN_DIR")"
 ARTIFACT="$RUN_DIR/artifact.tar.gz"
@@ -61,7 +66,16 @@ resolve_seed() {
     local p="$RUN_DIR/$f"
     if [[ -f "$p" ]]; then
       local s
-      s="$(python3 -c "import json,sys; d=json.load(open('$p')); print(d.get('seed','unknown'))" 2>/dev/null || true)"
+      # Pass path via env var to avoid quote injection in inline Python
+      s="$(SEED_JSON_PATH="$p" python3 -c "
+import json, os
+p = os.environ.get('SEED_JSON_PATH','')
+try:
+    d = json.load(open(p))
+    print(d.get('seed','unknown'))
+except Exception:
+    print('unknown')
+" 2>/dev/null || true)"
       [[ -n "$s" ]] && echo "$s" && return
     fi
   done
@@ -76,14 +90,23 @@ update_registry() {
   local cmd="$1"
   local run_id="$2"
   if [[ -f "$REGISTRY_SCRIPT" ]]; then
-    python3 "$REGISTRY_SCRIPT" "$cmd" --run_id "$run_id" 2>/dev/null || true
+    # F09 FIX: capture stderr; log failures instead of silently swallowing them.
+    local out
+    if ! out="$(python3 "$REGISTRY_SCRIPT" "$cmd" --run_id "$run_id" 2>&1)"; then
+      log "WARN" "Registry update '$cmd' failed for $run_id: $out"
+      echo "[$(ts)] [promote_artifact] run_id=\"$run_id\" lane=\"codespace\" phase=\"promote\" status=\"WARN\" msg=\"registry update failed cmd=$cmd err=$out\"" >> "$LOG_FILE" || true
+    fi
   fi
 }
 update_registry_status() {
   local run_id="$1"
   local status="$2"
   if [[ -f "$REGISTRY_SCRIPT" ]]; then
-    python3 "$REGISTRY_SCRIPT" status --run_id "$run_id" --status "$status" 2>/dev/null || true
+    local out
+    if ! out="$(python3 "$REGISTRY_SCRIPT" status --run_id "$run_id" --status "$status" 2>&1)"; then
+      log "WARN" "Registry status update failed for $run_id → $status: $out"
+      echo "[$(ts)] [promote_artifact] run_id=\"$run_id\" lane=\"codespace\" phase=\"promote\" status=\"WARN\" msg=\"registry status update failed status=$status err=$out\"" >> "$LOG_FILE" || true
+    fi
   fi
 }
 
@@ -94,13 +117,16 @@ echo "[$(ts)] [promote_artifact] run_id=\"$RUN_ID\" lane=\"codespace\" seed=\"$S
 # Check artifact exists
 # ---------------------------------------------------------------------------
 if [[ ! -f "$ARTIFACT" ]]; then
+  # F08 FIX: write to run.log before every error exit.
   log "ERROR" "artifact.tar.gz not found at $ARTIFACT — run package_run_artifact.sh first."
+  echo "[$(ts)] [promote_artifact] run_id=\"$RUN_ID\" lane=\"codespace\" seed=\"$SEED\" phase=\"promote\" status=\"ERROR\" msg=\"artifact.tar.gz not found\"" >> "$LOG_FILE"
   exit 1
 fi
 
 # Verify tar integrity (do not promote a corrupt archive)
 if ! tar -tzf "$ARTIFACT" > /dev/null 2>&1; then
   log "ERROR" "artifact.tar.gz failed integrity check — aborting promotion."
+  echo "[$(ts)] [promote_artifact] run_id=\"$RUN_ID\" lane=\"codespace\" seed=\"$SEED\" phase=\"promote\" status=\"ERROR\" msg=\"artifact.tar.gz failed integrity check\"" >> "$LOG_FILE"
   exit 1
 fi
 

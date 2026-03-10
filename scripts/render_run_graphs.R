@@ -142,6 +142,8 @@ placeholder_plot <- function(title, detail = "No data available for this run.") 
 
 # ---------------------------------------------------------------------------
 # Save helper (idempotent unless --force)
+# F11 FIX: wrap ggsave in tryCatch so a single plot failure does not
+# abort the entire render — log a warning and continue to next graph.
 # ---------------------------------------------------------------------------
 save_plot <- function(p, filename, width = opts$width,
                       height = opts$height, dpi = opts$dpi) {
@@ -151,12 +153,22 @@ save_plot <- function(p, filename, width = opts$width,
             paste("Skipping (already exists, use --force to overwrite):", filename))
     return(path)
   }
-  ggsave(path, plot = p, width = width, height = height, dpi = dpi,
-         device = "png", bg = "white")
-  log_entry <- log_msg("INFO", run_id,
-                        paste("Rendered:", filename), seed = seed_val)
-  write_log_entry(log_file, log_entry)
-  path
+  tryCatch({
+    ggsave(path, plot = p, width = width, height = height, dpi = dpi,
+           device = "png", bg = "white")
+    log_entry <- log_msg("INFO", run_id,
+                          paste("Rendered:", filename), seed = seed_val)
+    write_log_entry(log_file, log_entry)
+    path
+  }, error = function(e) {
+    warn_entry <- log_msg("WARN", run_id,
+                           paste("Failed to render", filename, "—",
+                                 conditionMessage(e)),
+                           seed = seed_val)
+    write_log_entry(log_file, warn_entry)
+    if (file.exists(path)) file.remove(path)  # remove partial file
+    NA_character_
+  })
 }
 
 # ---------------------------------------------------------------------------
@@ -180,6 +192,11 @@ if (has_data) {
 
 rendered <- character(0)
 
+# Helper: append only successful (non-NA) paths to rendered list.
+track <- function(path) {
+  if (!is.na(path)) rendered <<- c(rendered, path)
+}
+
 # ---------------------------------------------------------------------------
 # Graph 1: Emissions by scenario
 # ---------------------------------------------------------------------------
@@ -197,7 +214,7 @@ if (has_scenario && has_emissions) {
 } else {
   p1 <- placeholder_plot("Emissions by Scenario")
 }
-rendered <- c(rendered, save_plot(p1, "emissions_by_scenario.png"))
+track(save_plot(p1, "emissions_by_scenario.png"))
 
 # ---------------------------------------------------------------------------
 # Graph 2: Emissions distribution
@@ -211,7 +228,7 @@ if (has_emissions) {
 } else {
   p2 <- placeholder_plot("Emissions Distribution")
 }
-rendered <- c(rendered, save_plot(p2, "emissions_distribution.png"))
+track(save_plot(p2, "emissions_distribution.png"))
 
 # ---------------------------------------------------------------------------
 # Graph 3: Cost by scenario
@@ -230,7 +247,7 @@ if (has_scenario && has_cost) {
 } else {
   p3 <- placeholder_plot("Cost by Scenario")
 }
-rendered <- c(rendered, save_plot(p3, "cost_by_scenario.png"))
+track(save_plot(p3, "cost_by_scenario.png"))
 
 # ---------------------------------------------------------------------------
 # Graph 4: Cost distribution
@@ -243,7 +260,7 @@ if (has_cost) {
 } else {
   p4 <- placeholder_plot("Cost Distribution")
 }
-rendered <- c(rendered, save_plot(p4, "cost_distribution.png"))
+track(save_plot(p4, "cost_distribution.png"))
 
 # ---------------------------------------------------------------------------
 # Graph 5: Scenario comparison (boxplot)
@@ -258,7 +275,7 @@ if (has_scenario && has_emissions) {
 } else {
   p5 <- placeholder_plot("Scenario Comparison")
 }
-rendered <- c(rendered, save_plot(p5, "scenario_comparison.png"))
+track(save_plot(p5, "scenario_comparison.png"))
 
 # ---------------------------------------------------------------------------
 # Graph 6: Summary grid (2×2 mini panels)
@@ -284,7 +301,7 @@ if (!file.exists(grid_file) || opts$force) {
     for (sp in summary_plots) print(sp)
     dev.off()
     on.exit(NULL)   # clear the guard once successfully closed
-    rendered <- c(rendered, grid_file)
+    track(grid_file)
     log_entry <- log_msg("INFO", run_id, "Rendered: summary_grid.png", seed = seed_val)
     write_log_entry(log_file, log_entry)
   }, error = function(e) {
@@ -301,8 +318,10 @@ summary_path <- file.path(run_dir, "summary.json")
 
 git_sha <- tryCatch(
   trimws(system("git rev-parse --short HEAD 2>/dev/null", intern = TRUE)),
-  error = function(e) "unknown"
+  error = function(e) character(0)
 )
+# F07 FIX: system() returns character(0) when git is absent or not in a repo.
+if (length(git_sha) == 0 || nchar(git_sha) == 0) git_sha <- "unknown"
 
 summary_obj <- list(
   run_id          = run_id,

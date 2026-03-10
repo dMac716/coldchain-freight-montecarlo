@@ -11,19 +11,25 @@ FAIL=2
 overall=0
 
 ts() { date -u "+%Y-%m-%dT%H:%M:%SZ"; }
-
 log() {
   local level="$1"; shift
   echo "[$(ts)] [healthcheck] [${level}] $*"
 }
 
+# F04 FIX: replace && assignment with if-statement so set -euo pipefail
+# does not exit when the LHS of && returns non-zero (overall already >= 1).
 check() {
   local label="$1"
   local result="$2"   # 0=ok, 1=warn, 2=fail
   local detail="$3"
-  if   [[ "$result" -eq $PASS ]]; then log "PASS" "${label}: ${detail}"
-  elif [[ "$result" -eq $WARN ]]; then log "WARN" "${label}: ${detail}"; [[ $overall -lt 1 ]] && overall=1
-  else                                  log "FAIL" "${label}: ${detail}"; overall=2
+  if [[ "$result" -eq $PASS ]]; then
+    log "PASS" "${label}: ${detail}"
+  elif [[ "$result" -eq $WARN ]]; then
+    log "WARN" "${label}: ${detail}"
+    if [[ $overall -lt 1 ]]; then overall=1; fi
+  else
+    log "FAIL" "${label}: ${detail}"
+    overall=2
   fi
 }
 

@@ -25,6 +25,14 @@ VALID_STATUSES = {"queued", "running", "completed", "failed",
                   "stalled", "local_only", "promoted"}
 
 
+def _coerce_seed(seed_str: str):
+    """Return seed as int when possible, else keep as string."""
+    try:
+        return int(seed_str)
+    except (ValueError, TypeError):
+        return seed_str
+
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
@@ -96,7 +104,7 @@ def cmd_create(args) -> int:
     record = {
         "run_id":    args.run_id,
         "lane":      args.lane,
-        "seed":      int(args.seed) if args.seed.isdigit() else args.seed,
+        "seed":      _coerce_seed(args.seed),
         "status":    "queued",
         "promoted":  False,
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
