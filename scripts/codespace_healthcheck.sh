@@ -10,11 +10,9 @@ WARN=1
 FAIL=2
 overall=0
 
-ts() { date -u "+%Y-%m-%dT%H:%M:%SZ"; }
-log() {
-  local level="$1"; shift
-  echo "[$(ts)] [healthcheck] [${level}] $*"
-}
+export COLDCHAIN_LOG_TAG="healthcheck"
+# shellcheck source=scripts/lib/log_helpers.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/log_helpers.sh"
 
 # F04 FIX: replace && assignment with if-statement so set -euo pipefail
 # does not exit when the LHS of && returns non-zero (overall already >= 1).
@@ -23,12 +21,12 @@ check() {
   local result="$2"   # 0=ok, 1=warn, 2=fail
   local detail="$3"
   if [[ "$result" -eq $PASS ]]; then
-    log "PASS" "${label}: ${detail}"
+    log_event PASS healthcheck "${label}: ${detail}"
   elif [[ "$result" -eq $WARN ]]; then
-    log "WARN" "${label}: ${detail}"
+    log_event WARN healthcheck "${label}: ${detail}"
     if [[ $overall -lt 1 ]]; then overall=1; fi
   else
-    log "FAIL" "${label}: ${detail}"
+    log_event FAIL healthcheck "${label}: ${detail}"
     overall=2
   fi
 }
@@ -119,11 +117,11 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 if [[ $overall -eq 0 ]]; then
-  log "INFO" "Healthcheck PASSED — Codespace lane is ready."
+  log_event INFO healthcheck "Healthcheck PASSED — Codespace lane is ready."
 elif [[ $overall -eq 1 ]]; then
-  log "WARN" "Healthcheck completed with warnings — lane may have reduced capability."
+  log_event WARN healthcheck "Healthcheck completed with warnings — lane may have reduced capability."
 else
-  log "ERROR" "Healthcheck FAILED — lane is not ready."
+  log_event ERROR healthcheck "Healthcheck FAILED — lane is not ready."
 fi
 
 exit $overall

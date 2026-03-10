@@ -10,14 +10,25 @@ for (f in source_files) source(f, local = FALSE)
 
 option_list <- list(
   make_option(c("--run_group"), type = "character", help = "Run group id"),
-  make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN")
+  make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN"),
+  make_option(c("--distance_mode"), type = "character", default = "FAF_DISTRIBUTION", help = "Distance mode: FAF_DISTRIBUTION, ROAD_NETWORK_FIXED_DEST, ROAD_NETWORK_PHYSICS")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
 if (is.null(opt$run_group)) stop("--run_group is required.")
 mode <- normalize_run_mode(opt$mode)
+distance_mode <- normalize_distance_mode(opt$distance_mode)
+Sys.setenv(DISTANCE_MODE = distance_mode)
+
+configure_log(
+  tag  = "aggregate",
+  lane = Sys.getenv("COLDCHAIN_LANE", unset = "local")
+)
+log_event("INFO", "start", sprintf(
+  "aggregate starting: run_group=%s mode=%s", opt$run_group, opt$mode
+))
 
 inputs <- read_inputs_local()
-assert_mode_data_ready(mode, inputs$scenarios, inputs$histogram_config)
+assert_mode_data_ready(mode, inputs$scenarios, inputs$histogram_config, inputs = inputs, distance_mode = distance_mode)
 
 if (mode == "REAL_RUN" && nrow(inputs$scenario_matrix) > 0) {
   rg_rows <- subset(inputs$scenario_matrix, run_group == opt$run_group)
@@ -43,6 +54,7 @@ for (f in names(artifacts)) {
       a$inputs_hash != ref$inputs_hash ||
       a$metric_definitions_hash != ref$metric_definitions_hash) {
     message("Skipping artifact with mismatched model or inputs: ", f)
+    log_event("WARN", "aggregate", sprintf("skipping mismatched artifact: %s", f))
     next
   }
   keep[[f]] <- a
@@ -158,6 +170,7 @@ for (nm in metric_names) {
 metadata <- list(
   run_group_id = opt$run_group,
   mode = mode,
+  distance_mode = distance_mode,
   model_version = ref$model_version,
   inputs_hash = ref$inputs_hash,
   metric_definitions_hash = ref$metric_definitions_hash,
@@ -170,3 +183,4 @@ writeLines(jsonlite::toJSON(metadata, auto_unbox = TRUE, pretty = TRUE),
            file.path(outdir, "aggregate_metadata.json"))
 
 message("Aggregation complete: ", outdir)
+log_event("INFO", "complete", sprintf("aggregate complete: outdir=%s", outdir))
