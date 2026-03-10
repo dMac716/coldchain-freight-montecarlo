@@ -176,8 +176,19 @@ fi
 
 # ---------------------------------------------------------------------------
 # Upload to GCS or mark local_only
+# COLDCHAIN_SMOKE_DRY_RUN=1 (set by smoke_gcp.sh) logs the upload command
+# but skips the actual gsutil transfer — safe for automated smoke tests.
 # ---------------------------------------------------------------------------
-if gcs_available; then
+SMOKE_DRY_RUN="${COLDCHAIN_SMOKE_DRY_RUN:-0}"
+
+if gcs_available && [[ "${SMOKE_DRY_RUN}" == "1" ]]; then
+  DEST="${GCS_PREFIX}/${RUN_ID}/artifact.tar.gz"
+  log "INFO" "DRY_RUN: would upload to ${DEST} (skipping — COLDCHAIN_SMOKE_DRY_RUN=1)"
+  echo "[$(ts)] [promote_artifact] run_id=\"$RUN_ID\" lane=\"codespace\" seed=\"$SEED\" phase=\"promote\" status=\"INFO\" msg=\"DRY_RUN: skipped upload to ${DEST}\"" >> "$LOG_FILE"
+  update_registry_status "$RUN_ID" "local_only"
+  echo "dry_run_skipped: $DEST"
+  exit 0
+elif gcs_available; then
   DEST="${GCS_PREFIX}/${RUN_ID}/artifact.tar.gz"
   log "INFO" "Uploading to ${DEST} ..."
 

@@ -30,7 +30,7 @@ BQ_DATASET ?= coldchain_sim
 SITE_RUNS_N ?= 50
 RUN_ID ?=
 
-.PHONY: setup validate-inputs preflight test smoke local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
+.PHONY: setup validate-inputs preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
 
 setup:
 	bash tools/bootstrap_local.sh
@@ -47,6 +47,15 @@ test:
 
 smoke:
 	bash tools/smoke_test.sh
+
+smoke-local:
+	bash tools/smoke_local.sh
+
+smoke-codespace:
+	bash tools/smoke_codespace.sh
+
+smoke-gcp:
+	bash tools/smoke_gcp.sh
 
 local:
 	Rscript tools/run_local.R --scenario SMOKE_LOCAL --n 5000 --seed 123 --mode SMOKE_LOCAL --distance_mode $(DISTANCE_MODE) --outdir outputs/local_smoke
