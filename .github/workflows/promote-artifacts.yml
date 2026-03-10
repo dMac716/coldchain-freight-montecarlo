@@ -1,0 +1,85 @@
+name: Promote Run Artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_dir:
+        description: "Path to run directory (e.g. runs/my-run-001)"
+        required: true
+        type: string
+      force:
+        description: "Re-promote even if already promoted"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      gcs_bucket:
+        description: "GCS bucket override (default: gs://coldchain-freight-sources)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+  id-token: write   # Required for Workload Identity Federation
+
+jobs:
+  promote:
+    name: Promote ${{ inputs.run_dir }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate run_dir
+        run: |
+          if [[ ! -d "${{ inputs.run_dir }}" ]]; then
+            echo "::error::run_dir '${{ inputs.run_dir }}' does not exist."
+            exit 1
+          fi
+          if [[ ! -f "${{ inputs.run_dir }}/artifact.tar.gz" ]]; then
+            echo "::error::artifact.tar.gz not found in '${{ inputs.run_dir }}'. Run package-artifacts first."
+            exit 1
+          fi
+
+      # Workload Identity Federation (preferred — no long-lived secrets)
+      - name: Authenticate to GCS via Workload Identity
+        id: auth
+        uses: google-github-actions/auth@v2
+        if: vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        continue-on-error: true
+
+      # Fallback: service account JSON key (legacy)
+      - name: Authenticate to GCS via service account key
+        if: steps.auth.outcome != 'success' && secrets.GCP_SA_KEY != ''
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+        continue-on-error: true
+
+      - name: Set up Cloud SDK
+        if: steps.auth.outcome == 'success' || secrets.GCP_SA_KEY != ''
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Set GCS bucket override
+        if: inputs.gcs_bucket != ''
+        run: echo "COLDCHAIN_GCS_BUCKET=${{ inputs.gcs_bucket }}" >> "$GITHUB_ENV"
+
+      - name: Promote artifact
+        run: |
+          FORCE_FLAG=""
+          [[ "${{ inputs.force }}" == "true" ]] && FORCE_FLAG="--force"
+          bash scripts/promote_artifact.sh "${{ inputs.run_dir }}" $FORCE_FLAG
+
+      - name: Show registry entry
+        if: always()
+        run: |
+          RUN_ID="$(basename '${{ inputs.run_dir }}')"
+          python3 scripts/update_run_registry.py show --run_id "$RUN_ID" || true

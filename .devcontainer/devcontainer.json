@@ -1,7 +1,17 @@
 {
   "name": "coldchain-freight-montecarlo",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "features": {
+    "ghcr.io/devcontainers/features/r:1": {
+      "version": "4.4",
+      "installRMarkdown": false,
+      "installJupyterlab": false
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postCreate.sh && Rscript scripts/bootstrap.R",
+  "mounts": [
+    "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/root/.cache/R/renv,type=bind,consistency=cached"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,8 +22,13 @@
       ],
       "settings": {
         "r.bracketedPaste": true,
-        "files.eol": "\n"
+        "files.eol": "\n",
+        "r.rterm.linux": "/usr/local/bin/R"
       }
     }
+  },
+  "remoteEnv": {
+    "RENV_PATHS_CACHE": "/root/.cache/R/renv",
+    "COLDCHAIN_LANE": "codespace"
   }
 }

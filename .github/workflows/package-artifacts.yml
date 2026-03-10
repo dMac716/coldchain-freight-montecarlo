@@ -1,0 +1,70 @@
+name: Package Run Artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_dir:
+        description: "Path to run directory (e.g. runs/my-run-001)"
+        required: true
+        type: string
+      force:
+        description: "Overwrite existing artifact.tar.gz"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+  workflow_call:
+    inputs:
+      run_dir:
+        description: "Path to run directory"
+        required: true
+        type: string
+      force:
+        required: false
+        default: "false"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Package ${{ inputs.run_dir }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate run_dir input
+        run: |
+          if [[ ! -d "${{ inputs.run_dir }}" ]]; then
+            echo "::error::run_dir '${{ inputs.run_dir }}' does not exist."
+            exit 1
+          fi
+
+      - name: Package artifact
+        run: |
+          FORCE_FLAG=""
+          [[ "${{ inputs.force }}" == "true" ]] && FORCE_FLAG="--force"
+          bash scripts/package_run_artifact.sh "${{ inputs.run_dir }}" $FORCE_FLAG
+
+      - name: Show artifact info
+        run: |
+          ARTIFACT="${{ inputs.run_dir }}/artifact.tar.gz"
+          if [[ -f "$ARTIFACT" ]]; then
+            echo "Artifact size: $(du -sh "$ARTIFACT" | cut -f1)"
+            echo "Contents:"
+            tar -tzf "$ARTIFACT"
+          fi
+
+      - name: Upload packaged artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-artifact-${{ github.run_id }}
+          path: ${{ inputs.run_dir }}/artifact.tar.gz
+          if-no-files-found: error
+          retention-days: 90
