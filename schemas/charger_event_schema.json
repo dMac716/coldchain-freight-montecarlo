@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/dMac716/coldchain-freight-montecarlo/schemas/charger_event_schema.json",
+  "title": "ChargerStopEvent",
+  "description": "Per-charge-stop event record emitted by the stochastic charger availability feature. One row per charge-stop attempt per simulation draw. Written to runs/<run_id>/charging_events.csv (CSV) or charging_events.jsonl (JSONL).",
+  "type": "object",
+  "required": [
+    "run_id",
+    "draw_index",
+    "stop_index",
+    "charger_id",
+    "station_id",
+    "compatible",
+    "charger_state",
+    "wait_time_minutes",
+    "charge_duration_minutes",
+    "pre_charge_soc",
+    "post_charge_soc"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique identifier for the simulation run (matches runs/index.json and manifest.json)."
+    },
+    "draw_index": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monte Carlo draw index within this run (0-based)."
+    },
+    "stop_index": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Charge-stop sequence number within this draw (0-based)."
+    },
+    "t_arrive_minutes": {
+      "type": ["number", "null"],
+      "description": "Elapsed simulation time (minutes from trip start) at charger arrival."
+    },
+    "charger_id": {
+      "type": "string",
+      "description": "Charger identifier from the charger dataset (charger_id column)."
+    },
+    "station_id": {
+      "type": "string",
+      "description": "Station identifier (station_id or corridor_id from charger dataset)."
+    },
+    "station_class": {
+      "type": ["string", "null"],
+      "enum": ["highway_corridor", "urban", "depot", "unknown", null],
+      "description": "Station class used for modifier lookup."
+    },
+    "compatible": {
+      "type": "boolean",
+      "description": "True if the charger connector and power are compatible with the vehicle."
+    },
+    "incompatibility_reason": {
+      "type": ["string", "null"],
+      "description": "Reason compatibility check failed, or null if compatible=true. Examples: 'connector_mismatch', 'power_below_minimum'."
+    },
+    "charger_state": {
+      "type": "string",
+      "enum": ["available", "occupied", "broken", "skipped"],
+      "description": "Charger availability state at time of arrival. 'skipped' means the stop was bypassed (e.g., sufficient SOC)."
+    },
+    "p_broken_effective": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Effective p_broken after station-class and time-of-day modifiers."
+    },
+    "p_occupied_effective": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Effective p_occupied_given_not_broken after modifiers."
+    },
+    "wait_time_minutes": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Actual wait time incurred (minutes). Zero if charger was immediately available."
+    },
+    "charge_duration_minutes": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Duration of active charging (minutes). Zero if charge did not occur."
+    },
+    "energy_delivered_kwh": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Energy delivered to vehicle battery (kWh)."
+    },
+    "charger_power_kw_used": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Effective charger power during this stop (kW)."
+    },
+    "pre_charge_soc": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "State-of-charge at charger arrival (fraction, 0–1)."
+    },
+    "post_charge_soc": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "State-of-charge at charger departure (fraction, 0–1)."
+    },
+    "reefer_runtime_increment_minutes": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Additional reefer (transport refrigeration unit) runtime caused by this stop's wait time (minutes)."
+    },
+    "hos_delay_minutes": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Hours-of-service delay attributable to charger wait at this stop (minutes)."
+    },
+    "detour_miles": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Miles of detour to reach this charger from the main route."
+    },
+    "along_route_miles": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Distance from trip origin to charger insertion point (miles)."
+    },
+    "seed": {
+      "type": ["integer", "null"],
+      "description": "RNG seed used for this draw."
+    },
+    "lane": {
+      "type": ["string", "null"],
+      "description": "Compute lane that produced this record."
+    },
+    "scenario_id": {
+      "type": ["string", "null"],
+      "description": "Scenario identifier from scenario_matrix.csv."
+    },
+    "powertrain": {
+      "type": ["string", "null"],
+      "description": "Powertrain configuration (e.g., 'bev_ecascadia', 'diesel_reefer')."
+    }
+  },
+  "additionalProperties": false
+}

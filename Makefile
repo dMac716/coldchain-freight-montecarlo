@@ -31,6 +31,12 @@ ALL           ?=                # set ALL=1 to include healthy/ignored runs
 # -- Metadata consistency check -----------------------------------------------
 STRICT        ?=                # set STRICT=1 to treat WARN as FAIL
 
+# -- Stochastic charging analysis --------------------------------------------
+CHARGER_RUN_DIR ?=                # run dir for charging analysis targets
+DET_RUN_DIR     ?=                # deterministic baseline run dir (compare-charger-scenarios)
+STOCH_RUN_DIR   ?=                # stochastic run dir             (compare-charger-scenarios)
+CONGESTION      ?= moderate       # preset: baseline | moderate | stressed | severe
+
 # -- Route / geo tools --------------------------------------------------------
 PROVIDER             ?= osrm
 ROUTE_ALTS           ?= 3
@@ -69,7 +75,7 @@ SITE_RUNS_N  ?= 50
   local real aggregate clean-chunks \
   render-graphs validate-graphs package promote \
   run-summary triage-runs check-run-metadata env-check canonical-readiness \
-  distances-petco routes-petco elevation ev-stations-cache bev-route-plans \
+  pilot-congestion-run summarize-charging-events render-charging-plots compare-charger-scenarios \
   route-sim route-sim-mc route-sim-coord route-sim-summary \
   bq setup-bq publish-run refresh-site-bq \
   derive-ui ui proposal
@@ -234,6 +240,46 @@ route-sim-coord: ## Coordinated multi-worker route simulation (SIM_WORKERS, SIM_
 
 route-sim-summary: ## Summarise route simulation outputs into analysis tables
 	Rscript tools/summarize_route_sim_outputs.R --tracks_dir outputs/sim_tracks --events_dir outputs/sim_events --outdir outputs/analysis
+
+# ===========================================================================
+##@ Stochastic charging analysis  (CHARGER_RUN_DIR=runs/<run_id> required for most targets)
+# ===========================================================================
+
+pilot-congestion-run: ## Run a pilot MC route sim with stochastic charger availability (CONGESTION preset)
+	@echo "Running pilot congestion scenario: CONGESTION=$(CONGESTION)"
+	Rscript tools/run_route_sim_mc.R \
+	  --config test_kit.yaml \
+	  --scenario SMOKE_LOCAL \
+	  --product_type refrigerated \
+	  --powertrain bev_ecascadia \
+	  --trip_leg delivery \
+	  --n 20 \
+	  --seed 9001 \
+	  --artifact_mode local \
+	  --bundle_root outputs/run_bundle/pilot_congestion/$(CONGESTION) \
+	  --summary_out outputs/run_bundle/pilot_congestion/$(CONGESTION)/route_sim_summary.csv \
+	  --runs_out    outputs/run_bundle/pilot_congestion/$(CONGESTION)/route_sim_runs.csv
+
+summarize-charging-events: ## Summarise per-charge-stop events into QA table (CHARGER_RUN_DIR required)
+	@test -n "$(CHARGER_RUN_DIR)" || (echo "ERROR: CHARGER_RUN_DIR is required.  make summarize-charging-events CHARGER_RUN_DIR=runs/<run_id>"; exit 1)
+	Rscript scripts/summarize_charging_events.R \
+	  --run_dir "$(CHARGER_RUN_DIR)" \
+	  --format  "$(if $(FORMAT),$(FORMAT),both)"
+
+render-charging-plots: ## Render standard charging analysis plots (CHARGER_RUN_DIR required)
+	@test -n "$(CHARGER_RUN_DIR)" || (echo "ERROR: CHARGER_RUN_DIR is required.  make render-charging-plots CHARGER_RUN_DIR=runs/<run_id>"; exit 1)
+	Rscript scripts/render_charging_plots.R \
+	  --run_dir "$(CHARGER_RUN_DIR)" \
+	  $(if $(FORCE),--force true)
+
+compare-charger-scenarios: ## Compare deterministic vs stochastic runs (DET_RUN_DIR + STOCH_RUN_DIR required)
+	@test -n "$(DET_RUN_DIR)"   || (echo "ERROR: DET_RUN_DIR is required.   make compare-charger-scenarios DET_RUN_DIR=runs/A STOCH_RUN_DIR=runs/B"; exit 1)
+	@test -n "$(STOCH_RUN_DIR)" || (echo "ERROR: STOCH_RUN_DIR is required.  make compare-charger-scenarios DET_RUN_DIR=runs/A STOCH_RUN_DIR=runs/B"; exit 1)
+	Rscript scripts/compare_charger_scenarios.R \
+	  --det_run_dir   "$(DET_RUN_DIR)" \
+	  --stoch_run_dir "$(STOCH_RUN_DIR)" \
+	  --outdir        "$(if $(RUN_DIR),$(RUN_DIR)/charger_comparison,outputs/analysis/charger_comparison)" \
+	  $(if $(FORCE),--force true)
 
 # ===========================================================================
 ##@ GCP and BigQuery  (GCP_PROJECT required)
