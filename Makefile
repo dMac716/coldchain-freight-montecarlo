@@ -30,7 +30,7 @@ BQ_DATASET ?= coldchain_sim
 SITE_RUNS_N ?= 50
 RUN_ID ?=
 
-.PHONY: setup validate-inputs validate-graphs run-summary preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
+.PHONY: setup validate-inputs validate-graphs run-summary triage-runs preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
 
 setup:
 	bash tools/bootstrap_local.sh
@@ -54,6 +54,25 @@ run-summary:
 	  $(if $(SORT),  --sort   "$(SORT)")  \
 	  $(if $(STATUS),--status "$(STATUS)") \
 	  $(if $(LANE),  --lane   "$(LANE)")
+
+## Stale-run triage — classify all runs and recommend actions
+# Options (all optional):
+#   FORMAT=table|csv|json    output format                  (default: table)
+#   STALE_HOURS=N            stall threshold in hours       (default: 1)
+#   ACTION=retry|promote|…   filter to one action type
+#   ALL=1                    include healthy/ignored runs
+triage-runs:
+	@python3 scripts/triage_runs.py \
+	  --format "$(if $(FORMAT),$(FORMAT),table)" \
+	  $(if $(STALE_HOURS), --stale-hours "$(STALE_HOURS)") \
+	  $(if $(ACTION),      --action      "$(ACTION)") \
+	  $(if $(ALL),         --all) ; \
+	  status=$$?; \
+	  if [ $$status -eq 1 ]; then \
+	    echo "" >&2; \
+	    echo "⚠  Actionable issues found. See ACTION column above." >&2; \
+	  fi; \
+	  exit 0
 
 preflight:
 	$(MAKE) validate-inputs MODE=$(MODE)
