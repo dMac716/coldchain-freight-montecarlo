@@ -30,7 +30,7 @@ BQ_DATASET ?= coldchain_sim
 SITE_RUNS_N ?= 50
 RUN_ID ?=
 
-.PHONY: setup validate-inputs validate-graphs run-summary triage-runs preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
+.PHONY: setup validate-inputs validate-graphs run-summary triage-runs check-run-metadata preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
 
 setup:
 	bash tools/bootstrap_local.sh
@@ -41,6 +41,19 @@ validate-inputs:
 validate-graphs:
 	@test -n "$(RUN_DIR)" || (echo "ERROR: RUN_DIR is required. Usage: make validate-graphs RUN_DIR=runs/<run_id>"; exit 1)
 	python3 scripts/validate_graph_pack.py --run_dir $(RUN_DIR)
+
+## Metadata consistency — cross-check run_id/seed/lane/git_sha across all sources
+# Required:
+#   RUN_DIR=runs/<run_id>
+# Options (all optional):
+#   FORMAT=json|table|text   output format    (default: json)
+#   STRICT=1                 treat WARN as FAIL
+check-run-metadata:
+	@test -n "$(RUN_DIR)" || (echo "ERROR: RUN_DIR is required. Usage: make check-run-metadata RUN_DIR=runs/<run_id>"; exit 1)
+	@python3 scripts/check_run_metadata.py \
+	  --run_dir "$(RUN_DIR)" \
+	  --format  "$(if $(FORMAT),$(FORMAT),json)" \
+	  $(if $(STRICT), --strict)
 
 ## Run summary — overview of all registered runs
 # Options (all optional):
