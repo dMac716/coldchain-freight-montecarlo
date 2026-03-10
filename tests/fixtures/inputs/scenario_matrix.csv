@@ -1,0 +1,2 @@
+"variant_id","scenario_id","product_mode","spatial_structure","powertrain","powertrain_config","trailer_type","refrigeration_mode","grid_case","run_group","status","notes"
+"SMOKE_LOCAL_DIESEL_REEFER","SMOKE_LOCAL","REFRIGERATED","SMOKE_LOCAL","diesel","DIESEL_TRU_DIESEL","refrigerated","diesel_tru","NA","SMOKE_LOCAL","SMOKE_READY","Fixture variant — smoke / CI use only"

@@ -64,7 +64,7 @@ SITE_RUNS_N  ?= 50
 # ===========================================================================
 
 .PHONY: help \
-  setup validate-inputs preflight test \
+  setup validate-inputs preflight test gen-fixtures \
   smoke smoke-local smoke-codespace smoke-gcp \
   local real aggregate clean-chunks \
   render-graphs validate-graphs package promote \
@@ -106,6 +106,9 @@ preflight: ## Full preflight: validate inputs + scenario/variant/distance check
 
 test: ## Run unit test suite (testthat)
 	Rscript -e 'testthat::test_dir("tests/testthat")'
+
+gen-fixtures: ## Regenerate tests/fixtures/ deterministically from hardcoded constants
+	Rscript scripts/gen_test_fixtures.R
 
 # ===========================================================================
 ##@ Smoke tests (one per compute lane)

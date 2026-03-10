@@ -3,6 +3,25 @@
 
 library(testthat)
 
+# ---------------------------------------------------------------------------
+# On-disk fixture bundle helpers
+# Point at the pre-generated CSV bundle in tests/fixtures/.
+# Regenerate with: Rscript scripts/gen_test_fixtures.R  (or make gen-fixtures)
+# ---------------------------------------------------------------------------
+
+fixture_dir <- function() {
+  # Works whether tests are run from the repo root or from tests/testthat/
+  candidate <- file.path(dirname(dirname(testthat::test_path())), "fixtures")
+  if (!dir.exists(candidate)) {
+    candidate <- file.path(getwd(), "tests", "fixtures")
+  }
+  if (!dir.exists(candidate)) stop("fixtures dir not found: ", candidate)
+  candidate
+}
+
+fixture_inputs_path  <- function() file.path(fixture_dir(), "inputs")
+fixture_derived_path <- function() file.path(fixture_dir(), "derived")
+
 fixture_inputs_small <- function() {
   list(
     FU_kcal = 1000,
@@ -29,11 +48,11 @@ fixture_inputs_small <- function() {
 # Deterministic histogram config for tests
 fixture_hist_config <- function() {
   list(
-    metric = c("gco2_dry", "gco2_reefer", "diff_gco2", "ratio"),
+    metric = c("ghg_traction", "ghg_refrigeration", "ghg_total", "gco2_dry", "gco2_reefer", "diff_gco2", "ratio"),
     # Chosen to safely cover plausible ranges for fixtures
-    min = c(0, 0, -10000, 0),
-    max = c(50000, 50000, 50000, 5),
-    bins = c(200, 200, 200, 200)
+    min = c(0, 0, 0, 0, 0, -10000, 0),
+    max = c(50000, 50000, 50000, 50000, 50000, 50000, 5),
+    bins = c(200, 200, 200, 200, 200, 200, 200)
   )
 }
 
