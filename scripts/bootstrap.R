@@ -10,6 +10,28 @@ log_msg <- function(level, msg) {
 }
 
 # ---------------------------------------------------------------------------
+# renv.lock awareness — prefer locked versions when renv is available
+# ---------------------------------------------------------------------------
+renv_lock <- "renv.lock"
+if (file.exists(renv_lock)) {
+  log_msg("INFO", "renv.lock detected — attempting renv::restore() for locked package versions.")
+  renv_ok <- tryCatch({
+    if (!requireNamespace("renv", quietly = TRUE)) {
+      install.packages("renv", repos = "https://cloud.r-project.org", quiet = TRUE)
+    }
+    renv::restore(prompt = FALSE)
+    TRUE
+  }, error = function(e) {
+    log_msg("WARN", paste("renv::restore() failed, falling back to manual install:", conditionMessage(e)))
+    FALSE
+  })
+  if (isTRUE(renv_ok)) {
+    log_msg("INFO", "renv::restore() succeeded.")
+    # Still verify the specific required packages below
+  }
+}
+
+# ---------------------------------------------------------------------------
 # Required packages
 # ---------------------------------------------------------------------------
 required_pkgs <- c(

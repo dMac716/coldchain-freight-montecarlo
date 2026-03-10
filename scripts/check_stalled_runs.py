@@ -16,6 +16,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 REGISTRY_PATH  = Path("runs/index.json")
 HEARTBEAT_FILE = "heartbeat.txt"
@@ -74,7 +75,7 @@ def save_registry(records: list) -> None:
 # ---------------------------------------------------------------------------
 # Heartbeat check
 # ---------------------------------------------------------------------------
-def heartbeat_age_seconds(run_dir: Path) -> float | None:
+def heartbeat_age_seconds(run_dir: Path) -> Optional[float]:
     """Return age in seconds of heartbeat.txt, or None if not present."""
     hb = run_dir / HEARTBEAT_FILE
     if not hb.exists():

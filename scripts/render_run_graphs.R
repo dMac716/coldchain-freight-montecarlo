@@ -274,16 +274,24 @@ summary_plots <- list(make_mini(p1), make_mini(p2), make_mini(p3), make_mini(p4)
 
 grid_file <- file.path(graphs_dir, "summary_grid.png")
 if (!file.exists(grid_file) || opts$force) {
-  png(grid_file,
-      width  = as.integer(opts$width  * opts$dpi),
-      height = as.integer(opts$height * opts$dpi),
-      res    = opts$dpi)
-  graphics::layout(matrix(1:4, nrow = 2))
-  for (sp in summary_plots) print(sp)
-  dev.off()
-  rendered <- c(rendered, grid_file)
-  log_entry <- log_msg("INFO", run_id, "Rendered: summary_grid.png", seed = seed_val)
-  write_log_entry(log_file, log_entry)
+  tryCatch({
+    png(grid_file,
+        width  = as.integer(opts$width  * opts$dpi),
+        height = as.integer(opts$height * opts$dpi),
+        res    = opts$dpi)
+    on.exit(if (length(dev.list()) > 0) dev.off(), add = TRUE)
+    graphics::layout(matrix(1:4, nrow = 2))
+    for (sp in summary_plots) print(sp)
+    dev.off()
+    on.exit(NULL)   # clear the guard once successfully closed
+    rendered <- c(rendered, grid_file)
+    log_entry <- log_msg("INFO", run_id, "Rendered: summary_grid.png", seed = seed_val)
+    write_log_entry(log_file, log_entry)
+  }, error = function(e) {
+    log_msg("WARN", run_id,
+            paste("summary_grid.png failed:", conditionMessage(e)))
+    if (file.exists(grid_file)) file.remove(grid_file)
+  })
 }
 
 # ---------------------------------------------------------------------------

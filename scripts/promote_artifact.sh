@@ -124,8 +124,8 @@ gcs_available() {
   if [[ -n "${CLOUDSDK_AUTH_ACCESS_TOKEN:-}" ]]; then
     return 0
   fi
-  # Try application default credentials
-  if gcloud auth application-default print-access-token >/dev/null 2>&1; then
+  # Try application default credentials (with timeout to avoid interactive hang)
+  if timeout 10 gcloud auth application-default print-access-token >/dev/null 2>&1; then
     return 0
   fi
   return 1

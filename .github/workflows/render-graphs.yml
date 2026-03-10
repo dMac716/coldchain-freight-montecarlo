@@ -30,9 +30,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate run_dir input
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
         run: |
-          if [[ ! -d "${{ inputs.run_dir }}" ]]; then
-            echo "::error::run_dir '${{ inputs.run_dir }}' does not exist in this workspace."
+          if [[ ! -d "$RUN_DIR" ]]; then
+            echo "::error::run_dir '$RUN_DIR' does not exist in this workspace."
             exit 1
           fi
 
@@ -61,16 +63,21 @@ jobs:
         run: Rscript scripts/bootstrap.R
 
       - name: Render graphs
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
+          FORCE_INPUT: ${{ inputs.force }}
         run: |
           FORCE_FLAG=""
-          [[ "${{ inputs.force }}" == "true" ]] && FORCE_FLAG="--force"
+          [[ "$FORCE_INPUT" == "true" ]] && FORCE_FLAG="--force"
           Rscript scripts/render_run_graphs.R \
-            --run_dir "${{ inputs.run_dir }}" \
+            --run_dir "$RUN_DIR" \
             $FORCE_FLAG
 
       - name: Show summary
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
         run: |
-          SUMMARY="${{ inputs.run_dir }}/summary.json"
+          SUMMARY="${RUN_DIR}/summary.json"
           if [[ -f "$SUMMARY" ]]; then
             echo "--- summary.json ---"
             cat "$SUMMARY"

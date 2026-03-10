@@ -36,13 +36,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate run_dir
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
         run: |
-          if [[ ! -d "${{ inputs.run_dir }}" ]]; then
-            echo "::error::run_dir '${{ inputs.run_dir }}' does not exist."
+          if [[ ! -d "$RUN_DIR" ]]; then
+            echo "::error::run_dir '$RUN_DIR' does not exist."
             exit 1
           fi
-          if [[ ! -f "${{ inputs.run_dir }}/artifact.tar.gz" ]]; then
-            echo "::error::artifact.tar.gz not found in '${{ inputs.run_dir }}'. Run package-artifacts first."
+          if [[ ! -f "$RUN_DIR/artifact.tar.gz" ]]; then
+            echo "::error::artifact.tar.gz not found in '$RUN_DIR'. Run package-artifacts first."
             exit 1
           fi
 
@@ -73,13 +75,18 @@ jobs:
         run: echo "COLDCHAIN_GCS_BUCKET=${{ inputs.gcs_bucket }}" >> "$GITHUB_ENV"
 
       - name: Promote artifact
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
+          FORCE_INPUT: ${{ inputs.force }}
         run: |
           FORCE_FLAG=""
-          [[ "${{ inputs.force }}" == "true" ]] && FORCE_FLAG="--force"
-          bash scripts/promote_artifact.sh "${{ inputs.run_dir }}" $FORCE_FLAG
+          [[ "$FORCE_INPUT" == "true" ]] && FORCE_FLAG="--force"
+          bash scripts/promote_artifact.sh "$RUN_DIR" $FORCE_FLAG
 
       - name: Show registry entry
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
         if: always()
         run: |
-          RUN_ID="$(basename '${{ inputs.run_dir }}')"
+          RUN_ID="$(basename "$RUN_DIR")"
           python3 scripts/update_run_registry.py show --run_id "$RUN_ID" || true

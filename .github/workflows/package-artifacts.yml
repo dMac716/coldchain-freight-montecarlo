@@ -40,21 +40,28 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate run_dir input
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
         run: |
-          if [[ ! -d "${{ inputs.run_dir }}" ]]; then
-            echo "::error::run_dir '${{ inputs.run_dir }}' does not exist."
+          if [[ ! -d "$RUN_DIR" ]]; then
+            echo "::error::run_dir '$RUN_DIR' does not exist."
             exit 1
           fi
 
       - name: Package artifact
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
+          FORCE_INPUT: ${{ inputs.force }}
         run: |
           FORCE_FLAG=""
-          [[ "${{ inputs.force }}" == "true" ]] && FORCE_FLAG="--force"
-          bash scripts/package_run_artifact.sh "${{ inputs.run_dir }}" $FORCE_FLAG
+          [[ "$FORCE_INPUT" == "true" ]] && FORCE_FLAG="--force"
+          bash scripts/package_run_artifact.sh "$RUN_DIR" $FORCE_FLAG
 
       - name: Show artifact info
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
         run: |
-          ARTIFACT="${{ inputs.run_dir }}/artifact.tar.gz"
+          ARTIFACT="${RUN_DIR}/artifact.tar.gz"
           if [[ -f "$ARTIFACT" ]]; then
             echo "Artifact size: $(du -sh "$ARTIFACT" | cut -f1)"
             echo "Contents:"
