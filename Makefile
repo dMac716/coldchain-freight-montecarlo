@@ -68,7 +68,7 @@ SITE_RUNS_N  ?= 50
   smoke smoke-local smoke-codespace smoke-gcp \
   local real aggregate clean-chunks \
   render-graphs validate-graphs package promote \
-  run-summary triage-runs check-run-metadata \
+  run-summary triage-runs check-run-metadata env-check \
   distances-petco routes-petco elevation ev-stations-cache bev-route-plans \
   route-sim route-sim-mc route-sim-coord route-sim-summary \
   bq setup-bq publish-run refresh-site-bq \
@@ -186,6 +186,9 @@ triage-runs: ## Classify runs by health issue and recommend actions (STALE_HOURS
 	    echo "  Actionable issues found. See ACTION column above." >&2; \
 	  fi; \
 	  exit 0
+
+env-check: ## Classify compute environment (canonical-capable / graphing-only / packaging-only / unsupported)
+	@bash scripts/env_classify.sh; exit 0
 
 check-run-metadata: ## Cross-check metadata consistency for one run (RUN_DIR required; FORMAT, STRICT)
 	@test -n "$(RUN_DIR)" || (echo "ERROR: RUN_DIR is required.  make check-run-metadata RUN_DIR=runs/<run_id>"; exit 1)
