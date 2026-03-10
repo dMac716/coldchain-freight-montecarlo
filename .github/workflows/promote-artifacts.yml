@@ -25,9 +25,13 @@ permissions:
   contents: read
   id-token: write   # Required for Workload Identity Federation
 
+concurrency:
+  group: promote-${{ github.repository }}-${{ inputs.run_dir }}
+  cancel-in-progress: false   # never cancel an in-flight GCS upload
+
 jobs:
   promote:
-    name: Promote ${{ inputs.run_dir }}
+    name: Promote — ${{ inputs.run_dir }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -38,7 +42,9 @@ jobs:
       - name: Validate run_dir
         env:
           RUN_DIR: ${{ inputs.run_dir }}
+        shell: bash
         run: |
+          set -euo pipefail
           if [[ ! -d "$RUN_DIR" ]]; then
             echo "::error::run_dir '$RUN_DIR' does not exist."
             exit 1
@@ -70,23 +76,38 @@ jobs:
         if: steps.auth.outcome == 'success' || secrets.GCP_SA_KEY != ''
         uses: google-github-actions/setup-gcloud@v2
 
+      # F01 FIX: never interpolate ${{ inputs.* }} directly into run: blocks.
+      # Assign to env: key; reference the env var inside the shell script.
       - name: Set GCS bucket override
         if: inputs.gcs_bucket != ''
-        run: echo "COLDCHAIN_GCS_BUCKET=${{ inputs.gcs_bucket }}" >> "$GITHUB_ENV"
+        env:
+          GCS_BUCKET_INPUT: ${{ inputs.gcs_bucket }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "COLDCHAIN_GCS_BUCKET=${GCS_BUCKET_INPUT}" >> "$GITHUB_ENV"
 
       - name: Promote artifact
         env:
           RUN_DIR: ${{ inputs.run_dir }}
           FORCE_INPUT: ${{ inputs.force }}
+        shell: bash
         run: |
+          set -euo pipefail
           FORCE_FLAG=""
-          [[ "$FORCE_INPUT" == "true" ]] && FORCE_FLAG="--force"
+          if [[ "$FORCE_INPUT" == "true" ]]; then FORCE_FLAG="--force"; fi
           bash scripts/promote_artifact.sh "$RUN_DIR" $FORCE_FLAG
 
       - name: Show registry entry
         env:
           RUN_DIR: ${{ inputs.run_dir }}
         if: always()
+        shell: bash
         run: |
+          set -euo pipefail
           RUN_ID="$(basename "$RUN_DIR")"
-          python3 scripts/update_run_registry.py show --run_id "$RUN_ID" || true
+          # F15 FIX: update_run_registry.py has no 'show' command.
+          # Use run_summary.py and filter to this run_id via env var.
+          COLDCHAIN_RUN_ID="$RUN_ID" \
+            python3 -c "import json,sys,os; rid=os.environ['COLDCHAIN_RUN_ID']; rows=[r for r in json.loads(open('runs/index.json').read()) if r.get('run_id')==rid]; print(json.dumps(rows[0] if rows else {'note':'not found','run_id':rid}, indent=2))" \
+            || echo "(registry unavailable)"

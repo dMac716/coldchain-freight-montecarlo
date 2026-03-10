@@ -17,13 +17,18 @@ on:
       - 'README.md'
       - 'AGENTS.md'
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   r-ci:
+    name: R CI
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     env:
       # Force offline-first behavior in CI

@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: codespace-health-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   healthcheck:
     name: Codespace Lane Health
@@ -42,7 +46,13 @@ jobs:
             libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev
 
       - name: Bootstrap R packages
-        run: Rscript scripts/bootstrap.R
+        shell: bash
+        run: |
+          set -euo pipefail
+          Rscript scripts/bootstrap.R
 
       - name: Run healthcheck
-        run: bash scripts/codespace_healthcheck.sh
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/codespace_healthcheck.sh

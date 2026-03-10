@@ -19,9 +19,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: render-${{ github.repository }}-${{ inputs.run_dir }}
+  cancel-in-progress: false
+
 jobs:
   render:
-    name: Render graphs for ${{ inputs.run_dir }}
+    name: Render graphs — ${{ inputs.run_dir }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -32,11 +36,23 @@ jobs:
       - name: Validate run_dir input
         env:
           RUN_DIR: ${{ inputs.run_dir }}
+        shell: bash
         run: |
+          set -euo pipefail
           if [[ ! -d "$RUN_DIR" ]]; then
             echo "::error::run_dir '$RUN_DIR' does not exist in this workspace."
             exit 1
           fi
+
+      - name: Derive run basename for artifact naming
+        id: run_info
+        env:
+          RUN_DIR: ${{ inputs.run_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_BASENAME="$(basename "$RUN_DIR")"
+          echo "run_basename=${RUN_BASENAME}" >> "$GITHUB_OUTPUT"
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -66,9 +82,11 @@ jobs:
         env:
           RUN_DIR: ${{ inputs.run_dir }}
           FORCE_INPUT: ${{ inputs.force }}
+        shell: bash
         run: |
+          set -euo pipefail
           FORCE_FLAG=""
-          [[ "$FORCE_INPUT" == "true" ]] && FORCE_FLAG="--force"
+          if [[ "$FORCE_INPUT" == "true" ]]; then FORCE_FLAG="--force"; fi
           Rscript scripts/render_run_graphs.R \
             --run_dir "$RUN_DIR" \
             $FORCE_FLAG
@@ -76,7 +94,9 @@ jobs:
       - name: Show summary
         env:
           RUN_DIR: ${{ inputs.run_dir }}
+        shell: bash
         run: |
+          set -euo pipefail
           SUMMARY="${RUN_DIR}/summary.json"
           if [[ -f "$SUMMARY" ]]; then
             echo "--- summary.json ---"
@@ -87,7 +107,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: graphs-${{ github.run_id }}
+          name: graphs-${{ steps.run_info.outputs.run_basename }}-${{ github.run_id }}
           path: ${{ inputs.run_dir }}/graphs/
           if-no-files-found: warn
           retention-days: 30
