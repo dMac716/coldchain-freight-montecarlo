@@ -30,13 +30,17 @@ BQ_DATASET ?= coldchain_sim
 SITE_RUNS_N ?= 50
 RUN_ID ?=
 
-.PHONY: setup validate-inputs preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
+.PHONY: setup validate-inputs validate-graphs preflight test smoke smoke-local smoke-codespace smoke-gcp local real aggregate bq clean-chunks derive-ui ui proposal distances-petco routes-petco elevation ev-stations-cache bev-route-plans route-sim route-sim-mc route-sim-coord route-sim-summary setup-bq publish-run refresh-site-bq
 
 setup:
 	bash tools/bootstrap_local.sh
 
 validate-inputs:
 	Rscript tools/validate_inputs.R --mode $(MODE)
+
+validate-graphs:
+	@test -n "$(RUN_DIR)" || (echo "ERROR: RUN_DIR is required. Usage: make validate-graphs RUN_DIR=runs/<run_id>"; exit 1)
+	python3 scripts/validate_graph_pack.py --run_dir $(RUN_DIR)
 
 preflight:
 	$(MAKE) validate-inputs MODE=$(MODE)
