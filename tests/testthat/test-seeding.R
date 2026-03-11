@@ -69,6 +69,24 @@ test_that("derive_shard_seed is deterministic", {
   expect_equal(derive_shard_seed(42L, 3L), derive_shard_seed(42L, 3L))
 })
 
+test_that("derive_shard_seed: same master_seed and shard_id always return same seed", {
+  # Check several (master_seed, shard_id) pairs to guard against accidental
+  # global-state coupling between calls.
+  pairs <- list(c(1L, 0L), c(42L, 7L), c(9999L, 0L), c(1L, 99L), c(2147483L, 50L))
+  for (p in pairs) {
+    expect_identical(derive_shard_seed(p[[1]], p[[2]]), derive_shard_seed(p[[1]], p[[2]]))
+  }
+})
+
+test_that("derive_shard_seed: different shard_id values return different seeds", {
+  # Use derive_shard_seed directly (not via derive_shard_seeds) to confirm
+  # the single-shard entry point also satisfies the uniqueness property.
+  m     <- 77L
+  ids   <- c(0L, 1L, 2L, 10L, 100L, 999L)
+  seeds <- vapply(ids, function(i) derive_shard_seed(m, i), integer(1L))
+  expect_equal(length(unique(seeds)), length(ids))
+})
+
 # ---------------------------------------------------------------------------
 # derive_variant_seed
 # ---------------------------------------------------------------------------
@@ -100,6 +118,54 @@ test_that("derive_variant_seed is consistent with run_chunk.R pattern", {
   expected <- shard_seed + seq_len(n_variants) - 1L
   got      <- vapply(seq_len(n_variants), function(i) derive_variant_seed(shard_seed, i), integer(1L))
   expect_equal(got, expected)
+})
+
+# ---------------------------------------------------------------------------
+# derive_run_seed
+# ---------------------------------------------------------------------------
+
+test_that("derive_run_seed: same shard_seed and run_id always return same seed", {
+  # Pairs: (shard_seed, run_id).  Includes an edge case near INT_MAX to catch
+  # any overflow-induced non-determinism.
+  pairs <- list(
+    c(1000L, 1L),
+    c(500L,  5L),
+    c(12345L, 3L),
+    c(.Machine$integer.max - 1L, 1L)
+  )
+  for (p in pairs) {
+    a <- derive_run_seed(as.integer(p[[1]]), as.integer(p[[2]]))
+    b <- derive_run_seed(as.integer(p[[1]]), as.integer(p[[2]]))
+    expect_identical(a, b)
+  }
+})
+
+test_that("derive_run_seed: different run_id values return different seeds", {
+  shard_seed <- 12345L
+  run_ids    <- 1:10
+  seeds      <- vapply(run_ids, function(r) derive_run_seed(shard_seed, r), integer(1L))
+  expect_equal(length(unique(seeds)), length(run_ids))
+})
+
+# ---------------------------------------------------------------------------
+# Stability
+# ---------------------------------------------------------------------------
+
+test_that("seed derivation is stable across repeated calls with no RNG side effects", {
+  # Prime the RNG so .Random.seed exists before the calls.
+  set.seed(7L)
+  rng_before <- .Random.seed
+
+  shard <- derive_shard_seed(11L, 3L)
+  run   <- derive_run_seed(shard, 2L)
+
+  for (i in seq_len(9L)) {
+    expect_identical(derive_shard_seed(11L, 3L), shard)
+    expect_identical(derive_run_seed(shard, 2L), run)
+  }
+
+  # Derivation functions must not touch the caller's RNG state.
+  expect_identical(.Random.seed, rng_before)
 })
 
 # ---------------------------------------------------------------------------
