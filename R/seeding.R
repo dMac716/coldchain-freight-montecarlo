@@ -2,98 +2,87 @@
 # Deterministic hierarchical seed derivation for publishable-research MC runs.
 #
 # Seed chain:
-#   master_seed  (experiment-level, user-provided integer)
-#     └─ shard_seed[i]  derived via set.seed(master_seed) + sample.int (at init time)
-#          └─ variant_seed[j] = shard_seed[i] + (j - 1)   (run_shard.R inner loop)
+#   master_seed  (integer, experiment-wide, user-provided)
+#       └─ shard_seed = derive_shard_seed(master_seed, shard_id)
+#               └─ run_seed = derive_run_seed(shard_seed, run_id)
 #
-# All shard seeds are pre-derived in a single RNG pass and stored in
-# experiment_manifest.json.  run_shard.R reads from the manifest — it never
-# recomputes seeds independently — making the full provenance auditable.
+# All derivations use pure integer arithmetic — no RNG calls, no global state.
+# The same inputs always produce the same seed on any platform.
+# The formula is self-contained and can be reproduced in any language:
+#
+#   shard_seed = ((master_seed × 1000003) + (shard_id × 999983))  mod  INT_MAX  +  1
+#   run_seed   = ((shard_seed  − 1) + (run_id − 1))                mod  INT_MAX  +  1
+#
+# where INT_MAX = .Machine$integer.max = 2147483647 (a Mersenne prime, 2^31 − 1).
+# Because INT_MAX is prime, every multiplier 1 ≤ k < INT_MAX is coprime with it.
+# This guarantees that different shard_ids always yield different shard_seeds
+# (the mapping shard_id → shard_seed is a bijection on the residues mod INT_MAX).
+
+# Prime multipliers for shard-level mixing.
+# Two distinct primes reduce correlation between the master_seed and shard_id terms.
+.SHARD_MIX_M <- 1000003   # applied to master_seed
+.SHARD_MIX_S <- 999983    # applied to shard_id
 
 # ---------------------------------------------------------------------------
-# Derive shard seeds from master seed
-# ---------------------------------------------------------------------------
-
-#' Derive one seed per shard from master_seed.
-#'
-#' Uses R's default Mersenne-Twister + Inversion-method RNG, seeded
-#' deterministically from master_seed, then draws n_shards unique integers.
-#' The same master_seed + n_shards always produces the same vector.
-#' Different shard indices get different seeds; different master_seeds produce
-#' entirely different seed sets.
-#'
-#' @param master_seed Integer. Experiment-level RNG seed.
-#' @param n_shards    Integer. Number of shards to derive seeds for (>= 1).
-#' @return Named integer vector of length n_shards; names are "0", "1", ...
-derive_shard_seeds <- function(master_seed, n_shards) {
-  stopifnot(is.numeric(master_seed), length(master_seed) == 1L,
-            is.finite(master_seed))
-  stopifnot(is.numeric(n_shards), length(n_shards) == 1L,
-            n_shards >= 1L)
-
-  master_seed <- as.integer(master_seed)
-  n_shards    <- as.integer(n_shards)
-
-  # Snapshot and restore the caller's RNG state so this function is pure.
-  # .Random.seed does not exist in a fresh R session until the first RNG call,
-  # so we must guard the read with exists().
-  rng_existed <- exists(".Random.seed", envir = globalenv(), inherits = FALSE)
-  old_rng     <- if (rng_existed) .Random.seed else NULL
-  on.exit({
-    if (rng_existed) {
-      assign(".Random.seed", old_rng, envir = globalenv())
-    } else {
-      # Clean up the state that set.seed() created so callers see a fresh session.
-      suppressWarnings(rm(".Random.seed", envir = globalenv()))
-    }
-  })
-
-  set.seed(master_seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
-  seeds <- sample.int(.Machine$integer.max, n_shards, replace = FALSE)
-
-  names(seeds) <- as.character(seq_len(n_shards) - 1L)  # 0-indexed shard IDs
-  seeds
-}
-
-# ---------------------------------------------------------------------------
-# Derive the seed for a specific shard
+# Shard level
 # ---------------------------------------------------------------------------
 
 #' Derive the seed for a single shard.
 #'
-#' Calls derive_shard_seeds(master_seed, shard_id + 1) and returns the last
-#' element.  Because Mersenne-Twister has no skip-ahead, all preceding seeds
-#' are generated and discarded; for large shard_id this is O(shard_id).
+#' O(1) arithmetic — no RNG, no global state.
 #'
-#' @param master_seed Integer. Experiment-level RNG seed.
+#' @param master_seed Integer. Experiment-wide seed.
 #' @param shard_id    Integer >= 0. Zero-based shard index.
-#' @return Single integer seed for this shard.
+#' @return Integer in [1, .Machine$integer.max].
 derive_shard_seed <- function(master_seed, shard_id) {
-  shard_id <- as.integer(shard_id)
-  stopifnot(shard_id >= 0L)
-  all_seeds <- derive_shard_seeds(master_seed, shard_id + 1L)
-  unname(all_seeds[shard_id + 1L])
+  stopifnot(is.numeric(master_seed), length(master_seed) == 1L, is.finite(master_seed))
+  stopifnot(is.numeric(shard_id),   length(shard_id)   == 1L, shard_id >= 0)
+  # Use as.numeric to avoid integer overflow before the mod operation.
+  raw <- (as.numeric(master_seed) * .SHARD_MIX_M +
+          as.numeric(shard_id)    * .SHARD_MIX_S) %% .Machine$integer.max
+  as.integer(raw) + 1L
+}
+
+#' Derive seeds for all shards in one call.
+#'
+#' Vectorised wrapper around derive_shard_seed.
+#'
+#' @param master_seed Integer. Experiment-wide seed.
+#' @param n_shards    Integer >= 1. Number of shards.
+#' @return Named integer vector of length n_shards; names are "0", "1", ...
+derive_shard_seeds <- function(master_seed, n_shards) {
+  stopifnot(is.numeric(n_shards), length(n_shards) == 1L, n_shards >= 1L)
+  n_shards <- as.integer(n_shards)
+  ids      <- seq_len(n_shards) - 1L  # 0-indexed shard IDs
+  seeds    <- vapply(ids, function(i) derive_shard_seed(master_seed, i), integer(1L))
+  names(seeds) <- as.character(ids)
+  seeds
 }
 
 # ---------------------------------------------------------------------------
-# Derive the per-variant seed within a shard
+# Run level
 # ---------------------------------------------------------------------------
 
-#' Derive the seed for a specific variant within a shard.
+#' Derive the seed for a specific run within a shard.
 #'
-#' Consistent with the existing run_chunk.R pattern:
-#'   variant_seed = shard_seed + (variant_index - 1)
-#' variant_index is 1-based (first variant = index 1).
+#' run_id is 1-based: run 1 receives shard_seed unchanged, run 2 receives
+#' shard_seed + 1, etc., wrapping within [1, .Machine$integer.max].
 #'
-#' @param shard_seed    Integer. Shard-level seed from derive_shard_seed().
-#' @param variant_index Integer >= 1. 1-based index of the variant in the loop.
-#' @return Integer seed for this variant.
-derive_variant_seed <- function(shard_seed, variant_index) {
+#' This formula is consistent with the existing run_chunk.R pattern
+#' (seed_used = seed_base + variant_index - 1).
+#'
+#' @param shard_seed Integer. Shard-level seed from derive_shard_seed().
+#' @param run_id     Integer >= 1. 1-based run index within the shard.
+#' @return Integer in [1, .Machine$integer.max].
+derive_run_seed <- function(shard_seed, run_id) {
   # Promote to numeric before adding to prevent silent integer overflow when
-  # shard_seed is near .Machine$integer.max, then wrap to [1, INT_MAX].
-  raw <- as.numeric(shard_seed) + as.integer(variant_index) - 1L
+  # shard_seed is near .Machine$integer.max, then wrap back to [1, INT_MAX].
+  raw <- as.numeric(shard_seed) + as.integer(run_id) - 1L
   as.integer(((raw - 1L) %% .Machine$integer.max) + 1L)
 }
+
+# Backward-compatible alias: run_chunk.R and existing tests use "variant" terminology.
+derive_variant_seed <- derive_run_seed
 
 # ---------------------------------------------------------------------------
 # Seed provenance record
@@ -101,23 +90,31 @@ derive_variant_seed <- function(shard_seed, variant_index) {
 
 #' Build a seed provenance record for embedding in metadata files.
 #'
-#' @param master_seed  Integer. Experiment master seed.
-#' @param shard_id     Integer >= 0. Zero-based shard index.
-#' @param shard_seed   Integer. Derived shard seed.
-#' @param n_shards     Integer. Total shards in the experiment.
+#' The 'derivation' field is a self-contained R expression that reproduces
+#' shard_seed from master_seed and shard_id using only arithmetic — no RNG.
+#' It can be evaluated with eval(parse(text = provenance$derivation)).
+#'
+#' @param master_seed Integer. Experiment master seed.
+#' @param shard_id    Integer >= 0. Zero-based shard index.
+#' @param shard_seed  Integer. Derived shard seed (from derive_shard_seed()).
+#' @param n_shards    Integer. Total shards in the experiment.
 #' @return Named list suitable for jsonlite::toJSON().
 build_seed_provenance <- function(master_seed, shard_id, shard_seed, n_shards) {
+  derivation <- paste0(
+    "as.integer(",
+    "(as.numeric(", as.integer(master_seed), "L) * 1000003 + ",
+    "as.numeric(",  as.integer(shard_id),    "L) * 999983) %% ",
+    ".Machine$integer.max) + 1L"
+  )
   list(
-    master_seed     = as.integer(master_seed),
-    shard_id        = as.integer(shard_id),
-    shard_seed      = as.integer(shard_seed),
-    n_shards        = as.integer(n_shards),
-    rng_kind        = "Mersenne-Twister",
-    rng_normal_kind = "Inversion",
-    derivation      = paste0(
-      "set.seed(", master_seed, ", kind='Mersenne-Twister', normal.kind='Inversion'); ",
-      "sample.int(.Machine$integer.max, ", shard_id + 1L, ", replace=FALSE)[", shard_id + 1L, "]"
-    )
+    master_seed       = as.integer(master_seed),
+    shard_id          = as.integer(shard_id),
+    shard_seed        = as.integer(shard_seed),
+    n_shards          = as.integer(n_shards),
+    rng_kind          = "Mersenne-Twister",  # kept for backward compatibility
+    rng_normal_kind   = "Inversion",          # kept for backward compatibility
+    derivation_method = "arithmetic",          # actual derivation method
+    derivation        = derivation
   )
 }
 
@@ -127,8 +124,8 @@ build_seed_provenance <- function(master_seed, shard_id, shard_seed, n_shards) {
 
 #' Verify that a shard seed can be reproduced from the experiment manifest.
 #'
-#' Raises an error if the shard_seed stored in the manifest does not match
-#' the freshly-derived value. Use this for audit checks.
+#' Recomputes the expected seed from manifest$master_seed and errors if it
+#' does not match the stored value.  Use this for audit checks.
 #'
 #' @param manifest List. Parsed experiment_manifest.json (from jsonlite::fromJSON).
 #' @param shard_id Integer >= 0. Zero-based shard index to verify.
@@ -157,10 +154,12 @@ validate_shard_seed <- function(manifest, shard_id) {
 
 #' Verify all shard seeds in an experiment manifest.
 #'
+#' Checks that n_shards is present, matches the actual seed count, and that
+#' every seed can be reproduced from master_seed.
+#'
 #' @param manifest List. Parsed experiment_manifest.json.
-#' @return Invisibly TRUE if all seeds verify; stops on first mismatch.
+#' @return Invisibly TRUE if all seeds verify; stops on first problem.
 validate_all_shard_seeds <- function(manifest) {
-  # Guard: n_shards must be present and positive.
   if (is.null(manifest$n_shards)) {
     stop("validate_all_shard_seeds: manifest is missing 'n_shards' field")
   }
@@ -169,9 +168,7 @@ validate_all_shard_seeds <- function(manifest) {
     stop("validate_all_shard_seeds: manifest 'n_shards' must be a positive integer")
   }
 
-  # Guard: n_shards must equal the number of seeds stored.  If they differ,
-  # validate_shard_seed would silently skip any seeds beyond n_shards, making
-  # the audit incomplete.
+  # n_shards must equal the actual seed count so no seeds are skipped silently.
   actual <- length(manifest$shard_seeds)
   if (actual != n_shards) {
     stop(sprintf(
