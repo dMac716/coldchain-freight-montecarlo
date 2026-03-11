@@ -30,6 +30,32 @@ suppressPackageStartupMessages(library(optparse))
 suppressPackageStartupMessages(library(jsonlite))
 
 # ---------------------------------------------------------------------------
+# Source R/seeding.R for seed verification (see "Seed chain" below).
+# Locate it relative to this script, then fall back to the working directory.
+# ---------------------------------------------------------------------------
+script_path <- tryCatch(
+  normalizePath(sys.frames()[[1L]]$ofile, mustWork = FALSE),
+  error = function(e) ""
+)
+repo_root_early <- if (nzchar(script_path)) dirname(dirname(script_path)) else getwd()
+seeding_file <- file.path(repo_root_early, "R", "seeding.R")
+if (!file.exists(seeding_file)) stop("Cannot find R/seeding.R at: ", seeding_file)
+source(seeding_file, local = FALSE)
+
+# Seed chain (for reference and audit):
+#
+#   master_seed
+#     └─ shard_seed = derive_shard_seed(master_seed, shard_id)
+#          arithmetic: ((master * 1000003 + shard_id * 999983) % INT_MAX) + 1
+#          minimum spacing between any two shard seeds: 999983
+#          └─ variant_seed[i] = shard_seed + (i − 1)   [run_chunk.R line 81]
+#               i is the 1-based variant loop index (number of scenario variants V)
+#               └─ N MC draws: sequential MT stream from set.seed(variant_seed[i])
+#
+# Non-collision invariant: different shards reuse no variant seeds as long as
+# V < 999983 (the shard-to-shard seed spacing).  For typical scenarios V < 20.
+
+# ---------------------------------------------------------------------------
 # Arguments
 # ---------------------------------------------------------------------------
 opt <- parse_args(OptionParser(
@@ -82,6 +108,17 @@ experiment_id   <- manifest$experiment_id
 master_seed     <- as.integer(manifest$master_seed)
 runs_per_shard  <- as.integer(manifest$runs_per_shard)
 
+# Verify the manifest's shard_seed matches what the arithmetic formula produces.
+# This catches corrupted manifests, hand-edited entries, and manifests written
+# by an older version of init_experiment.R that used a different derivation.
+expected_seed <- derive_shard_seed(master_seed, opt$shard_id)
+if (!identical(shard_seed, expected_seed)) {
+  stop(sprintf(
+    "shard_seed mismatch for shard_id %d: manifest has %d, derive_shard_seed() returns %d. ",
+    opt$shard_id, shard_seed, expected_seed
+  ))
+}
+
 # ---------------------------------------------------------------------------
 # Resolve shard output directory
 # ---------------------------------------------------------------------------
@@ -112,13 +149,9 @@ stdout_log <- file.path(shard_dir, "stdout.log")
 stderr_log <- file.path(shard_dir, "stderr.log")
 
 # ---------------------------------------------------------------------------
-# Locate run_chunk.R relative to this script, falling back to tools/
+# Locate run_chunk.R — reuse repo_root_early resolved during seeding.R load.
 # ---------------------------------------------------------------------------
-script_path <- tryCatch(
-  normalizePath(sys.frames()[[1L]]$ofile, mustWork = FALSE),
-  error = function(e) ""
-)
-repo_root <- if (nzchar(script_path)) dirname(dirname(script_path)) else getwd()
+repo_root <- repo_root_early
 run_chunk  <- file.path(repo_root, "tools", "run_chunk.R")
 if (!file.exists(run_chunk))
   stop("Cannot find tools/run_chunk.R at: ", run_chunk)
@@ -143,6 +176,7 @@ write_metadata <- function(status) {
     config_path   = opt$config_path,
     mode          = opt$mode,
     runs_per_shard = runs_per_shard,
+    seed_verified  = TRUE,
     status        = status,
     timestamp     = timestamp_start,
     completed_at  = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
