@@ -62,6 +62,13 @@ if (length(missing) > 0L) stop("Missing required arguments: ", paste0("--", miss
 if (opt$shard_count    < 1L) stop("--shard_count must be >= 1")
 if (opt$runs_per_shard < 1L) stop("--runs_per_shard must be >= 1")
 
+if (!nzchar(opt$experiment_id))
+  stop("--experiment_id must be a non-empty string")
+if (grepl("[/\\\\]|\\.\\.", opt$experiment_id))
+  stop("--experiment_id must not contain path separators or '..'")
+if (!nzchar(opt$scenario))
+  stop("--scenario must be a non-empty string")
+
 # ---------------------------------------------------------------------------
 # Resolve output path
 # ---------------------------------------------------------------------------
@@ -74,6 +81,8 @@ if (file.exists(manifest_path) && !opt$force) {
 }
 
 dir.create(experiment_dir, recursive = TRUE, showWarnings = FALSE)
+if (!dir.exists(experiment_dir))
+  stop("Failed to create output directory: ", experiment_dir)
 
 # ---------------------------------------------------------------------------
 # Derive shard seeds
@@ -83,6 +92,15 @@ shard_seeds <- derive_shard_seeds(opt$master_seed, opt$shard_count)
 # Named integer vector: names "0", "1", ..., "N-1" (zero-based shard IDs)
 
 shard_ids <- as.integer(names(shard_seeds))  # 0, 1, ..., shard_count - 1
+
+# Assert the three invariants that run_shard.R will depend on.
+if (length(shard_seeds) != opt$shard_count)
+  stop(sprintf("shard seed count mismatch: expected %d, got %d",
+               opt$shard_count, length(shard_seeds)))
+if (!identical(shard_ids, seq_len(opt$shard_count) - 1L))
+  stop("shard_ids are not consecutive 0-based integers — check derive_shard_seeds()")
+if (length(unique(shard_seeds)) != length(shard_seeds))
+  stop("duplicate shard seeds detected — check derive_shard_seeds()")
 
 # ---------------------------------------------------------------------------
 # Capture reproducibility metadata
@@ -111,5 +129,14 @@ manifest <- list(
   r_version      = paste(R.version$major, R.version$minor, sep = ".")
 )
 
-write(toJSON(manifest, auto_unbox = TRUE, pretty = TRUE), file = manifest_path)
+json_text <- toJSON(manifest, auto_unbox = TRUE, pretty = TRUE)
+# Verify serializability before touching the filesystem.
+tryCatch(invisible(fromJSON(json_text)),
+         error = function(e) stop("Manifest serialization produced invalid JSON: ", e$message))
+write(json_text, file = manifest_path)
+# Confirm the file exists and the bytes on disk parse cleanly.
+if (!file.exists(manifest_path))
+  stop("Failed to write manifest to: ", manifest_path)
+tryCatch(invisible(fromJSON(manifest_path)),
+         error = function(e) stop("Written manifest is not valid JSON: ", e$message))
 message("Manifest written to ", manifest_path)
