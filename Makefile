@@ -103,6 +103,11 @@ help: ## Show this help
 setup: ## Bootstrap local dev environment (installs R packages)
 	bash tools/bootstrap_local.sh
 
+codespace-ready: ## Re-run bootstrap, then verify Codespace readiness and smoke path
+	Rscript scripts/bootstrap.R
+	bash scripts/codespace_healthcheck.sh
+	bash tools/smoke_codespace.sh
+
 validate-inputs: ## Validate all input CSV contracts (MODE=SMOKE_LOCAL|REAL_RUN)
 	Rscript tools/validate_inputs.R --mode $(MODE)
 

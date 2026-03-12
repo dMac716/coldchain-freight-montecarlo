@@ -40,7 +40,7 @@ while IFS=$'\t' read -r script flag; do
   [[ -f "$script" ]] || { echo "FAIL: script referenced by Makefile not found: $script" >&2; fail=1; continue; }
   flag_name="${flag#--}"
   # Static contract check: declared make_option(c("--flag"), ...).
-  if ! rg -q 'make_option\(c\("--'"${flag_name}"'"\)' "$script"; then
+  if ! grep -Eq "make_option\\(c\\(\"--${flag_name}\"\\)" "$script"; then
     echo "FAIL: $MAKEFILE_PATH uses $flag for $script, but flag is not declared via make_option" >&2
     fail=1
   fi
