@@ -16,6 +16,18 @@ export R_LIBS_USER="${R_LIBS_USER:-${HOME}/.local/share/R/site-library}"
 export RENV_PATHS_CACHE="${RENV_PATHS_CACHE:-${HOME}/.cache/R/renv}"
 
 mkdir -p "${R_LIBS_USER}" "${RENV_PATHS_CACHE}"
+printf 'R_LIBS_USER=%s\nRENV_PATHS_CACHE=%s\n' \
+  "${R_LIBS_USER}" "${RENV_PATHS_CACHE}" > "${HOME}/.Renviron"
+
+# ---------------------------------------------------------------------------
+# Apt source hygiene
+# ---------------------------------------------------------------------------
+# Some Codespaces base images ship a stale Yarn apt source whose signing key is
+# absent. Disable only that source so the main package install remains stable.
+while IFS= read -r src; do
+  [[ -n "${src}" ]] || continue
+  sudo sed -i.bak '/dl\.yarnpkg\.com\/debian/s/^/# disabled by postCreate: /' "${src}"
+done < <(grep -R -l 'dl.yarnpkg.com/debian' /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true)
 
 # ---------------------------------------------------------------------------
 # System packages — single consolidated apt pass
