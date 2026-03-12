@@ -478,7 +478,7 @@ inputs_hash_from_resolved <- function(resolved_inputs_df) {
   sha256_text(jsonlite::toJSON(resolved_inputs_df, auto_unbox = TRUE))
 }
 
-write_results_summary <- function(stats, path) {
+write_results_summary <- function(stats, path, hist = NULL) {
   metrics <- names(stats)
   out <- data.frame(
     metric = metrics,

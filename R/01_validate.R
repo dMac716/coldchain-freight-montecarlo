@@ -172,6 +172,29 @@ validate_artifact_schema_local <- function(path_json) {
   invisible(TRUE)
 }
 
+normalize_distance_mode <- function(mode) {
+  if (is.null(mode) || !is.character(mode) || length(mode) != 1 || !nzchar(mode)) {
+    return("FAF_DISTRIBUTION")
+  }
+
+  out <- toupper(trimws(mode))
+
+  allowed <- c(
+    "FAF_DISTRIBUTION",
+    "ROAD_NETWORK_FIXED_DEST",
+    "ROAD_NETWORK_PHYSICS"
+  )
+
+  if (!out %in% allowed) {
+    stop(
+      "Invalid distance_mode. Allowed values: ",
+      paste(allowed, collapse = ", ")
+    )
+  }
+
+  out
+}
+
 normalize_run_mode <- function(mode) {
   if (is.null(mode) || !is.character(mode) || length(mode) != 1 || !nzchar(mode)) {
     return("SMOKE_LOCAL")
@@ -185,7 +208,7 @@ normalize_run_mode <- function(mode) {
 }
 
 assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scenario_name = NULL,
-                                   variant_row = NULL, inputs = NULL, priors_map = NULL) {
+                                   variant_row = NULL, inputs = NULL, priors_map = NULL,  distance_mode = NULL) {
   mode <- normalize_run_mode(mode)
   if (mode != "REAL_RUN") return(invisible(TRUE))
 
@@ -246,6 +269,27 @@ assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scen
         stop("REAL_RUN gate failed: sampling_priors contains NEEDS_SOURCE_VALUE for requested variant.")
       }
     }
+  }
+
+  invisible(TRUE)
+}
+
+assert_variant_dimensions_present <- function(scenario_matrix_df) {
+
+  required <- c(
+    "variant_id",
+    "scenario_id",
+    "powertrain",
+    "status"
+  )
+
+  missing <- setdiff(required, names(scenario_matrix_df))
+
+  if (length(missing) > 0) {
+    stop(
+      "scenario_matrix.csv missing required columns: ",
+      paste(missing, collapse = ", ")
+    )
   }
 
   invisible(TRUE)
