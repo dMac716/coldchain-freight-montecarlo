@@ -17,6 +17,59 @@ if (file.exists("R/log_helpers.R")) {
   configure_log(tag = "bootstrap")
 }
 
+default_user_library <- function() {
+  env_path <- Sys.getenv("R_LIBS_USER", unset = "")
+  if (nzchar(env_path)) {
+    return(normalizePath(path.expand(env_path), winslash = "/", mustWork = FALSE))
+  }
+  normalizePath(
+    file.path(path.expand("~"), ".local", "share", "R", "site-library"),
+    winslash = "/",
+    mustWork = FALSE
+  )
+}
+
+dir_is_writable <- function(path) {
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(path)) return(FALSE)
+  probe <- file.path(path, sprintf(".write_probe_%d", Sys.getpid()))
+  ok <- tryCatch(
+    file.create(probe),
+    warning = function(w) FALSE,
+    error = function(e) FALSE
+  )
+  if (isTRUE(ok) && file.exists(probe)) unlink(probe, force = TRUE)
+  isTRUE(ok)
+}
+
+select_library_path <- function() {
+  user_lib <- default_user_library()
+  candidate_libs <- unique(c(
+    user_lib,
+    normalizePath(.libPaths(), winslash = "/", mustWork = FALSE)
+  ))
+  writable <- vapply(candidate_libs, dir_is_writable, logical(1))
+  if (!any(writable)) {
+    log_event(
+      "ERROR",
+      "bootstrap",
+      paste(
+        "No writable R package library found.",
+        "Re-run: bash .devcontainer/postCreate.sh && Rscript scripts/bootstrap.R"
+      )
+    )
+    quit(status = 1)
+  }
+  candidate_libs[[which(writable)[1]]]
+}
+
+library_target <- select_library_path()
+Sys.setenv(R_LIBS_USER = library_target)
+.libPaths(unique(c(library_target, .libPaths())))
+
+log_event("INFO", "bootstrap", paste("Using R package library:", library_target))
+log_event("INFO", "bootstrap", paste("Active .libPaths():", paste(.libPaths(), collapse = " | ")))
+
 # ---------------------------------------------------------------------------
 # renv.lock awareness — prefer locked versions when renv is available
 # ---------------------------------------------------------------------------
@@ -25,7 +78,12 @@ if (file.exists(renv_lock)) {
   log_event("INFO", "bootstrap", "renv.lock detected — attempting renv::restore() for locked package versions.")
   renv_ok <- tryCatch({
     if (!requireNamespace("renv", quietly = TRUE)) {
-      install.packages("renv", repos = "https://cloud.r-project.org", quiet = TRUE)
+      install.packages(
+        "renv",
+        lib = library_target,
+        repos = "https://cloud.r-project.org",
+        quiet = TRUE
+      )
     }
     renv::restore(prompt = FALSE)
     TRUE
@@ -70,6 +128,7 @@ if (length(missing_pkgs) > 0) {
   n_cpus  <- max(1L, if (is.na(n_cores)) 1L else as.integer(n_cores) - 1L, 1L)
   install.packages(
     missing_pkgs,
+    lib      = library_target,
     repos    = "https://cloud.r-project.org",
     quiet    = TRUE,
     Ncpus    = n_cpus

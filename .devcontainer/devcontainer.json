@@ -3,7 +3,7 @@
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "postCreateCommand": "bash .devcontainer/postCreate.sh && Rscript scripts/bootstrap.R",
   "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/root/.cache/R/renv,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/home/vscode/.cache/R/renv,type=bind,consistency=cached"
   ],
   "customizations": {
     "vscode": {
@@ -17,12 +17,14 @@
       "settings": {
         "r.bracketedPaste": true,
         "files.eol": "\n",
+        "r.rpath.linux": "/usr/bin/R",
         "r.rterm.linux": "/usr/bin/R"
       }
     }
   },
   "remoteEnv": {
-    "RENV_PATHS_CACHE": "/root/.cache/R/renv",
-    "COLDCHAIN_LANE": "codespace",
+    "RENV_PATHS_CACHE": "/home/vscode/.cache/R/renv",
+    "R_LIBS_USER": "/home/vscode/.local/share/R/site-library",
+    "COLDCHAIN_LANE": "codespace"
   }
 }

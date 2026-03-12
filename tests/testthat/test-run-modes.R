@@ -5,6 +5,13 @@ test_that("normalize_run_mode enforces allowed values", {
   expect_error(normalize_run_mode("prod"))
 })
 
+test_that("normalize_distance_mode enforces allowed values and defaults", {
+  expect_identical(normalize_distance_mode(NULL), "FAF_DISTRIBUTION")
+  expect_identical(normalize_distance_mode("road_network_fixed_dest"), "ROAD_NETWORK_FIXED_DEST")
+  expect_identical(normalize_distance_mode("ROAD_NETWORK_PHYSICS"), "ROAD_NETWORK_PHYSICS")
+  expect_error(normalize_distance_mode("unknown_mode"))
+})
+
 test_that("REAL_RUN data gates reject missing distance and uncalibrated histograms", {
   scenarios <- data.frame(
     scenario_id = "BASE",
@@ -88,4 +95,20 @@ test_that("hist coverage enforcement warns in smoke and fails in real", {
   n_list <- list(m = 12L)
   expect_warning(enforce_hist_coverage(h, n_list = n_list, mode = "SMOKE_LOCAL", threshold = 0.001))
   expect_error(enforce_hist_coverage(h, n_list = n_list, mode = "REAL_RUN", threshold = 0.001))
+})
+
+test_that("scenario matrix requires proposal dimension columns", {
+  ok <- data.frame(
+    variant_id = "X",
+    scenario_id = "CENTRALIZED",
+    product_mode = "DRY",
+    spatial_structure = "CENTRALIZED",
+    powertrain = "diesel",
+    powertrain_config = "DIESEL_TRU_DIESEL",
+    trailer_type = "dry_van",
+    refrigeration_mode = "none",
+    stringsAsFactors = FALSE
+  )
+  expect_silent(assert_variant_dimensions_present(ok))
+  expect_error(assert_variant_dimensions_present(ok[, c("variant_id", "scenario_id"), drop = FALSE]))
 })

@@ -12,6 +12,10 @@
 
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
+export R_LIBS_USER="${R_LIBS_USER:-/home/vscode/.local/share/R/site-library}"
+export RENV_PATHS_CACHE="${RENV_PATHS_CACHE:-/home/vscode/.cache/R/renv}"
+
+mkdir -p "${R_LIBS_USER}" "${RENV_PATHS_CACHE}"
 
 # ---------------------------------------------------------------------------
 # System packages — single consolidated apt pass

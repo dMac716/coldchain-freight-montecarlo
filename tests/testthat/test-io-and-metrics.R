@@ -56,3 +56,17 @@ test_that("histogram tracks underflow and overflow counts", {
   expect_equal(h$overflow, 2)
   expect_equal(sum(h$counts), 1)
 })
+
+test_that("write_results_summary supports omitted histograms", {
+  stats <- list(
+    gco2 = list(mean = 1, var = 0.25, min = 0.5, max = 1.5)
+  )
+  out <- tempfile(fileext = ".csv")
+  write_results_summary(stats, out, hist = NULL)
+  expect_true(file.exists(out))
+  d <- utils::read.csv(out, stringsAsFactors = FALSE)
+  expect_identical(names(d), c("metric", "mean", "var", "min", "max", "p05", "p50", "p95"))
+  expect_true(all(is.na(d$p05)))
+  expect_true(all(is.na(d$p50)))
+  expect_true(all(is.na(d$p95)))
+})

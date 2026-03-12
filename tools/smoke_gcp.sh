@@ -142,7 +142,41 @@ fi
 
 log "INFO" "verify" "Simulation outputs present in ${SMOKE_DIR}"
 
-# ─── step 5: artifact packaging ───────────────────────────────────────────────
+# ─── step 5: run registry pre-registration ───────────────────────────────────
+log "INFO" "registry" "Registering smoke run before promotion preflight"
+if command -v python3 &>/dev/null; then
+  python3 "${ROOT_DIR}/scripts/update_run_registry.py" create \
+    --run_id "${RUN_ID}" \
+    --lane   "${LANE}" \
+    --seed   "${SMOKE_SEED}" 2>/dev/null || true
+  python3 "${ROOT_DIR}/scripts/update_run_registry.py" status \
+    --run_id "${RUN_ID}" \
+    --status "completed" 2>/dev/null || true
+  log "INFO" "registry" "Registry primed: ${RUN_ID} → completed"
+else
+  warn "registry" "python3 not found — skipping registry preregistration"
+fi
+
+# ─── step 6: graph rendering ──────────────────────────────────────────────────
+log "INFO" "graphs" "Rendering diagnostic graphs"
+Rscript "${ROOT_DIR}/scripts/render_run_graphs.R" \
+  --run_dir "${SMOKE_DIR}" \
+  --force \
+  2>&1 | while IFS= read -r line; do
+    echo "${line}"
+    echo "${line}" >> "${LOG_FILE}"
+  done || die "render_run_graphs.R failed — check scripts/render_run_graphs.R and ggplot2"
+
+SUMMARY_JSON="${SMOKE_DIR}/summary.json"
+[[ -f "${SUMMARY_JSON}" ]] || die "render_run_graphs.R did not produce summary.json"
+python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "${SUMMARY_JSON}" \
+  >/dev/null 2>&1 || die "summary.json is not valid JSON after graph rendering"
+
+PNG_COUNT="$(find "${SMOKE_DIR}/graphs" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')"
+log "INFO" "graphs" "Graph rendering complete: ${PNG_COUNT} PNG(s) in ${SMOKE_DIR}/graphs/"
+[[ "${PNG_COUNT}" -ge 1 ]] || die "render_run_graphs.R produced 0 PNGs — headless display or ggplot2 issue"
+
+# ─── step 7: artifact packaging ───────────────────────────────────────────────
 log "INFO" "package" "Packaging artifact"
 bash "${ROOT_DIR}/scripts/package_run_artifact.sh" "${SMOKE_DIR}" --force \
   2>&1 | while IFS= read -r line; do
@@ -156,7 +190,7 @@ tar -tzf "${SMOKE_DIR}/artifact.tar.gz" > /dev/null 2>&1 \
   || die "artifact.tar.gz integrity check failed"
 log "INFO" "package" "artifact.tar.gz OK (${ARTIFACT_SIZE})"
 
-# ─── step 6: promotion path ───────────────────────────────────────────────────
+# ─── step 8: promotion path ───────────────────────────────────────────────────
 log "INFO" "promote" "Testing promotion path (GCP_AVAILABLE=${GCP_AVAILABLE} dry_run=${COLDCHAIN_SMOKE_DRY_RUN})"
 PROMOTE_STATUS="unknown"
 PROMOTE_OUT="$(
@@ -183,12 +217,8 @@ else
 fi
 log "INFO" "promote" "Promotion result: ${PROMOTE_STATUS}"
 
-# ─── step 7: run registry ─────────────────────────────────────────────────────
+# ─── step 9: run registry final state ─────────────────────────────────────────
 if command -v python3 &>/dev/null; then
-  python3 "${ROOT_DIR}/scripts/update_run_registry.py" create \
-    --run_id "${RUN_ID}" \
-    --lane   "${LANE}" \
-    --seed   "${SMOKE_SEED}" 2>/dev/null || true
   FINAL_STATUS="completed"
   if [[ "${PROMOTE_STATUS}" == "promoted" ]]; then
     FINAL_STATUS="promoted"

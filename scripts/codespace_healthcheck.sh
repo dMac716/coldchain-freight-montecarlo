@@ -9,6 +9,7 @@ PASS=0
 WARN=1
 FAIL=2
 overall=0
+BOOTSTRAP_CMD="bash .devcontainer/postCreate.sh && Rscript scripts/bootstrap.R"
 
 export COLDCHAIN_LOG_TAG="healthcheck"
 # shellcheck source=scripts/lib/log_helpers.sh
@@ -42,19 +43,34 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 2. Required R packages
+# 2. Writable R package library
+# ---------------------------------------------------------------------------
+PACKAGE_LIB="${R_LIBS_USER:-${HOME}/.local/share/R/site-library}"
+if [[ ! -d "${PACKAGE_LIB}" ]]; then
+  check "R package library" $FAIL "missing: ${PACKAGE_LIB} — run: ${BOOTSTRAP_CMD}"
+elif [[ ! -w "${PACKAGE_LIB}" ]]; then
+  check "R package library" $FAIL "not writable: ${PACKAGE_LIB} — run: ${BOOTSTRAP_CMD}"
+elif PROBE_FILE="$(mktemp "${PACKAGE_LIB}/.healthcheck_write_probe.XXXXXX" 2>/dev/null)"; then
+  rm -f "${PROBE_FILE}"
+  check "R package library" $PASS "writable: ${PACKAGE_LIB}"
+else
+  check "R package library" $FAIL "write probe failed: ${PACKAGE_LIB} — run: ${BOOTSTRAP_CMD}"
+fi
+
+# ---------------------------------------------------------------------------
+# 3. Required R packages
 # ---------------------------------------------------------------------------
 required_pkgs="optparse jsonlite digest data.table yaml ggplot2 readxl"
 for pkg in $required_pkgs; do
   if Rscript -e "requireNamespace('${pkg}', quietly=TRUE) || stop()" >/dev/null 2>&1; then
     check "R package: ${pkg}" $PASS "available"
   else
-    check "R package: ${pkg}" $FAIL "not installed"
+    check "R package: ${pkg}" $FAIL "not installed — run: ${BOOTSTRAP_CMD}"
   fi
 done
 
 # ---------------------------------------------------------------------------
-# 3. Required directories
+# 4. Required directories
 # ---------------------------------------------------------------------------
 required_dirs="R tools data/derived runs"
 for d in $required_dirs; do
@@ -66,7 +82,7 @@ for d in $required_dirs; do
 done
 
 # ---------------------------------------------------------------------------
-# 4. Required scripts
+# 5. Required scripts
 # ---------------------------------------------------------------------------
 required_scripts=(
   "scripts/bootstrap.R"
@@ -85,7 +101,7 @@ for s in "${required_scripts[@]}"; do
 done
 
 # ---------------------------------------------------------------------------
-# 5. Graph rendering smoke-check (dry run — no run dir required)
+# 6. Graph rendering smoke-check (dry run — no run dir required)
 # ---------------------------------------------------------------------------
 if Rscript -e "suppressWarnings(library(ggplot2)); p <- ggplot(data.frame(x=1:3,y=1:3), aes(x,y)) + geom_point(); ggplot2::ggsave(tempfile(fileext='.png'), p, width=2, height=2); cat('ok\n')" 2>/dev/null | grep -q "ok"; then
   check "Graph render smoke" $PASS "ggplot2 PNG render succeeded"
@@ -94,7 +110,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 6. Python runtime (for registry/stall scripts)
+# 7. Python runtime (for registry/stall scripts)
 # ---------------------------------------------------------------------------
 if command -v python3 >/dev/null 2>&1; then
   PY_VER=$(python3 --version 2>&1)
@@ -104,7 +120,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 7. Run registry
+# 8. Run registry
 # ---------------------------------------------------------------------------
 if [[ -f "runs/index.json" ]]; then
   check "Run registry" $PASS "runs/index.json present"
@@ -122,6 +138,7 @@ elif [[ $overall -eq 1 ]]; then
   log_event WARN healthcheck "Healthcheck completed with warnings — lane may have reduced capability."
 else
   log_event ERROR healthcheck "Healthcheck FAILED — lane is not ready."
+  echo "Remediation: ${BOOTSTRAP_CMD}"
 fi
 
 exit $overall
