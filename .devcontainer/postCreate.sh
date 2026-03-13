@@ -130,7 +130,7 @@ if [[ ! -x "${HOME}/.duckdb/cli/latest/duckdb" ]]; then
   curl -fsSL https://install.duckdb.org | sh
 fi
 DUCKDB_BIN="${HOME}/.duckdb/cli/latest"
-DUCKDB_PATH_EXPORT='export PATH="$HOME/.duckdb/cli/latest:$PATH"'
+DUCKDB_PATH_EXPORT="export PATH=\"\$HOME/.duckdb/cli/latest:\$PATH\""
 if [[ -d "${DUCKDB_BIN}" ]]; then
   BASHRC="${HOME}/.bashrc"
   touch "${BASHRC}"
