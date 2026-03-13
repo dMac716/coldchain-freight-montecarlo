@@ -178,14 +178,18 @@ compute_units_per_truck <- function(payload_max_lb, pallets_max, unit_weight_lb,
   pallet_tare_lb_draw <- scalar_numeric(pallet_tare_lb_draw)
   case_tare_lb_draw <- scalar_numeric(case_tare_lb_draw)
   cube_units_per_pallet <- scalar_numeric(cube_units_per_pallet)
+  legacy_scalar_contract <- !is.finite(units_per_case_draw) &&
+    is.finite(cube_units_per_pallet) &&
+    !is.finite(cases_per_pallet_draw)
 
-  if (!is.finite(units_per_case_draw) && is.finite(cube_units_per_pallet)) {
+  if (legacy_scalar_contract) {
     units_per_case_draw <- 1
     cases_per_pallet_draw <- cube_units_per_pallet
   }
   if (!is.finite(pallet_tare_lb_draw)) pallet_tare_lb_draw <- 0
   if (!is.finite(case_tare_lb_draw)) case_tare_lb_draw <- 0
   if (!all(is.finite(c(payload_max_lb, pallets_max, unit_weight_lb, units_per_case_draw, cases_per_pallet_draw, pallet_tare_lb_draw, case_tare_lb_draw)))) {
+    if (legacy_scalar_contract) return(NA_real_)
     return(list(units_per_truck = NA_real_, cube_limit_units = NA_real_, weight_limit_units = NA_real_, limiting_constraint = NA_character_))
   }
 
@@ -201,6 +205,10 @@ compute_units_per_truck <- function(payload_max_lb, pallets_max, unit_weight_lb,
     "cube"
   } else {
     "weight"
+  }
+
+  if (legacy_scalar_contract) {
+    return(as.numeric(units_per_truck))
   }
 
   list(
