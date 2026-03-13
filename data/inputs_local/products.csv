@@ -1,3 +1,3 @@
 product_id,preservation,kcal_per_kg,kcal_per_cup,moisture_pct_as_fed,packaging_mass_frac,source_id,source_page,status,notes
-hills_science_diet_adult_large_breed,dry,3675,365,,,hills_science_diet_adult_large_breed_2026,p5,PACKAGING_MASS_TBD,Caloric density from Hill's product sheet; packaging_mass_frac unresolved.
-freshpet_vital_large_breed,refrigerated,2375,337,56.7,,freshpet_vital_large_breed_2026,p2-p3,PACKAGING_MASS_TBD,ME kcal and moisture from Freshpet product sheet; packaging_mass_frac unresolved.
+hills_science_diet_adult_large_breed,dry,3675,365,,,hills_science_diet_adult_large_breed_2026,p5,PACKAGING_MASS_TBD,"Caloric density from Hill's product sheet; packaging_mass_frac unresolved."
+freshpet_vital_large_breed,refrigerated,2375,337,56.7,,freshpet_vital_large_breed_2026,p2-p3,PACKAGING_MASS_TBD,"ME kcal and moisture from Freshpet product sheet; packaging_mass_frac unresolved."

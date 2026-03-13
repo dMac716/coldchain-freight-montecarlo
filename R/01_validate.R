@@ -172,29 +172,6 @@ validate_artifact_schema_local <- function(path_json) {
   invisible(TRUE)
 }
 
-normalize_distance_mode <- function(mode) {
-  if (is.null(mode) || !is.character(mode) || length(mode) != 1 || !nzchar(mode)) {
-    return("FAF_DISTRIBUTION")
-  }
-
-  out <- toupper(trimws(mode))
-
-  allowed <- c(
-    "FAF_DISTRIBUTION",
-    "ROAD_NETWORK_FIXED_DEST",
-    "ROAD_NETWORK_PHYSICS"
-  )
-
-  if (!out %in% allowed) {
-    stop(
-      "Invalid distance_mode. Allowed values: ",
-      paste(allowed, collapse = ", ")
-    )
-  }
-
-  out
-}
-
 normalize_run_mode <- function(mode) {
   if (is.null(mode) || !is.character(mode) || length(mode) != 1 || !nzchar(mode)) {
     return("SMOKE_LOCAL")
@@ -351,20 +328,8 @@ assert_scenarios_distance_linkage <- function(scenarios_df, distance_df) {
 
 assert_variant_dimensions_present <- function(scenario_matrix_df) {
   required <- c(
-    "variant_id", "scenario_id", "product_mode", "spatial_structure",
-    "powertrain", "powertrain_config", "trailer_type", "refrigeration_mode"
-  )
-  missing <- setdiff(required, names(scenario_matrix_df))
-  if (length(missing) > 0) {
-    stop("scenario_matrix.csv missing required dimension columns: ", paste(missing, collapse = ", "))
-  }
-  invisible(TRUE)
-}
-
-assert_variant_dimensions_present <- function(scenario_matrix_df) {
-  required <- c(
-    "variant_id", "scenario_id", "product_mode", "spatial_structure",
-    "powertrain", "powertrain_config", "trailer_type", "refrigeration_mode"
+    "variant_id", "scenario_id", "powertrain",
+    "trailer_type", "refrigeration_mode"
   )
   missing <- setdiff(required, names(scenario_matrix_df))
   if (length(missing) > 0) {
