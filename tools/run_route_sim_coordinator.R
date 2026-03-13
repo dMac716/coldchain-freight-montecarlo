@@ -5,6 +5,38 @@ suppressPackageStartupMessages({
   library(parallel)
 })
 
+script_file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_path <- if (length(script_file_arg) > 0) sub("^--file=", "", script_file_arg[[1]]) else "tools/run_route_sim_coordinator.R"
+script_path <- normalizePath(script_path, winslash = "/", mustWork = TRUE)
+script_dir <- dirname(script_path)
+repo_root <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
+
+resolve_repo_path <- function(path, kind = c("file", "dir"), must_work = TRUE) {
+  kind <- match.arg(kind)
+  raw <- trimws(as.character(path))
+  if (!nzchar(raw)) return(raw)
+  expanded <- path.expand(raw)
+  is_absolute <- grepl("^(/|[A-Za-z]:[/\\\\])", expanded)
+  candidates <- unique(c(expanded, if (!is_absolute) file.path(repo_root, raw) else NULL))
+  exists_fn <- if (identical(kind, "dir")) dir.exists else file.exists
+  for (candidate in candidates) {
+    if (exists_fn(candidate)) {
+      return(normalizePath(candidate, winslash = "/", mustWork = TRUE))
+    }
+  }
+  if (isTRUE(must_work)) {
+    stop(
+      sprintf(
+        "%s not found: %s. Checked: %s",
+        tools::toTitleCase(kind),
+        raw,
+        paste(candidates, collapse = ", ")
+      )
+    )
+  }
+  normalizePath(candidates[[length(candidates)]], winslash = "/", mustWork = FALSE)
+}
+
 # Keep BLAS/OpenMP from oversubscribing shared hosts.
 Sys.setenv(
   OMP_NUM_THREADS = "1",
@@ -15,9 +47,9 @@ Sys.setenv(
 )
 
 source_files <- c(
-  list.files("R", pattern = "\\.R$", full.names = TRUE),
-  list.files("R/io", pattern = "\\.R$", full.names = TRUE),
-  list.files("R/sim", pattern = "\\.R$", full.names = TRUE)
+  list.files(file.path(repo_root, "R"), pattern = "\\.R$", full.names = TRUE),
+  list.files(file.path(repo_root, "R", "io"), pattern = "\\.R$", full.names = TRUE),
+  list.files(file.path(repo_root, "R", "sim"), pattern = "\\.R$", full.names = TRUE)
 )
 for (f in source_files) source(f, local = FALSE)
 
@@ -54,6 +86,12 @@ opt <- parse_args(OptionParser(option_list = list(
   make_option(c("--runs_out"), type = "character", default = "outputs/summaries/route_sim_runs.csv")
 )))
 
+opt$config <- resolve_repo_path(opt$config, kind = "file", must_work = TRUE)
+if (nzchar(opt$routes)) opt$routes <- resolve_repo_path(opt$routes, kind = "file", must_work = TRUE)
+if (nzchar(opt$elevation)) opt$elevation <- resolve_repo_path(opt$elevation, kind = "file", must_work = FALSE)
+if (nzchar(opt$stations)) opt$stations <- resolve_repo_path(opt$stations, kind = "file", must_work = TRUE)
+if (nzchar(opt$plans)) opt$plans <- resolve_repo_path(opt$plans, kind = "file", must_work = TRUE)
+
 cfg <- read_cfg(opt$config)
 workers <- max(1L, as.integer(opt$workers))
 confirm_heavy <- tolower(as.character(opt$confirm_heavy %||% "true")) %in% c("1", "true", "yes", "y")
@@ -76,12 +114,12 @@ counts <- split_work_counts(as.integer(opt$n), workers)
 starts <- worker_seed_offsets(counts, as.integer(opt$seed))
 
 run_stamp <- format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC")
-coord_dir <- file.path("outputs", "coordinator", paste0(opt$scenario, "_", tolower(opt$powertrain), "_", run_stamp))
+coord_dir <- file.path(repo_root, "outputs", "coordinator", paste0(opt$scenario, "_", tolower(opt$powertrain), "_", run_stamp))
 dir.create(coord_dir, recursive = TRUE, showWarnings = FALSE)
 
 mk_args <- function(worker_id, worker_n, worker_seed, worker_summary, worker_runs, worker_progress) {
   args <- c(
-    "tools/run_route_sim_mc.R",
+    file.path(repo_root, "tools", "run_route_sim_mc.R"),
     "--config", opt$config,
     "--elevation", opt$elevation,
     "--facility_id", opt$facility_id,

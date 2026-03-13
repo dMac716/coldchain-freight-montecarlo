@@ -6,6 +6,38 @@ suppressPackageStartupMessages({
 if (!requireNamespace("data.table", quietly = TRUE)) stop("data.table package required")
 data.table::setDTthreads(1L)
 
+script_file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_path <- if (length(script_file_arg) > 0) sub("^--file=", "", script_file_arg[[1]]) else "tools/run_route_sim_mc.R"
+script_path <- normalizePath(script_path, winslash = "/", mustWork = TRUE)
+script_dir <- dirname(script_path)
+repo_root <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
+
+resolve_repo_path <- function(path, kind = c("file", "dir"), must_work = TRUE) {
+  kind <- match.arg(kind)
+  raw <- trimws(as.character(path))
+  if (!nzchar(raw)) return(raw)
+  expanded <- path.expand(raw)
+  is_absolute <- grepl("^(/|[A-Za-z]:[/\\\\])", expanded)
+  candidates <- unique(c(expanded, if (!is_absolute) file.path(repo_root, raw) else NULL))
+  exists_fn <- if (identical(kind, "dir")) dir.exists else file.exists
+  for (candidate in candidates) {
+    if (exists_fn(candidate)) {
+      return(normalizePath(candidate, winslash = "/", mustWork = TRUE))
+    }
+  }
+  if (isTRUE(must_work)) {
+    stop(
+      sprintf(
+        "%s not found: %s. Checked: %s",
+        tools::toTitleCase(kind),
+        raw,
+        paste(candidates, collapse = ", ")
+      )
+    )
+  }
+  normalizePath(candidates[[length(candidates)]], winslash = "/", mustWork = FALSE)
+}
+
 # Keep BLAS/OpenMP from oversubscribing shared hosts.
 Sys.setenv(
   OMP_NUM_THREADS = "1",
@@ -16,17 +48,12 @@ Sys.setenv(
 )
 
 source_files <- c(
-  list.files("R", pattern = "\\.R$", full.names = TRUE),
-  list.files("R/io", pattern = "\\.R$", full.names = TRUE),
-  list.files("R/sim", pattern = "\\.R$", full.names = TRUE)
+  list.files(file.path(repo_root, "R"), pattern = "\\.R$", full.names = TRUE),
+  list.files(file.path(repo_root, "R", "io"), pattern = "\\.R$", full.names = TRUE),
+  list.files(file.path(repo_root, "R", "sim"), pattern = "\\.R$", full.names = TRUE)
 )
 source_files <- sort(unique(source_files))
 for (f in source_files) source(f, local = FALSE)
-
-script_file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
-script_path <- if (length(script_file_arg) > 0) sub("^--file=", "", script_file_arg[[1]]) else "tools/run_route_sim_mc.R"
-script_dir <- dirname(normalizePath(script_path, winslash = "/", mustWork = TRUE))
-repo_root <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
 
 read_cfg <- function(path) {
   if (!requireNamespace("yaml", quietly = TRUE)) stop("yaml package required for route sim config")
@@ -311,20 +338,29 @@ opt <- parse_args(OptionParser(option_list = list(
   make_option(c("--runtime_summary_out"), type = "character", default = "")
 )))
 
+opt$config <- resolve_repo_path(opt$config, kind = "file", must_work = TRUE)
 cfg <- read_cfg(opt$config)
 if (nzchar(as.character(opt$charger_state_case %||% ""))) {
   if (is.null(cfg$charging)) cfg$charging <- list()
   cfg$charging$charger_state_case <- as.character(opt$charger_state_case)
 }
 data_path <- if (nzchar(opt$data_path)) {
-  opt$data_path
+  resolve_repo_path(opt$data_path, kind = "dir", must_work = TRUE)
 } else {
-  as.character(cfg$paths$data_path %||% Sys.getenv("ROUTE_SIM_DATA_PATH", unset = file.path(repo_root, "data", "derived")))
+  resolve_repo_path(
+    as.character(cfg$paths$data_path %||% Sys.getenv("ROUTE_SIM_DATA_PATH", unset = file.path(repo_root, "data", "derived"))),
+    kind = "dir",
+    must_work = TRUE
+  )
 }
 map_path <- if (nzchar(opt$map_path)) {
-  opt$map_path
+  resolve_repo_path(opt$map_path, kind = "dir", must_work = TRUE)
 } else {
-  as.character(cfg$paths$map_path %||% Sys.getenv("ROUTE_SIM_MAP_PATH", unset = file.path(repo_root, "sources", "data", "osm")))
+  resolve_repo_path(
+    as.character(cfg$paths$map_path %||% Sys.getenv("ROUTE_SIM_MAP_PATH", unset = file.path(repo_root, "sources", "data", "osm"))),
+    kind = "dir",
+    must_work = FALSE
+  )
 }
 if (!dir.exists(data_path)) {
   stop("Data path does not exist: ", data_path, ". Set --data_path or cfg$paths$data_path.")
@@ -414,7 +450,7 @@ infer_origin_network <- function() {
 product_type_resolved <- infer_product_type()
 reefer_state_arg <- parse_reefer_state(opt$reefer_state)
 origin_network_single <- infer_origin_network()
-scenario_matrix_path <- as.character(opt$scenario_test_matrix %||% "")
+scenario_matrix_path <- resolve_repo_path(as.character(opt$scenario_test_matrix %||% ""), kind = "file", must_work = FALSE)
 scenario_matrix <- data.frame()
 if (nzchar(scenario_matrix_path) && file.exists(scenario_matrix_path)) {
   scenario_matrix <- data.table::fread(scenario_matrix_path, showProgress = FALSE, fill = TRUE)
@@ -501,10 +537,14 @@ mc_draws_n <- as.integer(opt$n)
 duration_hours_override <- suppressWarnings(as.numeric(opt$duration_hours))
 if (!is.finite(duration_hours_override) || duration_hours_override <= 0) duration_hours_override <- NA_real_
 duration_hours_arg <- if (is.finite(duration_hours_override)) duration_hours_override else NULL
-routes_path <- if (nzchar(opt$routes)) opt$routes else as.character(cfg$routing$routes_geometry_path %||% file.path(data_path, "routes_facility_to_petco.csv"))
+routes_path <- if (nzchar(opt$routes)) {
+  resolve_repo_path(opt$routes, kind = "file", must_work = TRUE)
+} else {
+  resolve_repo_path(as.character(cfg$routing$routes_geometry_path %||% file.path(data_path, "routes_facility_to_petco.csv")), kind = "file", must_work = TRUE)
+}
 routes <- read_route_geometries(routes_path)
 od_cache <- data.frame()
-od_path <- as.character(cfg$routing$od_cache_path %||% file.path(data_path, "google_routes_od_cache.csv"))
+od_path <- resolve_repo_path(as.character(cfg$routing$od_cache_path %||% file.path(data_path, "google_routes_od_cache.csv")), kind = "file", must_work = FALSE)
 if (nzchar(od_path) && file.exists(od_path)) {
   od_cache <- read_od_cache(od_path)
 }
@@ -512,15 +552,27 @@ if (nzchar(od_path) && file.exists(od_path)) {
 stations <- data.frame()
 plans <- data.frame()
 if (tolower(opt$powertrain) == "bev") {
-  stations_path <- if (nzchar(opt$stations)) opt$stations else as.character(cfg$charging$stations_path %||% file.path(data_path, "ev_charging_stations_corridor.csv"))
-  plans_path <- if (nzchar(opt$plans)) opt$plans else as.character(cfg$charging$route_plans_path %||% file.path(data_path, "bev_route_plans.csv"))
+  stations_path <- if (nzchar(opt$stations)) {
+    resolve_repo_path(opt$stations, kind = "file", must_work = TRUE)
+  } else {
+    resolve_repo_path(as.character(cfg$charging$stations_path %||% file.path(data_path, "ev_charging_stations_corridor.csv")), kind = "file", must_work = TRUE)
+  }
+  plans_path <- if (nzchar(opt$plans)) {
+    resolve_repo_path(opt$plans, kind = "file", must_work = TRUE)
+  } else {
+    resolve_repo_path(as.character(cfg$charging$route_plans_path %||% file.path(data_path, "bev_route_plans.csv")), kind = "file", must_work = TRUE)
+  }
   stations <- read_ev_stations(stations_path)
   plans <- read_bev_route_plans(plans_path)
 }
 
 build_facility_context <- function(facility_id) {
   r <- select_route_row(routes, facility_id = facility_id, route_rank = 1L)
-  elevation_path <- if (nzchar(opt$elevation)) opt$elevation else file.path(data_path, "route_elevation_profiles.csv")
+  elevation_path <- if (nzchar(opt$elevation)) {
+    resolve_repo_path(opt$elevation, kind = "file", must_work = FALSE)
+  } else {
+    resolve_repo_path(file.path(data_path, "route_elevation_profiles.csv"), kind = "file", must_work = FALSE)
+  }
   elev <- load_elevation_profile(elevation_path, route_id = r$route_id[[1]])
   segments <- build_route_segments(r, elevation_profile = elev)
   planned_stops <- data.frame()
