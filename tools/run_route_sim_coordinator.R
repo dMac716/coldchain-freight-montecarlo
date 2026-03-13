@@ -5,10 +5,51 @@ suppressPackageStartupMessages({
   library(parallel)
 })
 
+script_file_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+script_path <- if (length(script_file_arg) > 0) sub("^--file=", "", script_file_arg[[1]]) else "tools/run_route_sim_coordinator.R"
+script_path <- normalizePath(script_path, winslash = "/", mustWork = TRUE)
+script_dir <- dirname(script_path)
+repo_root <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
+
+resolve_repo_path <- function(path, kind = c("file", "dir"), must_work = TRUE) {
+  kind <- match.arg(kind)
+  raw <- trimws(as.character(path))
+  if (!nzchar(raw)) return(raw)
+  expanded <- path.expand(raw)
+  is_absolute <- grepl("^(/|[A-Za-z]:[/\\\\])", expanded)
+  candidates <- unique(c(expanded, if (!is_absolute) file.path(repo_root, raw) else NULL))
+  exists_fn <- if (identical(kind, "dir")) dir.exists else file.exists
+  for (candidate in candidates) {
+    if (exists_fn(candidate)) {
+      return(normalizePath(candidate, winslash = "/", mustWork = TRUE))
+    }
+  }
+  if (isTRUE(must_work)) {
+    stop(
+      sprintf(
+        "%s not found: %s. Checked: %s",
+        tools::toTitleCase(kind),
+        raw,
+        paste(candidates, collapse = ", ")
+      )
+    )
+  }
+  normalizePath(candidates[[length(candidates)]], winslash = "/", mustWork = FALSE)
+}
+
+# Keep BLAS/OpenMP from oversubscribing shared hosts.
+Sys.setenv(
+  OMP_NUM_THREADS = "1",
+  OPENBLAS_NUM_THREADS = "1",
+  MKL_NUM_THREADS = "1",
+  VECLIB_MAXIMUM_THREADS = "1",
+  NUMEXPR_NUM_THREADS = "1"
+)
+
 source_files <- c(
-  list.files("R", pattern = "\\.R$", full.names = TRUE),
-  list.files("R/io", pattern = "\\.R$", full.names = TRUE),
-  list.files("R/sim", pattern = "\\.R$", full.names = TRUE)
+  list.files(file.path(repo_root, "R"), pattern = "\\.R$", full.names = TRUE),
+  list.files(file.path(repo_root, "R", "io"), pattern = "\\.R$", full.names = TRUE),
+  list.files(file.path(repo_root, "R", "sim"), pattern = "\\.R$", full.names = TRUE)
 )
 for (f in source_files) source(f, local = FALSE)
 
@@ -29,27 +70,56 @@ opt <- parse_args(OptionParser(option_list = list(
   make_option(c("--n"), type = "integer", default = 100L),
   make_option(c("--seed"), type = "integer", default = 123),
   make_option(c("--workers"), type = "integer", default = 4L),
+  make_option(c("--confirm_heavy"), type = "character", default = "true"),
+  make_option(c("--worker_nice"), type = "integer", default = 10L),
+  make_option(c("--worker_throttle_seconds"), type = "double", default = 0),
   make_option(c("--poll_seconds"), type = "double", default = 5),
   make_option(c("--stall_seconds"), type = "double", default = 180),
   make_option(c("--max_retries"), type = "integer", default = 1L),
   make_option(c("--stations"), type = "character", default = ""),
   make_option(c("--plans"), type = "character", default = ""),
+  make_option(c("--charger_state_case"), type = "character", default = ""),
+  make_option(c("--memory_limit_mb"), type = "double", default = NA_real_),
+  make_option(c("--memory_log_every_runs"), type = "integer", default = NA_integer_),
+  make_option(c("--gc_every_runs"), type = "integer", default = NA_integer_),
   make_option(c("--summary_out"), type = "character", default = "outputs/summaries/route_sim_summary.csv"),
   make_option(c("--runs_out"), type = "character", default = "outputs/summaries/route_sim_runs.csv")
 )))
 
+opt$config <- resolve_repo_path(opt$config, kind = "file", must_work = TRUE)
+if (nzchar(opt$routes)) opt$routes <- resolve_repo_path(opt$routes, kind = "file", must_work = TRUE)
+if (nzchar(opt$elevation)) opt$elevation <- resolve_repo_path(opt$elevation, kind = "file", must_work = FALSE)
+if (nzchar(opt$stations)) opt$stations <- resolve_repo_path(opt$stations, kind = "file", must_work = TRUE)
+if (nzchar(opt$plans)) opt$plans <- resolve_repo_path(opt$plans, kind = "file", must_work = TRUE)
+
 cfg <- read_cfg(opt$config)
 workers <- max(1L, as.integer(opt$workers))
+confirm_heavy <- tolower(as.character(opt$confirm_heavy %||% "true")) %in% c("1", "true", "yes", "y")
+
+if (confirm_heavy &&
+    should_prompt_heavy_run(as.integer(opt$n), workers) &&
+    interactive() &&
+    sink.number() == 0) {
+  cat(sprintf(
+    "This run is heavy (n=%d, workers=%d, nice=%d). Continue? [y/N]: ",
+    as.integer(opt$n), workers, as.integer(opt$worker_nice)
+  ))
+  ans <- tryCatch(readLines("stdin", n = 1), error = function(e) "")
+  if (!(tolower(trimws(ans)) %in% c("y", "yes"))) {
+    stop("Cancelled by user before launching heavy run.")
+  }
+}
+
 counts <- split_work_counts(as.integer(opt$n), workers)
 starts <- worker_seed_offsets(counts, as.integer(opt$seed))
 
 run_stamp <- format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC")
-coord_dir <- file.path("outputs", "coordinator", paste0(opt$scenario, "_", tolower(opt$powertrain), "_", run_stamp))
+coord_dir <- file.path(repo_root, "outputs", "coordinator", paste0(opt$scenario, "_", tolower(opt$powertrain), "_", run_stamp))
 dir.create(coord_dir, recursive = TRUE, showWarnings = FALSE)
 
 mk_args <- function(worker_id, worker_n, worker_seed, worker_summary, worker_runs, worker_progress) {
   args <- c(
-    "tools/run_route_sim_mc.R",
+    file.path(repo_root, "tools", "run_route_sim_mc.R"),
     "--config", opt$config,
     "--elevation", opt$elevation,
     "--facility_id", opt$facility_id,
@@ -61,11 +131,16 @@ mk_args <- function(worker_id, worker_n, worker_seed, worker_summary, worker_run
     "--summary_out", worker_summary,
     "--runs_out", worker_runs,
     "--progress_file", worker_progress,
-    "--worker_label", paste0("w", worker_id)
+    "--worker_label", paste0("w", worker_id),
+    "--throttle_seconds", as.character(as.numeric(opt$worker_throttle_seconds))
   )
   if (nzchar(opt$routes)) args <- c(args, "--routes", opt$routes)
   if (nzchar(opt$stations)) args <- c(args, "--stations", opt$stations)
   if (nzchar(opt$plans)) args <- c(args, "--plans", opt$plans)
+  if (nzchar(opt$charger_state_case)) args <- c(args, "--charger_state_case", opt$charger_state_case)
+  if (is.finite(as.numeric(opt$memory_limit_mb))) args <- c(args, "--memory_limit_mb", as.character(opt$memory_limit_mb))
+  if (is.finite(as.numeric(opt$memory_log_every_runs)) && as.integer(opt$memory_log_every_runs) > 0L) args <- c(args, "--memory_log_every_runs", as.character(as.integer(opt$memory_log_every_runs)))
+  if (is.finite(as.numeric(opt$gc_every_runs)) && as.integer(opt$gc_every_runs) > 0L) args <- c(args, "--gc_every_runs", as.character(as.integer(opt$gc_every_runs)))
   args
 }
 
@@ -74,8 +149,9 @@ launch_worker <- function(w) {
   w$status <- "RUNNING"
   worker_log <- file.path(coord_dir, sprintf("worker_%02d_attempt_%02d.log", w$id, w$attempt))
   args <- mk_args(w$id, w$n, w$seed, w$summary_path, w$runs_path, w$progress_path)
+  nice_args <- c("-n", as.character(as.integer(opt$worker_nice)), "Rscript", args)
   job <- parallel::mcparallel({
-    code <- system2("Rscript", args = args, stdout = worker_log, stderr = worker_log)
+    code <- system2("nice", args = nice_args, stdout = worker_log, stderr = worker_log)
     list(code = code, log = worker_log)
   }, silent = TRUE)
   w$job <- job

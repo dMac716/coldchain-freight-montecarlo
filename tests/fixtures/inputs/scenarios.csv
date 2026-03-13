@@ -1,0 +1,2 @@
+"scenario_id","scenario","description","fu_id","FU_kcal","spatial_structure","regionalized_distance_scale","distance_distribution_id","distance_model","grid_case","grid_co2_g_per_kwh","status","needed","source_plan","notes"
+"SMOKE_LOCAL","SMOKE_LOCAL","Synthetic fixture scenario — smoke / CI use only","FU_1000_KCAL",1000,"SMOKE_LOCAL",1,"dist_smoke_local","fixed","NA","","SMOKE_READY","","","Fixture only. Do not use for REAL_RUN."

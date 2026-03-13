@@ -1,0 +1,169 @@
+job:
+  name: stochastic_bev_remote_validation
+  # Root directory containing named source sub-directories.
+  source_root: outputs/memory_preflight
+
+# ── Output locations ──────────────────────────────────────────────────────────
+# All paths are relative to the repo root unless they start with /.
+# Override work_dir and report_dir in environment-specific files (see below).
+output_locations:
+  work_dir:    outputs/validation_remote/work    # ephemeral staging directory
+  report_dir:  outputs/validation_remote/report  # final JSON + MD reports land here
+  json_report: validation_summary.json           # filename written inside report_dir
+  md_report:   validation_report.md              # filename written inside report_dir
+
+# ── Per-check thresholds ──────────────────────────────────────────────────────
+#
+# How overrides work:
+#   Set VALIDATION_CONFIG_OVERRIDE to the path of a sparse YAML file.
+#   The override is deep-merged on top of this baseline — only specify the
+#   keys that differ.  Dicts merge recursively; lists replace wholesale.
+#   String values may contain ${ENV_VAR} references; they are expanded at
+#   load time using the process environment.
+#
+#   Codespaces:   VALIDATION_CONFIG_OVERRIDE=config/validation/codespaces.yaml
+#   Cloud runner: VALIDATION_CONFIG_OVERRIDE=config/validation/cloud_runner.yaml
+#   CI smoke:     VALIDATION_CONFIG_OVERRIDE=config/validation/ci_smoke.yaml
+checks:
+
+  # -- Artifact completeness --------------------------------------------------
+  artifact_completeness:
+    # Files that must exist within max_depth of each source directory.
+    # Absence of any required artifact fails this check.
+    required_artifacts:
+      - summary.csv
+      - runs.csv
+      - runtime_summary.csv
+      - memory_profile.csv
+      - memory_summary.json
+
+    # Files that are expected but whose absence is a warning, not a failure.
+    optional_artifacts:
+      - progress.csv
+      - console.log
+
+    # Search depth within each source directory (mirrors find -maxdepth).
+    max_depth: 2
+
+  # -- Log file checks --------------------------------------------------------
+  logs:
+    # Log files expected to exist under each source directory (warn if absent).
+    expected_log_files:
+      - console.log
+
+    # If any of these strings appear in a scanned log file the check fails.
+    error_keywords:
+      - "memory guard triggered"
+      - "oom"
+      - "fatal error"
+      - "error trace"
+
+    # Maximum lines to scan per log file (avoids reading multi-GB logs).
+    max_scan_lines: 500
+
+  # -- Memory thresholds ------------------------------------------------------
+  memory:
+    # Hard upper limit for peak_rss_mb.  Exceeding this value fails the check.
+    rss_limit_mb: 512
+
+    # Fields that must be present in memory_summary.json / runtime_summary.csv.
+    required_summary_fields:
+      - run_count
+      - initial_rss_mb
+      - peak_rss_mb
+      - final_rss_mb
+      - delta_rss_mb
+      - rss_limit_mb
+
+  # -- Runtime thresholds -----------------------------------------------------
+  runtime:
+    # Columns that must be present in runtime_summary.csv.
+    required_columns:
+      - run_label
+      - run_count
+      - wall_seconds
+      - avg_run_seconds
+      - timestamp
+
+    # Emit a warning (not a failure) when columns are absent.
+    warn_if_missing: false
+
+  # -- Summary / runtime split regression -------------------------------------
+  regression:
+    enabled: true
+    script: tools/verify_summary_runtime_split.R
+    # Seconds before the Rscript call is considered hung and killed.
+    timeout_seconds: 120
+
+  # -- RNG hash reproducibility -----------------------------------------------
+  rng_hash:
+    enabled: true
+
+    # File inside each source directory whose rows are hashed.
+    hash_file: runs.csv
+
+    # Hash only the first N rows for speed.  Set to null to hash all rows.
+    n_rows_to_hash: 50
+
+    algorithm: sha256
+
+    # Both sides must produce byte-identical hash_file content.
+    same_seed_pairs:
+      - a: rng_same_a
+        b: rng_same_b
+
+    # Both sides must produce different hash_file content.
+    different_seed_pairs:
+      - a: rng_same_a
+        b: rng_shard2
+
+  # -- Progress gate ----------------------------------------------------------
+  progress:
+    require_done_status: true
+
+# ── Source definitions ────────────────────────────────────────────────────────
+# Each entry names a sub-directory under job.source_root.
+# required_artifacts overrides checks.artifact_completeness.required_artifacts
+# for that source only.  Omit to inherit the global default.
+sources:
+  - name: run100
+    path: run100
+    group: core
+    expected_runs: 100
+
+  - name: run300
+    path: run300
+    group: core
+    expected_runs: 300
+
+  - name: run1000
+    path: run1000
+    group: core
+    expected_runs: 1000
+
+  - name: rng_same_a
+    path: rng/same_a
+    group: rng
+    required_artifacts:
+      - summary.csv
+      - runs.csv
+      - memory_profile.csv
+      - memory_summary.json
+
+  - name: rng_same_b
+    path: rng/same_b
+    group: rng
+    required_artifacts:
+      - summary.csv
+      - runs.csv
+      - memory_profile.csv
+      - memory_summary.json
+
+  - name: rng_shard2
+    path: rng/shard2
+    group: rng
+    required_artifacts:
+      - summary.csv
+      - runs.csv
+      - memory_profile.csv
+      - memory_summary.json

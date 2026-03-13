@@ -1,5 +1,15 @@
 # Run bundle creation for collaboration publishing.
 
+if (requireNamespace("data.table", quietly = TRUE)) {
+  try(data.table::setDTthreads(1L), silent = TRUE)
+}
+Sys.setenv(
+  OMP_NUM_THREADS = Sys.getenv("OMP_NUM_THREADS", unset = "1"),
+  OPENBLAS_NUM_THREADS = Sys.getenv("OPENBLAS_NUM_THREADS", unset = "1"),
+  MKL_NUM_THREADS = Sys.getenv("MKL_NUM_THREADS", unset = "1"),
+  VECLIB_MAXIMUM_THREADS = Sys.getenv("VECLIB_MAXIMUM_THREADS", unset = "1")
+)
+
 safe_git <- function(args) {
   out <- tryCatch(system2("git", args = args, stdout = TRUE, stderr = FALSE), error = function(e) "")
   if (length(out) == 0) return("")
@@ -12,11 +22,17 @@ git_metadata <- function() {
   dirty <- NA
   st <- tryCatch(system2("git", args = c("status", "--porcelain"), stdout = TRUE, stderr = FALSE), error = function(e) character())
   if (length(st) >= 0) dirty <- length(st) > 0
-  list(git_sha = sha, git_branch = branch, repo_dirty = isTRUE(dirty))
+  list(
+    git_sha = sha,
+    git_branch = branch,
+    repo_dirty = isTRUE(dirty),
+    dirty_paths = if (isTRUE(dirty)) as.character(st) else character()
+  )
 }
 
 run_status_from_sim <- function(sim) {
   if (!is.null(sim$metadata) && isTRUE(sim$metadata$plan_soc_violation)) return("plan_soc_violation")
+  if (!is.null(sim$metadata) && !isTRUE(sim$metadata$route_completed %||% sim$metadata$completed)) return("incomplete_route")
   if (!is.null(sim$event_log) && nrow(sim$event_log) > 0 && any(sim$event_log$event_type == "ROUTE_COMPLETE")) return("ok")
   "ok"
 }
@@ -29,10 +45,30 @@ run_summary_row <- function(sim, context) {
   ld <- sim$metadata$load %||% list()
   nutr <- sim$metadata$nutrition %||% list()
   product_type <- as.character(context$product_type %||% NA_character_)
+  cold_chain_required <- context$cold_chain_required %||% sim$metadata$cold_chain_required
+  if (is.null(cold_chain_required) || length(cold_chain_required) == 0 || is.na(cold_chain_required[[1]])) {
+    cold_chain_required <- isTRUE(cold_chain_required_from_product_type(product_type, default = TRUE))
+  } else {
+    cold_chain_required <- isTRUE(as.logical(cold_chain_required[[1]]))
+  }
+  reefer_state <- as.character(context$reefer_state %||% sim$metadata$reefer_state %||% if (isTRUE(cold_chain_required)) "on" else "off")
   origin_network <- as.character(context$origin_network %||% NA_character_)
   kcal_delivered <- as.numeric(context$kcal_delivered %||% NA_real_)
   protein_kg_delivered <- as.numeric(context$protein_kg_delivered %||% NA_real_)
   co2_total <- as.numeric(last$co2_kg_cum[[1]])
+  tru_kwh_cum <- as.numeric(last$tru_kwh_cum[[1]] %||% NA_real_)
+  tru_gal_cum <- as.numeric(last$tru_gal_cum[[1]] %||% NA_real_)
+  prop_kwh_cum <- as.numeric(last$propulsion_kwh_cum[[1]] %||% NA_real_)
+  diesel_gal_cum <- as.numeric(last$diesel_gal_cum[[1]] %||% NA_real_)
+  diesel_kg_per_gal <- as.numeric(context$cfg_resolved$emissions$diesel_co2_kg_per_gallon$baseline %||% 10.19)
+  grid_kg_per_kwh <- as.numeric(last$grid_kg_per_kwh[[1]] %||% NA_real_)
+  co2_tru <- if (isTRUE(cold_chain_required)) {
+    if (tolower(as.character(context$powertrain %||% "")) == "bev") tru_kwh_cum * grid_kg_per_kwh else tru_gal_cum * diesel_kg_per_gal
+  } else {
+    0
+  }
+  if (!is.finite(co2_tru)) co2_tru <- if (isTRUE(cold_chain_required)) NA_real_ else 0
+  co2_prop <- if (is.finite(co2_total) && is.finite(co2_tru)) pmax(0, co2_total - co2_tru) else NA_real_
   co2_upstream <- as.numeric(context$co2_kg_upstream %||% NA_real_)
   co2_full <- if (is.finite(co2_upstream)) co2_total + co2_upstream else NA_real_
   transport_cost_usd <- as.numeric(context$transport_cost_usd %||% context$transport_cost_total %||% NA_real_)
@@ -50,18 +86,78 @@ run_summary_row <- function(sim, context) {
   time_refuel_min <- as.numeric(sched$time_refuel_min %||% NA_real_)
   time_load_unload_min <- as.numeric(sched$time_load_unload_min %||% NA_real_)
   time_traffic_delay_min <- as.numeric(sched$time_traffic_delay_min %||% NA_real_)
+  traffic_multiplier <- as.numeric(context$traffic_multiplier %||% NA_real_)
+  queue_delay_minutes <- as.numeric(context$queue_delay_minutes %||% NA_real_)
+  if (!is.finite(queue_delay_minutes) || queue_delay_minutes < 0) queue_delay_minutes <- 0
+  traffic_state_id <- paste0(
+    as.character(context$traffic_mode %||% NA_character_),
+    "_tm", formatC(traffic_multiplier, format = "f", digits = 4),
+    "_qd", formatC(queue_delay_minutes, format = "f", digits = 2)
+  )
+  congestion_delay_hours <- if (is.finite(as.numeric(last$traffic_delay_h_cum[[1]] %||% NA_real_))) {
+    as.numeric(last$traffic_delay_h_cum[[1]]) + (queue_delay_minutes / 60)
+  } else if (is.finite(time_traffic_delay_min)) {
+    (time_traffic_delay_min + queue_delay_minutes) / 60
+  } else {
+    NA_real_
+  }
   num_break_30min <- as.integer(sched$num_break_30min %||% NA_integer_)
   num_rest_10hr <- as.integer(sched$num_rest_10hr %||% NA_integer_)
   sanity <- compute_load_sanity_flags(ld, run_id = as.character(context$run_id %||% ""))
-  data.frame(
+  md <- sim$metadata %||% list()
+  station_ids_used <- as.character(md$station_ids_used %||% character())
+  station_ids_used <- station_ids_used[nzchar(station_ids_used) & !is.na(station_ids_used)]
+  connector_types_used <- as.character(md$connector_types_used %||% character())
+  connector_types_used <- connector_types_used[nzchar(connector_types_used) & !is.na(connector_types_used)]
+  charger_types_used <- as.character(md$charger_types_used %||% character())
+  charger_types_used <- charger_types_used[nzchar(charger_types_used) & !is.na(charger_types_used)]
+  charger_levels_used <- as.character(md$charger_levels_used %||% character())
+  charger_levels_used <- charger_levels_used[nzchar(charger_levels_used) & !is.na(charger_levels_used)]
+  soc_min_observed <- suppressWarnings(as.numeric(md$soc_min_observed %||% NA_real_))
+  soc_max_observed <- suppressWarnings(as.numeric(md$soc_max_observed %||% NA_real_))
+  charge_qa <- md$charge_qa %||% list()
+  if (!is.finite(soc_min_observed) && "soc" %in% names(ss)) {
+    soc_min_observed <- suppressWarnings(min(as.numeric(ss$soc), na.rm = TRUE))
+    if (!is.finite(soc_min_observed)) soc_min_observed <- NA_real_
+  }
+  if (!is.finite(soc_max_observed) && "soc" %in% names(ss)) {
+    soc_max_observed <- suppressWarnings(max(as.numeric(ss$soc), na.rm = TRUE))
+    if (!is.finite(soc_max_observed)) soc_max_observed <- NA_real_
+  }
+  out <- data.frame(
     run_id = as.character(context$run_id),
     pair_id = as.character(context$pair_id %||% NA_character_),
+    scenario_id = as.character(context$scenario_id %||% context$scenario %||% NA_character_),
     scenario = as.character(context$scenario %||% NA_character_),
+    powertrain = as.character(context$powertrain %||% sim$metadata$powertrain %||% NA_character_),
     traffic_mode = as.character(context$traffic_mode %||% NA_character_),
+    cold_chain_required = as.logical(cold_chain_required),
+    reefer_state = reefer_state,
+    facility_id = as.character(context$facility_id %||% NA_character_),
+    retail_id = as.character(context$retail_id %||% NA_character_),
+    trip_leg = as.character(context$trip_leg %||% context$leg %||% NA_character_),
+    units_per_case_policy = as.character(context$units_per_case_policy %||% NA_character_),
+    case_geometry_policy = as.character(context$case_geometry_policy %||% NA_character_),
+    load_assignment_policy = as.character(ld$load_assignment_policy %||% context$load_assignment_policy %||% NA_character_),
+    artifact_mode = as.character(context$artifact_mode %||% NA_character_),
+    packaging_source_type = as.character(md$packaging_source_type %||% NA_character_),
+    packaging_confidence_level = as.character(md$packaging_confidence_level %||% NA_character_),
+    packaging_rationale = as.character(md$packaging_rationale %||% NA_character_),
     product_type = product_type,
     origin_network = origin_network,
     route_id = as.character(context$route_id %||% NA_character_),
     route_plan_id = as.character(context$route_plan_id %||% NA_character_),
+    route_completed = as.logical(sim$metadata$route_completed %||% sim$metadata$completed %||% FALSE),
+    charger_levels_used = if (length(charger_levels_used) > 0) paste(unique(charger_levels_used), collapse = "|") else NA_character_,
+    charger_types_used = if (length(charger_types_used) > 0) paste(unique(charger_types_used), collapse = "|") else NA_character_,
+    connector_types_used = if (length(connector_types_used) > 0) paste(unique(connector_types_used), collapse = "|") else NA_character_,
+    station_ids_used = if (length(station_ids_used) > 0) paste(unique(station_ids_used), collapse = "|") else NA_character_,
+    max_charge_rate_kw_min = suppressWarnings(as.numeric(md$max_charge_rate_kw_min %||% NA_real_)),
+    max_charge_rate_kw_max = suppressWarnings(as.numeric(md$max_charge_rate_kw_max %||% NA_real_)),
+    soc_min_observed = soc_min_observed,
+    soc_max_observed = soc_max_observed,
+    stochastic_charger_states_enabled = as.logical(md$stochastic_charger_states_enabled %||% FALSE),
+    charger_state_case = as.character(md$charger_state_case %||% NA_character_),
     leg = as.character(context$trip_leg %||% NA_character_),
     distance_miles = as.numeric(last$distance_miles_cum[[1]]),
     duration_minutes = as.numeric(as.numeric(difftime(as.POSIXct(last$t[[1]], tz = "UTC"), as.POSIXct(ss$t[[1]], tz = "UTC"), units = "mins"))),
@@ -69,8 +165,8 @@ run_summary_row <- function(sim, context) {
     co2_kg_total_transport = co2_total,
     co2_kg_upstream = co2_upstream,
     co2_kg_full = co2_full,
-    co2_kg_propulsion = NA_real_,
-    co2_kg_tru = NA_real_,
+    co2_kg_propulsion = co2_prop,
+    co2_kg_tru = co2_tru,
     kcal_delivered = kcal_delivered,
     mass_required_for_fu_kg = as.numeric(context$mass_required_for_fu_kg %||% NA_real_),
     protein_kg_delivered = protein_kg_delivered,
@@ -90,13 +186,19 @@ run_summary_row <- function(sim, context) {
     delivered_price_per_kcal = delivered_price_per_kcal,
     price_index = if (is.finite(delivered_price_per_kcal) && is.finite(base_price_per_kcal) && base_price_per_kcal > 0) delivered_price_per_kcal / base_price_per_kcal else NA_real_,
     price_index_vs_dry_baseline = if (is.finite(delivered_price_per_kcal) && is.finite(baseline_dry_price_per_kcal) && baseline_dry_price_per_kcal > 0) delivered_price_per_kcal / baseline_dry_price_per_kcal else NA_real_,
-    energy_kwh_propulsion = as.numeric(last$propulsion_kwh_cum[[1]]),
-    energy_kwh_tru = as.numeric(last$tru_kwh_cum[[1]]),
-    diesel_gal_propulsion = as.numeric(last$diesel_gal_cum[[1]]),
-    diesel_gal_tru = as.numeric(last$tru_gal_cum[[1]]),
+    energy_kwh_propulsion = prop_kwh_cum,
+    energy_kwh_tru = if (isTRUE(cold_chain_required)) tru_kwh_cum else 0,
+    energy_kwh_total = rowSums(cbind(
+      prop_kwh_cum,
+      if (isTRUE(cold_chain_required)) tru_kwh_cum else 0
+    ), na.rm = TRUE),
+    diesel_gal_propulsion = diesel_gal_cum,
+    diesel_gal_tru = if (isTRUE(cold_chain_required)) tru_gal_cum else 0,
     charge_stops = as.integer(last$charge_count[[1]]),
     refuel_stops = as.integer(last$refuel_count[[1]]),
     delay_minutes = as.numeric(last$delay_minutes_cum[[1]]),
+    congestion_delay_hours = congestion_delay_hours,
+    traffic_state_id = traffic_state_id,
     driving_time_h = if ("driving_time_h_cum" %in% names(last)) as.numeric(last$driving_time_h_cum[[1]]) else NA_real_,
     traffic_delay_time_h = if ("traffic_delay_h_cum" %in% names(last)) as.numeric(last$traffic_delay_h_cum[[1]]) else NA_real_,
     charging_or_refueling_time_h = if ("service_time_h_cum" %in% names(last)) as.numeric(last$service_time_h_cum[[1]]) else NA_real_,
@@ -104,6 +206,13 @@ run_summary_row <- function(sim, context) {
     trip_duration_total_h = if ("trip_duration_h_cum" %in% names(last)) as.numeric(last$trip_duration_h_cum[[1]]) else NA_real_,
     payload_max_lb_draw = as.numeric(ld$payload_max_lb_draw %||% NA_real_),
     units_per_truck = as.numeric(ld$units_per_truck %||% NA_real_),
+    units_per_truck_capacity = as.numeric(ld$units_per_truck_capacity %||% NA_real_),
+    cases_per_truck_capacity = as.numeric(ld$cases_per_truck_capacity %||% NA_real_),
+    assigned_units = as.numeric(ld$assigned_units %||% NA_real_),
+    assigned_cases = as.numeric(ld$assigned_cases %||% NA_real_),
+    actual_units_loaded = as.numeric(ld$actual_units_loaded %||% NA_real_),
+    load_fraction = as.numeric(ld$load_fraction %||% NA_real_),
+    unused_capacity_units = as.numeric(ld$unused_capacity_units %||% NA_real_),
     cases_per_pallet_draw = as.numeric(ld$cases_per_pallet_draw %||% NA_real_),
     units_per_case_draw = as.numeric(ld$units_per_case_draw %||% NA_real_),
     cube_limit_units = as.numeric(ld$cube_limit_units %||% NA_real_),
@@ -132,6 +241,16 @@ run_summary_row <- function(sim, context) {
     time_refuel_min = time_refuel_min,
     time_load_unload_min = time_load_unload_min,
     time_traffic_delay_min = time_traffic_delay_min,
+    charging_attempts = as.integer(charge_qa$charging_attempts %||% 0L),
+    compatible_chargers_considered = as.integer(charge_qa$compatible_chargers_considered %||% 0L),
+    occupied_events = as.integer(charge_qa$occupied_events %||% 0L),
+    broken_events = as.integer(charge_qa$broken_events %||% 0L),
+    average_wait_time_minutes = as.numeric(charge_qa$average_wait_time_minutes %||% 0),
+    max_wait_time_minutes = as.numeric(charge_qa$max_wait_time_minutes %||% 0),
+    total_wait_time_minutes = as.numeric(charge_qa$total_wait_time_minutes %||% 0),
+    added_refrigeration_runtime_minutes_waiting = as.numeric(charge_qa$added_refrigeration_runtime_minutes_waiting %||% 0),
+    added_hos_delay_minutes_waiting = as.numeric(charge_qa$added_hos_delay_minutes_waiting %||% 0),
+    failed_charging_attempt_fraction = as.numeric(charge_qa$failed_charging_attempt_fraction %||% 0),
     num_break_30min = num_break_30min,
     num_rest_10hr = num_rest_10hr,
     sanity_flag_low_cube_util = as.integer(sanity$sanity_flag_low_cube_util),
@@ -152,6 +271,13 @@ run_summary_row <- function(sim, context) {
     fuel_type_return = if (isTRUE(identical(context$trip_leg, "return"))) as.character(last$fuel_type_label[[1]]) else NA_character_,
     stringsAsFactors = FALSE
   )
+  if (tolower(as.character(context$powertrain %||% "")) == "bev") {
+    ek <- suppressWarnings(as.numeric(out$energy_kwh_propulsion[[1]]))
+    if (!is.finite(ek) || ek <= 0) {
+      warning("BEV energy calculation returned zero. run_id=", as.character(context$run_id %||% NA_character_))
+    }
+  }
+  out
 }
 
 infer_product_type_from_context <- function(context, cfg_resolved) {
@@ -189,9 +315,14 @@ pick_distribution_local <- function(spec, rng = NULL) {
 
 sample_nutrition_profile <- function(cfg_resolved, product_type, seed = 123) {
   # Deterministic per-run draw for nutrition uncertainty.
-  set.seed(as.integer(seed))
-  rng <- new.env(parent = emptyenv())
-  rng$runif <- function(...) stats::runif(...)
+  rng <- if (exists("new_local_rng", mode = "function")) {
+    new_local_rng(seed)
+  } else {
+    set.seed(as.integer(seed))
+    env <- new.env(parent = emptyenv())
+    env$runif <- function(...) stats::runif(...)
+    env
+  }
 
   p <- tolower(as.character(product_type %||% "refrigerated"))
   nsec <- cfg_resolved$nutrition[[p]]
@@ -353,7 +484,7 @@ lci_read_intensity_table <- function(cfg_resolved) {
   lci_cfg <- cfg_resolved$lci
   enabled <- isTRUE(as.logical(lci_cfg$enabled %||% FALSE))
   if (!enabled) return(data.frame())
-  wb <- as.character(lci_cfg$lci_workbook_path %||% "LCI.xlsx")
+  wb <- as.character(lci_cfg$lci_workbook_path %||% "sources/data/lci_workbook/LCI.xlsx")
   if (!file.exists(wb)) stop("LCI enabled but workbook not found: ", wb)
   if (!requireNamespace("readxl", quietly = TRUE)) {
     stop("LCI enabled but readxl package is not installed")
@@ -382,6 +513,7 @@ lci_read_intensity_table <- function(cfg_resolved) {
   })
   out <- do.call(rbind, rows)
   out <- lci_apply_process_key_map(out, cfg_resolved)
+  cache <- list()
   cache[[cache_key]] <- out
   options(coldchain.lci_intensity_cache = cache)
   out
@@ -621,8 +753,12 @@ write_run_bundle <- function(
     context,
     cfg_resolved = list(),
     artifact_paths = NULL,
+    artifact_manifest_df = NULL,
     tracks_path = NULL,
-    bundle_root = "outputs/run_bundle") {
+    bundle_root = "outputs/run_bundle",
+    write_events = TRUE,
+    write_charge_details = TRUE,
+    write_tracks_gz = TRUE) {
   if (is.null(context$run_id) || !nzchar(context$run_id)) stop("context$run_id is required")
   run_id <- as.character(context$run_id)
   bundle_dir <- file.path(bundle_root, run_id)
@@ -638,7 +774,11 @@ write_run_bundle <- function(
   }
 
   g <- git_metadata()
-  artifacts_df <- artifact_manifest(artifact_paths)
+  artifacts_df <- if (is.data.frame(artifact_manifest_df) && nrow(artifact_manifest_df) > 0) {
+    artifact_manifest_df
+  } else {
+    artifact_manifest(artifact_paths)
+  }
   inputs_hash <- inputs_hash_from_artifacts(artifacts_df)
   status <- run_status_from_sim(sim)
   enforce_real_run_requirements(sim)
@@ -683,15 +823,25 @@ write_run_bundle <- function(
 
   runs_obj <- list(
     run_id = run_id,
+    scenario_id = context$scenario_id %||% context$scenario %||% NA_character_,
     created_at_utc = as.character(format(Sys.time(), tz = "UTC", usetz = TRUE)),
     runner = Sys.getenv("USER", unset = ""),
     git_sha = g$git_sha,
     git_branch = g$git_branch,
     repo_dirty = g$repo_dirty,
+    dirty_paths = g$dirty_paths %||% character(),
     status = status,
     scenario = context$scenario %||% NA_character_,
     product_type = context$product_type %||% NA_character_,
     origin_network = context$origin_network %||% NA_character_,
+    traffic_mode = context$traffic_mode %||% NA_character_,
+    facility_id = context$facility_id %||% NA_character_,
+    retail_id = context$retail_id %||% NA_character_,
+    trip_leg = context$trip_leg %||% NA_character_,
+    units_per_case_policy = context$units_per_case_policy %||% NA_character_,
+    case_geometry_policy = context$case_geometry_policy %||% NA_character_,
+    load_assignment_policy = context$load_assignment_policy %||% NA_character_,
+    artifact_mode = context$artifact_mode %||% NA_character_,
     route_id = context$route_id %||% NA_character_,
     route_plan_id = context$route_plan_id %||% NA_character_,
     seed = as.integer(context$seed %||% NA_integer_),
@@ -702,6 +852,7 @@ write_run_bundle <- function(
 
   params_obj <- list(
     run_id = run_id,
+    scenario_id = context$scenario_id %||% context$scenario %||% NA_character_,
     pair_id = context$pair_id %||% NA_character_,
     scenario = context$scenario %||% NA_character_,
     traffic_mode = context$traffic_mode %||% NA_character_,
@@ -710,6 +861,12 @@ write_run_bundle <- function(
     facility_id = context$facility_id %||% NA_character_,
     powertrain = context$powertrain %||% NA_character_,
     trip_leg = context$trip_leg %||% NA_character_,
+    retail_id = context$retail_id %||% NA_character_,
+    units_per_case_policy = context$units_per_case_policy %||% NA_character_,
+    case_geometry_policy = context$case_geometry_policy %||% NA_character_,
+    load_assignment_policy = context$load_assignment_policy %||% NA_character_,
+    artifact_mode = context$artifact_mode %||% NA_character_,
+    scenario_notes = context$scenario_notes %||% NA_character_,
     seed = as.integer(context$seed %||% NA_integer_),
     mc_draws = as.integer(context$mc_draws %||% 1L),
     route_id = context$route_id %||% NA_character_,
@@ -726,20 +883,44 @@ write_run_bundle <- function(
   summaries_path <- file.path(bundle_dir, "summaries.csv")
   ingredients_path <- file.path(bundle_dir, "upstream_ingredients.csv")
   events_path <- file.path(bundle_dir, "events.csv")
+  charge_details_path <- file.path(bundle_dir, "charge_stop_details.csv")
   params_path <- file.path(bundle_dir, "params.json")
   artifacts_path <- file.path(bundle_dir, "artifacts.json")
   tracks_gz_path <- file.path(bundle_dir, "tracks.csv.gz")
 
   jsonlite::write_json(runs_obj, runs_path, pretty = TRUE, auto_unbox = TRUE, null = "null")
-  utils::write.csv(summary_row, summaries_path, row.names = FALSE)
-  if (nrow(ingredient_summary) > 0) {
-    utils::write.csv(ingredient_summary, ingredients_path, row.names = FALSE)
+  if (requireNamespace("data.table", quietly = TRUE)) {
+    data.table::fwrite(summary_row, summaries_path)
+  } else {
+    utils::write.csv(summary_row, summaries_path, row.names = FALSE)
   }
-  utils::write.csv(sim$event_log, events_path, row.names = FALSE)
+  if (nrow(ingredient_summary) > 0) {
+    if (requireNamespace("data.table", quietly = TRUE)) {
+      data.table::fwrite(ingredient_summary, ingredients_path)
+    } else {
+      utils::write.csv(ingredient_summary, ingredients_path, row.names = FALSE)
+    }
+  }
+  if (isTRUE(write_events)) {
+    if (requireNamespace("data.table", quietly = TRUE)) {
+      data.table::fwrite(sim$event_log, events_path)
+    } else {
+      utils::write.csv(sim$event_log, events_path, row.names = FALSE)
+    }
+  }
+  if (isTRUE(write_charge_details) && is.data.frame(sim$charge_stop_details) && nrow(sim$charge_stop_details) > 0) {
+    charge_details_df <- sim$charge_stop_details
+    if (!"run_id" %in% names(charge_details_df)) charge_details_df$run_id <- as.character(run_id)
+    if (requireNamespace("data.table", quietly = TRUE)) {
+      data.table::fwrite(charge_details_df, charge_details_path)
+    } else {
+      utils::write.csv(charge_details_df, charge_details_path, row.names = FALSE)
+    }
+  }
   jsonlite::write_json(params_obj, params_path, pretty = TRUE, auto_unbox = TRUE, null = "null")
   jsonlite::write_json(artifacts_df, artifacts_path, pretty = TRUE, auto_unbox = TRUE, dataframe = "rows", null = "null")
 
-  if (!is.null(tracks_path) && file.exists(tracks_path)) {
+  if (isTRUE(write_tracks_gz) && !is.null(tracks_path) && file.exists(tracks_path)) {
     con_in <- file(tracks_path, open = "rb")
     con_out <- gzfile(tracks_gz_path, open = "wb")
     on.exit(try(close(con_in), silent = TRUE), add = TRUE)
@@ -750,13 +931,18 @@ write_run_bundle <- function(
       writeBin(buf, con_out)
     }
   }
+  gc(verbose = FALSE)
 
   list(
     bundle_dir = bundle_dir,
+    run_record = runs_obj,
+    summary_record = summary_row,
+    artifact_record = artifacts_df,
     runs_path = runs_path,
     summaries_path = summaries_path,
     ingredients_path = if (file.exists(ingredients_path)) ingredients_path else NA_character_,
-    events_path = events_path,
+    events_path = if (isTRUE(write_events) && file.exists(events_path)) events_path else NA_character_,
+    charge_details_path = if (file.exists(charge_details_path)) charge_details_path else NA_character_,
     params_path = params_path,
     artifacts_path = artifacts_path,
     tracks_gz_path = if (file.exists(tracks_gz_path)) tracks_gz_path else NA_character_

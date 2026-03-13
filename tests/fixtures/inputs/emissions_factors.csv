@@ -1,0 +1,3 @@
+"factor_id","powertrain","trailer_type","refrigeration_mode","co2_g_per_ton_mile","co2_g_per_mile","default_payload_tons","kwh_per_mile_tract","kwh_per_mile_tru","grid_co2_g_per_kwh","source_id","source_page","status","notes"
+"diesel_refrigerated_diesel_tru","diesel","refrigerated","diesel_tru",109,2066,17.6,"","","","smartway_olt_2025","p13 Table 3; p14 Table 4","OK","Diesel refrigerated baseline — fixture copy."
+"diesel_dryvan_none","diesel","dry_van","none",105,1784,16.35,"","","","smartway_olt_2025","p13 Table 3; p14 Table 4","OK","Diesel dry-van baseline — fixture copy."

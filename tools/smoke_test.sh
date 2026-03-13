@@ -13,7 +13,7 @@ mkdir -p "$WORK_DIR/outputs" "$WORK_DIR/contrib/chunks"
 pushd "$WORK_DIR" >/dev/null
 Rscript tools/run_chunk.R --scenario SMOKE_LOCAL --n 200 --seed 123 --mode SMOKE_LOCAL --outdir outputs/local_smoke
 
-chunk_file="$(ls -1 contrib/chunks/chunk_SMOKE_LOCAL_*.json | tail -n 1)"
+chunk_file="$(find contrib/chunks -maxdepth 1 -type f -name 'chunk_SMOKE_LOCAL_*.json' -print | sort | tail -n 1)"
 Rscript tools/validate_artifact.R --file "$chunk_file"
 
 Rscript tools/aggregate.R --run_group SMOKE_LOCAL --mode SMOKE_LOCAL

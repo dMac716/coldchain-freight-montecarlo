@@ -28,12 +28,16 @@ on:
       - '.github/workflows/site-preflight.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: site-preflight-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   render-smoke:
+    name: Render site smoke
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

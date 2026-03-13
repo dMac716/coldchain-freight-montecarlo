@@ -14,7 +14,8 @@ option_list <- list(
   make_option(c("--n"), type = "integer", help = "Number of samples"),
   make_option(c("--seed"), type = "integer", default = NA_integer_, help = "Seed (optional)"),
   make_option(c("--outdir"), type = "character", default = "outputs/local", help = "Output directory"),
-  make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN")
+  make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN"),
+  make_option(c("--distance_mode"), type = "character", default = "FAF_DISTRIBUTION", help = "Distance mode: FAF_DISTRIBUTION, ROAD_NETWORK_FIXED_DEST, ROAD_NETWORK_PHYSICS")
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
@@ -22,10 +23,24 @@ if (is.null(opt$scenario) || is.null(opt$n)) {
   stop("--scenario and --n are required.")
 }
 mode <- normalize_run_mode(opt$mode)
+distance_mode <- normalize_distance_mode(opt$distance_mode)
+Sys.setenv(DISTANCE_MODE = distance_mode)
+
+configure_log(
+  tag  = "run_chunk",
+  seed = if (!is.na(opt$seed)) as.character(opt$seed) else "na",
+  lane = Sys.getenv("COLDCHAIN_LANE", unset = "local")
+)
+log_event("INFO", "start", sprintf(
+  "run_chunk starting: scenario=%s n=%d mode=%s seed=%s",
+  opt$scenario, opt$n, opt$mode,
+  if (!is.na(opt$seed)) as.character(opt$seed) else "na"
+))
 
 inputs <- read_inputs_local()
 validate_sampling_priors(inputs$sampling_priors)
 assert_scenarios_distance_linkage(inputs$scenarios, inputs$distance_distributions)
+assert_variant_dimensions_present(inputs$scenario_matrix)
 
 variant_rows <- select_variant_rows(inputs, opt$scenario)
 if (nrow(variant_rows) == 0) stop("No scenario variants selected.")
@@ -58,7 +73,8 @@ for (i in seq_len(nrow(variant_rows))) {
     scenario_name = variant_row$scenario_id[[1]],
     variant_row = variant_row,
     inputs = inputs,
-    priors_map = resolved$priors
+    priors_map = resolved$priors,
+    distance_mode = distance_mode
   )
   validate_inputs(inputs_list)
 
@@ -74,13 +90,18 @@ for (i in seq_len(nrow(variant_rows))) {
 
   outdir_variant <- if (nrow(variant_rows) == 1) opt$outdir else file.path(opt$outdir, variant_id)
   if (!dir.exists(outdir_variant)) dir.create(outdir_variant, recursive = TRUE)
-  write_results_summary(chunk$stats, file.path(outdir_variant, "results_summary.csv"))
+  write_results_summary(chunk$stats, file.path(outdir_variant, "results_summary.csv"), hist = chunk$hist)
 
   run_metadata <- list(
     selector = opt$scenario,
     variant_id = variant_id,
     scenario_id = variant_row$scenario_id[[1]],
     run_group = variant_row$run_group[[1]],
+    product_mode = resolved$variant_dims$product_mode,
+    spatial_structure = resolved$variant_dims$spatial_structure,
+    powertrain_config = resolved$variant_dims$powertrain_config,
+    regionalized_distance_scale = resolved$inputs_list$regionalized_distance_scale,
+    distance_mode = distance_mode,
     mode = mode,
     n = opt$n,
     seed = seed_used,
@@ -90,6 +111,14 @@ for (i in seq_len(nrow(variant_rows))) {
   )
   writeLines(jsonlite::toJSON(run_metadata, auto_unbox = TRUE, pretty = TRUE),
              file.path(outdir_variant, "run_metadata.json"))
+
+  draws_out <- chunk$draws
+  draws_out$variant_id <- variant_id
+  draws_out$scenario_id <- variant_row$scenario_id[[1]]
+  draws_out$product_mode <- resolved$variant_dims$product_mode
+  draws_out$spatial_structure <- resolved$variant_dims$spatial_structure
+  draws_out$powertrain_config <- resolved$variant_dims$powertrain_config
+  utils::write.csv(draws_out, gzfile(file.path(outdir_variant, "draws.csv.gz")), row.names = FALSE)
 
   resolved_parts <- list()
   base_fields <- required_model_param_ids()
@@ -200,4 +229,5 @@ for (i in seq_len(nrow(variant_rows))) {
   writeLines(jsonlite::toJSON(artifact_roundtrip, auto_unbox = TRUE, pretty = TRUE), artifact_path)
 
   message("Chunk written: ", artifact_path)
+  log_event("INFO", "chunk_written", sprintf("variant=%s chunk=%s", variant_id, artifact_path))
 }

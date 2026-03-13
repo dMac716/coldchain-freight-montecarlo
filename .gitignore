@@ -9,6 +9,9 @@
 # User-specific files
 .Ruserdata
 
+# GH PAT Token
+.secrets/
+
 # Example code in package build process
 *-Ex.R
 
@@ -58,6 +61,11 @@ _targets/
 
 # outputs and artifacts
 outputs/
+
+# Smoke test isolated output directories (all three lanes)
+runs/smoke_local_*/
+runs/smoke_codespace_*/
+runs/smoke_gcp_*/
 contrib/chunks/
 data/cache/
 
@@ -67,9 +75,17 @@ data/cache/
 # local Python virtual environments
 venv/
 .venv/
+__pycache__/
+*.py[cod]
 
 # local GCP runtime env
 config/gcp.env
+
+# local environment files (direnv / shell)
+.env
+.env.local
+.envrc
+.direnv/
 
 # local Quarto render cache/output scratch inside site project
 site/_freeze/
@@ -84,3 +100,14 @@ sources/FAF5.7.1/FAF5.7.1_State_HiLoForecasts/
 # macOS filesystem metadata
 .DS_Store
 **/.DS_Store
+
+# local duplicate proposal PDF (tracked canonical copy lives under sources/pdfs/)
+TTP Final Project -Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf
+
+# local OSRM build artifacts
+data/osrm/map.osm.pbf
+data/osrm/map.osrm*
+
+# local logs/scratch
+*.log
+*.tmp

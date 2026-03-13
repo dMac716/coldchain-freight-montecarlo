@@ -1,0 +1,26 @@
+# config/validation/codespaces.yaml
+#
+# Sparse override for GitHub Codespaces.
+# Deep-merged on top of defaults.yaml at load time.
+# Only keys that differ from the baseline are listed here.
+#
+# Usage:
+#   export VALIDATION_CONFIG_OVERRIDE=config/validation/codespaces.yaml
+
+output_locations:
+  # Use absolute paths so scripts work from any cwd inside the Codespace.
+  work_dir:   /workspaces/coldchain-freight-montecarlo/outputs/validation_remote/work
+  report_dir: /workspaces/coldchain-freight-montecarlo/outputs/validation_remote/report
+
+checks:
+  memory:
+    # Codespaces VMs have more RAM than the default local baseline.
+    rss_limit_mb: 768
+
+  regression:
+    # Containers can be slower to start Rscript; give extra headroom.
+    timeout_seconds: 240
+
+  logs:
+    # Scan more lines in Codespaces where log verbosity is higher.
+    max_scan_lines: 1000

@@ -9,7 +9,8 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 Usage: bash tools/bootstrap_local.sh
 
 Bootstraps local developer environment:
-  - verifies required CLIs (Rscript, git)
+  - verifies required CLIs (Rscript, git, rg)
+  - checks DuckDB CLI used by transport validation/catalog scripts
   - installs required R packages for local workflows
   - prepares config/gcp.env from example if missing
   - runs SMOKE_LOCAL preflight
@@ -26,6 +27,7 @@ need_cmd() {
 
 need_cmd Rscript
 need_cmd git
+need_cmd rg
 
 echo "[1/4] Installing required R packages (if missing)."
 Rscript -e 'pkgs <- c("optparse","jsonlite","digest","testthat"); missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = "https://cloud.r-project.org"); cat("R packages ready:", paste(pkgs, collapse = ", "), "\n")'
@@ -41,6 +43,11 @@ if command -v gcloud >/dev/null 2>&1 && command -v bq >/dev/null 2>&1; then
   echo "gcloud and bq detected."
 else
   echo "gcloud/bq not found (optional unless running make bq)."
+fi
+if command -v duckdb >/dev/null 2>&1; then
+  echo "duckdb detected."
+else
+  echo "duckdb not found. Transport catalog validation/promotion will fail until DuckDB CLI is installed."
 fi
 
 echo "[4/4] Running SMOKE_LOCAL preflight."

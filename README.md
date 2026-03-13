@@ -422,6 +422,36 @@ Rscript -e 'testthat::test_dir("tests/testthat")'
 bash tools/smoke_test.sh
 ```
 
+## Compute Lane Smoke Tests
+
+Each compute lane has a dedicated smoke test that runs a tiny, deterministic end-to-end
+check (`n=50`, `seed=42`, `MODE=SMOKE_LOCAL`) and writes isolated output to `runs/smoke_<lane>_seed42/`.
+All three are safe to re-run — they are fully idempotent.
+
+| Target | Lane | What it exercises |
+|--------|------|-------------------|
+| `make smoke-local` | local | validate → run_chunk → artifact schema → aggregate |
+| `make smoke-codespace` | Codespace | + graph rendering → artifact packaging → run registry |
+| `make smoke-gcp` | GCP | + artifact packaging → promotion path (local_only fallback) |
+
+```bash
+# Quick sanity check for the local pipeline
+make smoke-local
+
+# Codespace pipeline (requires ggplot2 and scripts/render_run_graphs.R)
+make smoke-codespace
+
+# GCP lane (safe — uses COLDCHAIN_SMOKE_DRY_RUN=1; no real GCS upload)
+make smoke-gcp
+
+# Live GCS upload smoke (requires gcloud auth and GCS_BUCKET)
+COLDCHAIN_SMOKE_DRY_RUN=0 bash tools/smoke_gcp.sh
+```
+
+Outputs land in `runs/smoke_<lane>_seed42/` and are gitignored.
+Structured logs are written to `runs/smoke_<lane>_seed42/run.log`.
+A `smoke_complete.flag` file is created on success and removed at the start of the next run.
+
 ## Optional BigQuery Pipeline
 This repository includes an optional GCS→BigQuery FAF ingestion path. It is not required for CI or local offline runs.
 

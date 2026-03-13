@@ -1,0 +1,33 @@
+# config/validation/cloud_runner.yaml
+#
+# Sparse override for GCP / Azure cloud runners.
+# Deep-merged on top of defaults.yaml at load time.
+# Only keys that differ from the baseline are listed here.
+#
+# Paths use ${ENV_VAR} references that are expanded at load time.
+# The following variables must be present in the runner environment:
+#   ARTIFACT_ROOT   — root directory of the run artifacts to validate
+#   OUTPUT_DIR      — where the JSON + MD reports should be written
+#   TEMP_DIR        — ephemeral scratch space (e.g. /tmp or a fast local disk)
+#
+# Usage:
+#   export VALIDATION_CONFIG_OVERRIDE=config/validation/cloud_runner.yaml
+
+job:
+  source_root: "${ARTIFACT_ROOT}"
+
+output_locations:
+  work_dir:   "${TEMP_DIR}/coldchain-validate-work"
+  report_dir: "${OUTPUT_DIR}"
+
+checks:
+  memory:
+    # Cloud runner instances are typically larger; allow more headroom.
+    rss_limit_mb: 1024
+
+  regression:
+    # Cloud runners may have cold-start latency for Rscript.
+    timeout_seconds: 300
+
+  logs:
+    max_scan_lines: 2000

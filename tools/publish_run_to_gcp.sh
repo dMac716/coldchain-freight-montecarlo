@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Disabled external contributions for now (local-only branch).
-# Original publish implementation is intentionally kept below for easy restore.
-echo "Disabled in local-only mode: tools/publish_run_to_gcp.sh"
-echo "Reason: external GCS/BigQuery publishing is turned off for this local deployment."
-exit 1
-
 # Usage:
 #   RUN_ID=my_run GCP_PROJECT=my-proj GCS_BUCKET=my-bucket bash tools/publish_run_to_gcp.sh
 
@@ -48,6 +42,7 @@ SUMMARIES_CSV="$BUNDLE_DIR/summaries.csv"
 EVENTS_CSV="$BUNDLE_DIR/events.csv"
 EVENTS_LOAD_CSV="$TMP_DIR/events_for_bq.csv"
 
+# shellcheck disable=SC2016
 Rscript -e '
 args <- commandArgs(trailingOnly = TRUE)
 in_json <- args[[1]]
@@ -66,9 +61,9 @@ STAGING="${BQ_DATASET}.runs_staging_${RUN_ID//[^a-zA-Z0-9_]/_}_$(date +%s)"
 bq --project_id "$GCP_PROJECT" mk --table --schema bq/schema_runs.json "$STAGING" >/dev/null
 bq --project_id "$GCP_PROJECT" load --source_format=NEWLINE_DELIMITED_JSON --replace "$STAGING" "$RUNS_NDJSON"
 
-bq --project_id "$GCP_PROJECT" query --use_legacy_sql=false "
-MERGE \\`${GCP_PROJECT}.${BQ_DATASET}.runs\\` T
-USING \\`${GCP_PROJECT}.${STAGING}\\` S
+RUNS_MERGE_SQL=$(cat <<EOF
+MERGE \`${GCP_PROJECT}.${BQ_DATASET}.runs\` T
+USING \`${GCP_PROJECT}.${STAGING}\` S
 ON T.run_id = S.run_id
 WHEN MATCHED THEN UPDATE SET
   created_at_utc = S.created_at_utc,
@@ -89,16 +84,20 @@ WHEN MATCHED THEN UPDATE SET
 WHEN NOT MATCHED THEN
   INSERT (run_id, created_at_utc, runner, git_sha, git_branch, repo_dirty, status, scenario, product_type, origin_network, route_id, route_plan_id, seed, mc_draws, gcs_prefix, inputs_hash)
   VALUES (S.run_id, S.created_at_utc, S.runner, S.git_sha, S.git_branch, S.repo_dirty, S.status, S.scenario, S.product_type, S.origin_network, S.route_id, S.route_plan_id, S.seed, S.mc_draws, S.gcs_prefix, S.inputs_hash)
-"
+EOF
+)
+bq --project_id "$GCP_PROJECT" query --use_legacy_sql=false "$RUNS_MERGE_SQL"
 
 bq --project_id "$GCP_PROJECT" rm -f -t "$STAGING" >/dev/null
 
 # Idempotent summaries reload per run_id
-bq --project_id "$GCP_PROJECT" query --use_legacy_sql=false "DELETE FROM \\`${GCP_PROJECT}.${BQ_DATASET}.summaries\\` WHERE run_id = '${RUN_ID}'"
+SUMMARIES_DELETE_SQL="DELETE FROM \`${GCP_PROJECT}.${BQ_DATASET}.summaries\` WHERE run_id = '${RUN_ID}'"
+bq --project_id "$GCP_PROJECT" query --use_legacy_sql=false "$SUMMARIES_DELETE_SQL"
 bq --project_id "$GCP_PROJECT" load --source_format=CSV --skip_leading_rows=1 "$BQ_DATASET.summaries" "$SUMMARIES_CSV" bq/schema_summaries.json
 
 # Optional events
 if [[ -f "$EVENTS_CSV" && -s "$EVENTS_CSV" ]]; then
+  # shellcheck disable=SC2016
   Rscript -e '
 args <- commandArgs(trailingOnly = TRUE)
 in_csv <- args[[1]]
@@ -115,9 +114,11 @@ utils::write.csv(d[, need, drop = FALSE], out_csv, row.names = FALSE)
 ' "$EVENTS_CSV" "$EVENTS_LOAD_CSV"
 
   # Ensure run_id is filled
+  # shellcheck disable=SC2016
   Rscript -e 'args <- commandArgs(trailingOnly = TRUE); p <- args[[1]]; rid <- args[[2]]; d <- utils::read.csv(p, stringsAsFactors = FALSE); d$run_id[d$run_id=="" | is.na(d$run_id)] <- rid; utils::write.csv(d, p, row.names = FALSE)' "$EVENTS_LOAD_CSV" "$RUN_ID"
 
-  bq --project_id "$GCP_PROJECT" query --use_legacy_sql=false "DELETE FROM \\`${GCP_PROJECT}.${BQ_DATASET}.events\\` WHERE run_id = '${RUN_ID}'"
+  EVENTS_DELETE_SQL="DELETE FROM \`${GCP_PROJECT}.${BQ_DATASET}.events\` WHERE run_id = '${RUN_ID}'"
+  bq --project_id "$GCP_PROJECT" query --use_legacy_sql=false "$EVENTS_DELETE_SQL"
   bq --project_id "$GCP_PROJECT" load --source_format=CSV --skip_leading_rows=1 "$BQ_DATASET.events" "$EVENTS_LOAD_CSV" bq/schema_events.json
 fi
 

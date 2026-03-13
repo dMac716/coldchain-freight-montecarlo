@@ -184,9 +184,46 @@ normalize_run_mode <- function(mode) {
   out
 }
 
+normalize_distance_mode <- function(distance_mode) {
+  if (is.null(distance_mode) || !nzchar(as.character(distance_mode))) {
+    return("FAF_DISTRIBUTION")
+  }
+  m <- toupper(trimws(as.character(distance_mode)))
+  allowed <- c("FAF_DISTRIBUTION", "ROAD_NETWORK_FIXED_DEST", "ROAD_NETWORK_PHYSICS")
+  if (!m %in% allowed) {
+    stop("Invalid distance mode. Allowed values: ", paste(allowed, collapse = ", "))
+  }
+  m
+}
+
+validate_road_distance_fixed_cache <- function(df, retail_id = "PETCO_DAVIS_COVELL") {
+  required <- c(
+    "facility_id", "retail_id", "distance_km", "duration_min", "provider", "profile", "timestamp_utc"
+  )
+  missing <- setdiff(required, names(df))
+  if (length(missing) > 0) stop("road_distance_facility_to_retail.csv missing columns: ", paste(missing, collapse = ", "))
+  expected_fac <- c("FACILITY_REFRIG_ENNIS", "FACILITY_DRY_TOPEKA")
+  rid <- retail_id
+  hit <- subset(df, retail_id == rid)
+  if (nrow(hit) < 2) stop("Road distance cache incomplete for retail_id=", retail_id)
+  if (!all(expected_fac %in% hit$facility_id)) {
+    stop("Road distance cache missing expected facilities for ", retail_id, ": ", paste(setdiff(expected_fac, hit$facility_id), collapse = ", "))
+  }
+  v <- hit[match(expected_fac, hit$facility_id), , drop = FALSE]
+  if (any(!is.finite(as.numeric(v$distance_km))) || any(as.numeric(v$distance_km) <= 0)) {
+    stop("Road distance cache has invalid distance_km.")
+  }
+  if (any(!is.finite(as.numeric(v$duration_min))) || any(as.numeric(v$duration_min) <= 0)) {
+    stop("Road distance cache has invalid duration_min.")
+  }
+  invisible(TRUE)
+}
+
 assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scenario_name = NULL,
-                                   variant_row = NULL, inputs = NULL, priors_map = NULL) {
+                                   variant_row = NULL, inputs = NULL, priors_map = NULL,
+                                   distance_mode = "FAF_DISTRIBUTION") {
   mode <- normalize_run_mode(mode)
+  distance_mode <- normalize_distance_mode(distance_mode)
   if (mode != "REAL_RUN") return(invisible(TRUE))
 
   id_col <- if ("scenario_id" %in% names(scenarios_df)) "scenario_id" else if ("scenario" %in% names(scenarios_df)) "scenario" else NULL
@@ -248,6 +285,27 @@ assert_mode_data_ready <- function(mode, scenarios_df, histogram_config_df, scen
     }
   }
 
+  if (distance_mode %in% c("ROAD_NETWORK_FIXED_DEST", "ROAD_NETWORK_PHYSICS")) {
+    if (is.null(inputs) || is.null(inputs$road_distance_fixed) || nrow(inputs$road_distance_fixed) == 0) {
+      stop("REAL_RUN gate failed: data/derived/road_distance_facility_to_retail.csv is required for distance_mode=", distance_mode)
+    }
+    validate_road_distance_fixed_cache(inputs$road_distance_fixed, retail_id = "PETCO_DAVIS_COVELL")
+    if (distance_mode == "ROAD_NETWORK_PHYSICS") {
+      if (is.null(inputs$routes_facility_to_petco) || nrow(inputs$routes_facility_to_petco) == 0) {
+        stop("REAL_RUN gate failed: routes_facility_to_petco.csv is required for ROAD_NETWORK_PHYSICS.")
+      }
+      if (is.null(inputs$route_elevation_profiles) || nrow(inputs$route_elevation_profiles) == 0) {
+        stop("REAL_RUN gate failed: route_elevation_profiles.csv is required for ROAD_NETWORK_PHYSICS.")
+      }
+      if (!is.null(variant_row) && "powertrain" %in% names(variant_row) &&
+          identical(as.character(variant_row$powertrain[[1]]), "bev")) {
+        if (is.null(inputs$bev_route_plans) || nrow(inputs$bev_route_plans) == 0) {
+          stop("REAL_RUN gate failed: bev_route_plans.csv is required for BEV ROAD_NETWORK_PHYSICS runs.")
+        }
+      }
+    }
+  }
+
   invisible(TRUE)
 }
 
@@ -264,6 +322,18 @@ assert_scenarios_distance_linkage <- function(scenarios_df, distance_df) {
   missing <- setdiff(ok_rows$distance_distribution_id, distance_df$distance_distribution_id)
   if (length(missing) > 0) {
     stop("Scenarios marked OK reference missing distance_distribution_id: ", paste(missing, collapse = ", "))
+  }
+  invisible(TRUE)
+}
+
+assert_variant_dimensions_present <- function(scenario_matrix_df) {
+  required <- c(
+    "variant_id", "scenario_id", "product_mode", "spatial_structure",
+    "powertrain", "powertrain_config", "trailer_type", "refrigeration_mode"
+  )
+  missing <- setdiff(required, names(scenario_matrix_df))
+  if (length(missing) > 0) {
+    stop("scenario_matrix.csv missing required dimension columns: ", paste(missing, collapse = ", "))
   }
   invisible(TRUE)
 }

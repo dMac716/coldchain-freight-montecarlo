@@ -1,0 +1,58 @@
+name: Codespace Health
+
+on:
+  push:
+    branches:
+      - main
+      - "dev/**"
+      - "feat/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codespace-health-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  healthcheck:
+    name: Codespace Lane Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.4"
+          use-public-rspm: true
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: r-healthcheck-${{ runner.os }}-${{ hashFiles('renv.lock') }}
+          restore-keys: |
+            r-healthcheck-${{ runner.os }}-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev
+
+      - name: Bootstrap R packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          Rscript scripts/bootstrap.R
+
+      - name: Run healthcheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/codespace_healthcheck.sh
