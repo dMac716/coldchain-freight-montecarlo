@@ -70,6 +70,7 @@ fi
 #   sc-lint (shellcheck)  -- make lint, pre-commit hook
 #   jq                    -- JSON inspection in shell scripts
 #   bc                    -- arithmetic in validation shell scripts
+#   openssh-server        -- enables gh codespace ssh for reproducibility checks
 
 sudo apt-get update -qq
 sudo apt-get install -y --no-install-recommends \
@@ -92,7 +93,10 @@ sudo apt-get install -y --no-install-recommends \
   pandoc \
   shellcheck \
   jq \
-  bc
+  bc \
+  openssh-server
+sudo mkdir -p /var/run/sshd
+sudo service ssh start >/dev/null 2>&1 || sudo /etc/init.d/ssh start >/dev/null 2>&1 || true
 sudo apt-get clean
 sudo rm -rf /var/lib/apt/lists/*
 
