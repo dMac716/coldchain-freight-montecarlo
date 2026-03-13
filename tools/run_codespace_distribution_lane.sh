@@ -113,7 +113,17 @@ if [[ "${PROMOTE_TO_REMOTE}" == "true" ]]; then
     echo "PROMOTE_TO_REMOTE=true requires REMOTE_RESULTS_ROOT"
     exit 1
   fi
-  bash "${REPO_ROOT}/tools/promote_transport_run_artifacts.sh"
+  RUN_ID="${RUN_ID}" \
+  LANE_ID="${LANE_ID}" \
+  OUT_ROOT="${OUT_ROOT}" \
+  REMOTE_RESULTS_ROOT="${REMOTE_RESULTS_ROOT}" \
+  CONTRIBUTOR_ID="${CONTRIBUTOR_ID}" \
+  WORKER_COUNT=1 \
+  SEED_BASE="${SEED}" \
+  N_REPS="${N_REPS}" \
+  LAUNCHER_VERSION="${LAUNCHER_VERSION}" \
+  SCENARIO_DESIGN_VERSION="${SCENARIO_DESIGN_VERSION}" \
+  bash "${REPO_ROOT}/tools/cloud_upload_and_finalize.sh"
 fi
 
 echo "codespace lane complete"
