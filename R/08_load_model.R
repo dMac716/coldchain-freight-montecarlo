@@ -159,14 +159,32 @@ sample_product_packaging <- function(seed, product_type, test_kit) {
   )
 }
 
-compute_units_per_truck <- function(payload_max_lb, pallets_max, unit_weight_lb, units_per_case_draw, cases_per_pallet_draw, pallet_tare_lb_draw, case_tare_lb_draw) {
+compute_units_per_truck <- function(payload_max_lb, pallets_max, unit_weight_lb,
+                                    units_per_case_draw = NULL,
+                                    cases_per_pallet_draw = NULL,
+                                    pallet_tare_lb_draw = NULL,
+                                    case_tare_lb_draw = NULL,
+                                    cube_units_per_pallet = NULL) {
+  scalar_numeric <- function(x) {
+    out <- suppressWarnings(as.numeric(x))
+    if (length(out) == 0L) return(NA_real_)
+    out[[1]]
+  }
   payload_max_lb <- as.numeric(payload_max_lb)
   pallets_max <- as.numeric(pallets_max)
   unit_weight_lb <- as.numeric(unit_weight_lb)
-  units_per_case_draw <- as.numeric(units_per_case_draw)
-  cases_per_pallet_draw <- as.numeric(cases_per_pallet_draw)
-  pallet_tare_lb_draw <- as.numeric(pallet_tare_lb_draw)
-  case_tare_lb_draw <- as.numeric(case_tare_lb_draw)
+  units_per_case_draw <- scalar_numeric(units_per_case_draw)
+  cases_per_pallet_draw <- scalar_numeric(cases_per_pallet_draw)
+  pallet_tare_lb_draw <- scalar_numeric(pallet_tare_lb_draw)
+  case_tare_lb_draw <- scalar_numeric(case_tare_lb_draw)
+  cube_units_per_pallet <- scalar_numeric(cube_units_per_pallet)
+
+  if (!is.finite(units_per_case_draw) && is.finite(cube_units_per_pallet)) {
+    units_per_case_draw <- 1
+    cases_per_pallet_draw <- cube_units_per_pallet
+  }
+  if (!is.finite(pallet_tare_lb_draw)) pallet_tare_lb_draw <- 0
+  if (!is.finite(case_tare_lb_draw)) case_tare_lb_draw <- 0
   if (!all(is.finite(c(payload_max_lb, pallets_max, unit_weight_lb, units_per_case_draw, cases_per_pallet_draw, pallet_tare_lb_draw, case_tare_lb_draw)))) {
     return(list(units_per_truck = NA_real_, cube_limit_units = NA_real_, weight_limit_units = NA_real_, limiting_constraint = NA_character_))
   }

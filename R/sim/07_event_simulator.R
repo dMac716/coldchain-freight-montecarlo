@@ -124,7 +124,7 @@ simulate_route_day <- function(
     state_retention = c("full", "first_last"),
     retain_event_log = TRUE,
     retain_charge_details = TRUE,
-    enforce_duration_limit = FALSE) {
+    enforce_duration_limit = NULL) {
   powertrain <- match.arg(powertrain)
   trip_leg <- match.arg(trip_leg)
   state_retention <- match.arg(state_retention)
@@ -132,7 +132,7 @@ simulate_route_day <- function(
 
   start_time <- as.POSIXct(start_time %||% cfg$time_sim$start_datetime_local %||% "2026-03-04T00:00:00", tz = "UTC")
   duration_hours <- as.numeric(duration_hours %||% cfg$time_sim$duration_hours %||% 24)
-  enforce_duration_limit <- isTRUE(enforce_duration_limit %||% cfg$time_sim$enforce_duration_limit %||% FALSE)
+  enforce_duration_limit <- isTRUE(enforce_duration_limit %||% cfg$time_sim$enforce_duration_limit %||% TRUE)
   end_time <- if (isTRUE(enforce_duration_limit) && is.finite(duration_hours) && duration_hours > 0) {
     start_time + duration_hours * 3600
   } else {
@@ -357,7 +357,7 @@ simulate_route_day <- function(
   if (nrow(stops_plan) > 0) stops_plan <- stops_plan[order(stops_plan$stop_idx), , drop = FALSE]
   next_stop_idx <- 1L
   plan_soc_violation <- FALSE
-  allow_emergency_charge <- TRUE
+  allow_emergency_charge <- isTRUE(cfg$charging$allow_emergency_charge %||% FALSE)
   max_emergency_charges <- suppressWarnings(as.integer(cfg$charging$max_emergency_charges %||% 512L))
   if (!is.finite(max_emergency_charges) || max_emergency_charges < 1L) max_emergency_charges <- 512L
   stochastic_charge_enabled <- identical(powertrain, "bev") &&
@@ -907,8 +907,10 @@ simulate_route_day <- function(
     schedule <- sched3$schedule
     hos <- sched3$hos
 
+    t_state <- if (isTRUE(enforce_duration_limit) && tcur > end_time) end_time else tcur
+
     add_state(
-      t = tcur,
+      t = t_state,
       seg = seg,
       speed_mph = speed_mph,
       soc = soc,
