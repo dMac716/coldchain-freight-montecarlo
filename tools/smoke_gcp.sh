@@ -31,6 +31,8 @@ SMOKE_OUTDIR_NAME="smoke_gcp"
 # Prevent accidental GCS uploads during automated smoke tests.
 # Set to 0 in the environment to test a real upload.
 export COLDCHAIN_SMOKE_DRY_RUN="${COLDCHAIN_SMOKE_DRY_RUN:-1}"
+export COLDCHAIN_LANE="${LANE}"
+export COLDCHAIN_SEED="${SMOKE_SEED}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUN_ID="smoke_gcp_seed${SMOKE_SEED}"
@@ -49,6 +51,24 @@ log() {
 
 die()  { log "ERROR" "fatal"  "$*"; exit 1; }
 warn() { log "WARN"  "$1" "$2"; }
+
+stage_start() {
+  local stage="$1" start_var="$2"
+  local start_epoch start_ts
+  start_epoch="$(date +%s)"
+  start_ts="$(date -u "+%Y-%m-%dT%H:%M:%SZ")"
+  printf -v "${start_var}" '%s' "${start_epoch}"
+  log "INFO" "${stage}" "stage_start_ts=${start_ts}"
+}
+
+stage_end() {
+  local stage="$1" start_epoch="$2"
+  local end_epoch end_ts elapsed
+  end_epoch="$(date +%s)"
+  end_ts="$(date -u "+%Y-%m-%dT%H:%M:%SZ")"
+  elapsed=$((end_epoch - start_epoch))
+  log "INFO" "${stage}" "stage_end_ts=${end_ts} elapsed_seconds=${elapsed}"
+}
 
 # ─── idempotency guard ────────────────────────────────────────────────────────
 mkdir -p "${SMOKE_DIR}"
@@ -87,13 +107,18 @@ cp -R "${ROOT_DIR}/R" \
 mkdir -p "${CHUNK_DIR}/contrib/chunks" "${CHUNK_DIR}/outputs"
 
 # ─── step 1: validate inputs ──────────────────────────────────────────────────
+stage_validate_start=0
+stage_start "validate" stage_validate_start
 log "INFO" "validate" "Validating inputs (mode=${SMOKE_MODE})"
 (
   cd "${CHUNK_DIR}"
   Rscript tools/validate_inputs.R --mode "${SMOKE_MODE}"
 ) || die "Input validation failed — check data/inputs_local/ and R/01_validate.R"
+stage_end "validate" "${stage_validate_start}"
 
 # ─── step 2: run Monte Carlo chunk ────────────────────────────────────────────
+stage_sample_start=0
+stage_start "sample" stage_sample_start
 log "INFO" "sample" "Running MC chunk (n=${SMOKE_N} seed=${SMOKE_SEED})"
 (
   cd "${CHUNK_DIR}"
@@ -105,10 +130,13 @@ log "INFO" "sample" "Running MC chunk (n=${SMOKE_N} seed=${SMOKE_SEED})"
     --distance_mode "${SMOKE_DISTANCE_MODE}" \
     --outdir   "outputs/${SMOKE_OUTDIR_NAME}"
 ) || die "run_chunk.R failed — check R/ source files and data/inputs_local/"
+stage_end "sample" "${stage_sample_start}"
 
 # ─── step 3: validate chunk artifact ─────────────────────────────────────────
+stage_artifact_start=0
+stage_start "artifact" stage_artifact_start
 CHUNK_FILE=""
-CHUNK_FILE="$(ls -1t "${CHUNK_DIR}/contrib/chunks"/chunk_SMOKE_LOCAL_*.json 2>/dev/null | head -n 1 || true)"
+CHUNK_FILE="$(find "${CHUNK_DIR}/contrib/chunks" -maxdepth 1 -type f -name 'chunk_SMOKE_LOCAL_*.json' -print 2>/dev/null | sort | tail -n 1 || true)"
 [[ -n "${CHUNK_FILE}" ]] || die "No chunk artifact found in contrib/chunks/"
 
 log "INFO" "artifact" "Validating artifact schema: $(basename "${CHUNK_FILE}")"
@@ -116,8 +144,11 @@ log "INFO" "artifact" "Validating artifact schema: $(basename "${CHUNK_FILE}")"
   cd "${CHUNK_DIR}"
   Rscript tools/validate_artifact.R --file "${CHUNK_FILE}"
 ) || die "Artifact schema validation failed"
+stage_end "artifact" "${stage_artifact_start}"
 
 # ─── step 4: aggregate ────────────────────────────────────────────────────────
+stage_aggregate_start=0
+stage_start "aggregate" stage_aggregate_start
 log "INFO" "aggregate" "Aggregating run_group=${SMOKE_RUN_GROUP}"
 (
   cd "${CHUNK_DIR}"
@@ -126,6 +157,7 @@ log "INFO" "aggregate" "Aggregating run_group=${SMOKE_RUN_GROUP}"
     --mode      "${SMOKE_MODE}" \
     --distance_mode "${SMOKE_DISTANCE_MODE}"
 ) || die "aggregate.R failed"
+stage_end "aggregate" "${stage_aggregate_start}"
 
 # ─── copy results to smoke dir ───────────────────────────────────────────────
 cp -R "${CHUNK_DIR}/outputs/${SMOKE_OUTDIR_NAME}/." "${SMOKE_DIR}/"
@@ -158,6 +190,8 @@ else
 fi
 
 # ─── step 6: graph rendering ──────────────────────────────────────────────────
+stage_graphs_start=0
+stage_start "graphs" stage_graphs_start
 log "INFO" "graphs" "Rendering diagnostic graphs"
 Rscript "${ROOT_DIR}/scripts/render_run_graphs.R" \
   --run_dir "${SMOKE_DIR}" \
@@ -175,8 +209,11 @@ python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "${SUMMARY_JSON}" \
 PNG_COUNT="$(find "${SMOKE_DIR}/graphs" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')"
 log "INFO" "graphs" "Graph rendering complete: ${PNG_COUNT} PNG(s) in ${SMOKE_DIR}/graphs/"
 [[ "${PNG_COUNT}" -ge 1 ]] || die "render_run_graphs.R produced 0 PNGs — headless display or ggplot2 issue"
+stage_end "graphs" "${stage_graphs_start}"
 
 # ─── step 7: artifact packaging ───────────────────────────────────────────────
+stage_package_start=0
+stage_start "package" stage_package_start
 log "INFO" "package" "Packaging artifact"
 bash "${ROOT_DIR}/scripts/package_run_artifact.sh" "${SMOKE_DIR}" --force \
   2>&1 | while IFS= read -r line; do
@@ -189,8 +226,11 @@ ARTIFACT_SIZE="$(du -sh "${SMOKE_DIR}/artifact.tar.gz" 2>/dev/null | cut -f1)"
 tar -tzf "${SMOKE_DIR}/artifact.tar.gz" > /dev/null 2>&1 \
   || die "artifact.tar.gz integrity check failed"
 log "INFO" "package" "artifact.tar.gz OK (${ARTIFACT_SIZE})"
+stage_end "package" "${stage_package_start}"
 
 # ─── step 8: promotion path ───────────────────────────────────────────────────
+stage_promote_start=0
+stage_start "promote" stage_promote_start
 log "INFO" "promote" "Testing promotion path (GCP_AVAILABLE=${GCP_AVAILABLE} dry_run=${COLDCHAIN_SMOKE_DRY_RUN})"
 PROMOTE_STATUS="unknown"
 PROMOTE_OUT="$(
@@ -216,8 +256,11 @@ else
   PROMOTE_STATUS="local_only"
 fi
 log "INFO" "promote" "Promotion result: ${PROMOTE_STATUS}"
+stage_end "promote" "${stage_promote_start}"
 
 # ─── step 9: run registry final state ─────────────────────────────────────────
+stage_registry_start=0
+stage_start "registry" stage_registry_start
 if command -v python3 &>/dev/null; then
   FINAL_STATUS="completed"
   if [[ "${PROMOTE_STATUS}" == "promoted" ]]; then
@@ -232,6 +275,7 @@ if command -v python3 &>/dev/null; then
 else
   warn "registry" "python3 not found — skipping registry update"
 fi
+stage_end "registry" "${stage_registry_start}"
 
 # ─── done ─────────────────────────────────────────────────────────────────────
 touch "${SMOKE_DIR}/smoke_complete.flag"

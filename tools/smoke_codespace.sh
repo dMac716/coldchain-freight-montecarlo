@@ -108,7 +108,7 @@ stage_end "sample" "${stage_sample_start}"
 stage_artifact_start=0
 stage_start "artifact" stage_artifact_start
 CHUNK_FILE=""
-CHUNK_FILE="$(ls -1t "${CHUNK_DIR}/contrib/chunks"/chunk_SMOKE_LOCAL_*.json 2>/dev/null | head -n 1 || true)"
+CHUNK_FILE="$(find "${CHUNK_DIR}/contrib/chunks" -maxdepth 1 -type f -name 'chunk_SMOKE_LOCAL_*.json' -print 2>/dev/null | sort | tail -n 1 || true)"
 [[ -n "${CHUNK_FILE}" ]] || die "No chunk artifact found in contrib/chunks/"
 
 log "INFO" "artifact" "Validating artifact schema: $(basename "${CHUNK_FILE}")"

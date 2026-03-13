@@ -91,8 +91,7 @@ check_shared_memory
 export CANONICAL_MATRIX="$MATRIX"
 export CANONICAL_TARGET="$TARGET"
 
-DELIM=$'\x1f'
-python3 - <<'PY' > /tmp/canonical_rows.tsv
+if ! python3 - <<'PY' > /tmp/canonical_rows.tsv
 import csv, os, sys
 matrix=os.environ["CANONICAL_MATRIX"]
 target=os.environ["CANONICAL_TARGET"]
@@ -101,20 +100,37 @@ sel=[r for r in rows if r.get("run_family")==target or r.get("run_id")==target]
 if not sel:
     print(f"ERROR\tNo canonical rows found for target={target}", file=sys.stderr)
     sys.exit(2)
-cols=list(rows[0].keys())
+cols=[
+    "run_family",
+    "run_id",
+    "scenario",
+    "product_type",
+    "powertrain",
+    "origin_mode",
+    "origin_network",
+    "facility_id",
+    "facility_id_dry",
+    "facility_id_refrigerated",
+    "traffic_mode",
+    "paired_origin_networks",
+    "paired_traffic_modes",
+    "trip_leg",
+    "n",
+    "seed",
+    "artifact_mode",
+]
 sep="\x1f"
 print(sep.join(cols))
 for r in sel:
     print(sep.join((r.get(c,"") or "").replace("\t"," ").strip() for c in cols))
 PY
-
-if [[ $? -ne 0 ]]; then
+then
   echo "Failed selecting canonical rows."
   exit 1
 fi
 
 header=1
-while IFS=$'\x1f' read -r run_family run_id scenario product_type powertrain origin_mode origin_network facility_id facility_id_dry facility_id_refrigerated traffic_mode paired_origin_networks paired_traffic_modes trip_leg n seed artifact_mode purpose include_in_presentation notes load_assignment_policy units_per_case_policy case_geometry_policy; do
+while IFS=$'\x1f' read -r run_family run_id scenario product_type powertrain origin_mode origin_network facility_id facility_id_dry facility_id_refrigerated traffic_mode paired_origin_networks paired_traffic_modes trip_leg n seed artifact_mode; do
   if [[ $header -eq 1 ]]; then
     header=0
     continue

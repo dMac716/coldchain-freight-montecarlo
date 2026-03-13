@@ -85,7 +85,7 @@ log "INFO" "sample" "Running MC chunk (n=${SMOKE_N} seed=${SMOKE_SEED})"
 
 # ─── step 3: locate and validate chunk artifact ───────────────────────────────
 CHUNK_FILE=""
-CHUNK_FILE="$(ls -1t "${CHUNK_DIR}/contrib/chunks"/chunk_SMOKE_LOCAL_*.json 2>/dev/null | head -n 1 || true)"
+CHUNK_FILE="$(find "${CHUNK_DIR}/contrib/chunks" -maxdepth 1 -type f -name 'chunk_SMOKE_LOCAL_*.json' -print 2>/dev/null | sort | tail -n 1 || true)"
 [[ -n "${CHUNK_FILE}" ]] || die "No chunk artifact found in contrib/chunks/ after run_chunk.R"
 
 log "INFO" "artifact" "Validating artifact schema: $(basename "${CHUNK_FILE}")"
