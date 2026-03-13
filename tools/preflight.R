@@ -11,14 +11,18 @@ for (f in source_files) source(f, local = FALSE)
 option_list <- list(
   make_option(c("--mode"), type = "character", default = "SMOKE_LOCAL", help = "Run mode: SMOKE_LOCAL or REAL_RUN"),
   make_option(c("--scenario"), type = "character", default = "SMOKE_LOCAL", help = "Scenario selector (scenario_id or variant_id)"),
-  make_option(c("--run_group"), type = "character", default = "SMOKE_LOCAL", help = "Run group used for chunk compatibility checks")
+  make_option(c("--run_group"), type = "character", default = "SMOKE_LOCAL", help = "Run group used for chunk compatibility checks"),
+  make_option(c("--distance_mode"), type = "character", default = "FAF_DISTRIBUTION", help = "Distance mode: FAF_DISTRIBUTION, ROAD_NETWORK_FIXED_DEST, ROAD_NETWORK_PHYSICS")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
 mode <- normalize_run_mode(opt$mode)
+distance_mode <- normalize_distance_mode(opt$distance_mode)
+Sys.setenv(DISTANCE_MODE = distance_mode)
 
 inputs <- read_inputs_local()
 validate_sampling_priors(inputs$sampling_priors)
 assert_scenarios_distance_linkage(inputs$scenarios, inputs$distance_distributions)
+assert_variant_dimensions_present(inputs$scenario_matrix)
 
 hist_config <- list(
   metric = inputs$histogram_config$metric,
@@ -41,7 +45,8 @@ for (i in seq_len(nrow(variant_rows))) {
     scenario_name = variant_row$scenario_id[[1]],
     variant_row = variant_row,
     inputs = inputs,
-    priors_map = resolved$priors
+    priors_map = resolved$priors,
+    distance_mode = distance_mode
   )
   validate_inputs(resolved$inputs_list)
 }
@@ -74,5 +79,6 @@ if (length(files) > 1) {
 cat("Preflight OK\n")
 cat("  mode:", mode, "\n")
 cat("  scenario selector:", opt$scenario, "\n")
+cat("  distance mode:", distance_mode, "\n")
 cat("  variants:", nrow(variant_rows), "\n")
 cat("  chunk files checked:", length(files), "\n")
