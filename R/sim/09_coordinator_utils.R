@@ -45,3 +45,11 @@ is_stalled <- function(progress, now_utc = Sys.time(), stall_seconds = 600) {
   age <- as.numeric(difftime(now_utc, progress$timestamp, units = "secs"))
   is.finite(age) && age > as.numeric(stall_seconds) && !identical(progress$status, "DONE")
 }
+
+should_prompt_heavy_run <- function(total_n, workers, threshold_n = 300, threshold_workers = 3) {
+  total_n <- as.integer(total_n)
+  workers <- as.integer(workers)
+  threshold_n <- as.integer(threshold_n)
+  threshold_workers <- as.integer(threshold_workers)
+  (is.finite(total_n) && total_n >= threshold_n) || (is.finite(workers) && workers >= threshold_workers)
+}

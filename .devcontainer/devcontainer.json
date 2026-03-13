@@ -3,7 +3,7 @@
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "postCreateCommand": "bash .devcontainer/postCreate.sh && Rscript scripts/bootstrap.R",
   "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/home/vscode/.cache/R/renv,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/home/codespace/.cache/R/renv,type=bind,consistency=cached"
   ],
   "customizations": {
     "vscode": {
@@ -23,8 +23,8 @@
     }
   },
   "remoteEnv": {
-    "RENV_PATHS_CACHE": "/home/vscode/.cache/R/renv",
-    "R_LIBS_USER": "/home/vscode/.local/share/R/site-library",
+    "RENV_PATHS_CACHE": "/home/codespace/.cache/R/renv",
+    "R_LIBS_USER": "/home/codespace/.local/share/R/site-library",
     "COLDCHAIN_LANE": "codespace"
   }
 }
