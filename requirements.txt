@@ -1,4 +1,11 @@
-# This repository currently has no Python runtime dependencies.
-# Primary implementation and tooling are in R.
-#
-# If Python utilities are added later, pin dependencies here.
+# Python package requirements for analysis/visual diagnostics:
+numpy>=1.26
+pandas>=2.1
+matplotlib>=3.8
+pyyaml>=6.0
+
+# System/runtime requirements (install outside pip):
+# - ffmpeg (required for MP4 animation export)
+# - ImageMagick `magick`/`convert` (used by the base R GIF fallback path)
+# - ripgrep `rg` (used heavily in repo workflows and bootstrap/debugging)
+# - DuckDB CLI `duckdb` (required by transport validation/catalog scripts)

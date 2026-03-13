@@ -70,9 +70,10 @@ fi
 #   imagemagick           -- base R GIF fallback
 #   pandoc                -- knitr, rmarkdown
 # Validation + shell utilities
-#   sc-lint (shellcheck)  -- make lint, pre-commit hook
+#   shellcheck            -- make lint, pre-commit hook
 #   jq                    -- JSON inspection in shell scripts
 #   bc                    -- arithmetic in validation shell scripts
+#   ripgrep               -- fast repo/file discovery used in dev workflows
 #   openssh-server        -- enables gh codespace ssh for reproducibility checks
 
 sudo apt-get update -qq
@@ -97,6 +98,7 @@ sudo apt-get install -y --no-install-recommends \
   shellcheck \
   jq \
   bc \
+  ripgrep \
   openssh-server
 sudo mkdir -p /var/run/sshd
 sudo service ssh start >/dev/null 2>&1 || sudo /etc/init.d/ssh start >/dev/null 2>&1 || true
@@ -120,6 +122,22 @@ fi
 # ---------------------------------------------------------------------------
 python3 -m pip install --quiet --upgrade pip
 python3 -m pip install --quiet -r requirements.txt
+
+# ---------------------------------------------------------------------------
+# DuckDB CLI (transport catalog ingest / post-run validation)
+# ---------------------------------------------------------------------------
+if [[ ! -x "${HOME}/.duckdb/cli/latest/duckdb" ]]; then
+  curl -fsSL https://install.duckdb.org | sh
+fi
+DUCKDB_BIN="${HOME}/.duckdb/cli/latest"
+if [[ -d "${DUCKDB_BIN}" ]]; then
+  BASHRC="${HOME}/.bashrc"
+  touch "${BASHRC}"
+  if ! grep -qF 'export PATH="$HOME/.duckdb/cli/latest:$PATH"' "${BASHRC}"; then
+    printf '\nexport PATH="$HOME/.duckdb/cli/latest:$PATH"\n' >> "${BASHRC}"
+  fi
+  export PATH="${DUCKDB_BIN}:$PATH"
+fi
 
 # ---------------------------------------------------------------------------
 # pre-commit hook (wires .pre-commit-config.yaml into git)
