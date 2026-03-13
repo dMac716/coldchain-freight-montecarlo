@@ -70,7 +70,7 @@ fi
 #   imagemagick           -- base R GIF fallback
 #   pandoc                -- knitr, rmarkdown
 # Validation + shell utilities
-#   shellcheck            -- make lint, pre-commit hook
+#   ShellCheck            -- make lint, pre-commit hook
 #   jq                    -- JSON inspection in shell scripts
 #   bc                    -- arithmetic in validation shell scripts
 #   ripgrep               -- fast repo/file discovery used in dev workflows
