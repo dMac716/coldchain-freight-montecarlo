@@ -609,12 +609,15 @@ inputs_hash_from_artifacts <- function(artifacts_df) {
 }
 
 evaluate_packaging_mass_policy <- function(product_type) {
+  repo_root <- trimws(Sys.getenv("COLDCHAIN_REPO_ROOT", unset = ""))
   candidates <- c(
+    if (nzchar(repo_root)) file.path(repo_root, "data", "inputs_local", "products.csv") else character(),
     file.path("data", "inputs_local", "products.csv"),
     file.path("..", "data", "inputs_local", "products.csv"),
     file.path("..", "..", "data", "inputs_local", "products.csv")
   )
-  p <- candidates[file.exists(candidates)][[1]] %||% candidates[[1]]
+  existing <- candidates[file.exists(candidates)]
+  p <- if (length(existing) > 0) existing[[1]] else candidates[[1]]
   default_note <- "Packaging mass TBD; results exclude packaging mass or use default=0 (whichever is implemented)."
   if (!file.exists(p)) {
     return(list(

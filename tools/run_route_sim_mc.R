@@ -11,6 +11,7 @@ script_path <- if (length(script_file_arg) > 0) sub("^--file=", "", script_file_
 script_path <- normalizePath(script_path, winslash = "/", mustWork = TRUE)
 script_dir <- dirname(script_path)
 repo_root <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
+Sys.setenv(COLDCHAIN_REPO_ROOT = repo_root)
 
 resolve_repo_path <- function(path, kind = c("file", "dir"), must_work = TRUE) {
   kind <- match.arg(kind)
