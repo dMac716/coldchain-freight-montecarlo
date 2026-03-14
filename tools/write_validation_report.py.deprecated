@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+"""
+tools/write_validation_report.py
+
+Writes validation_summary.json and validation_report.md from a list of
+check results passed as CLI arguments.
+
+Usage:
+  python3 tools/write_validation_report.py \\
+    --artifact-root PATH         \\
+    --config        PATH         \\
+    --timestamp     ISO8601      \\
+    --json-out      PATH         \\
+    --md-out        PATH         \\
+    --check NAME STATUS REASON   \\
+    [--check ...]
+
+Each --check takes exactly three positional values: name, status, reason.
+Pass an empty string ("") for reason when there is none.
+
+Valid statuses: passed, failed, warning, placeholder, skipped
+
+Exit codes:
+  0   All checks passed or warned (no failures)
+  1   One or more checks have status "failed"
+  2   Bad arguments
+"""
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Status metadata
+# ---------------------------------------------------------------------------
+
+_STATUS_SYMBOL = {
+    "passed":      "✅",
+    "failed":      "❌",
+    "warned":      "⚠️",   # overall status only
+    "warning":     "⚠️",   # per-check status
+    "partial":     "🔷",   # overall: no failures/warnings, but placeholders/skipped
+    "placeholder": "🔷",   # per-check status
+    "skipped":     "—",
+}
+
+_KNOWN_STATUSES = set(_STATUS_SYMBOL) - {"warned"}  # "warned" is overall-only
+
+_CHECK_DISPLAY = {
+    "summary_runtime_split":  "Summary / runtime split regression",
+    "artifact_completeness":  "Artifact completeness",
+    "memory_runtime":         "Memory / runtime metrics",
+    "rng_hash":               "RNG hash reproducibility",
+    "run_count_consistency":  "Run-count consistency (runtime_summary.csv)",
+}
+
+
+def _display_name(name: str) -> str:
+    return _CHECK_DISPLAY.get(name, name.replace("_", " ").title())
+
+
+def overall_status(checks: list) -> str:
+    """
+    failed  → any check failed
+    warned  → no failures, but at least one warning
+    partial → no failures/warnings, but at least one placeholder or skipped
+    passed  → every check passed
+    """
+    statuses = {c["status"] for c in checks}
+    if "failed" in statuses:
+        return "failed"
+    if "warning" in statuses:
+        return "warned"
+    if statuses - {"passed"}:
+        return "partial"
+    return "passed"
+
+
+# ---------------------------------------------------------------------------
+# JSON output
+# ---------------------------------------------------------------------------
+
+def build_summary(artifact_root: str, config_path: str, timestamp: str, checks: list) -> dict:
+    ov       = overall_status(checks)
+    warnings = [c for c in checks if c["status"] == "warning"]
+    return {
+        "schema_version":    "1",
+        "status":            ov,
+        "timestamp":         timestamp,
+        "artifact_root":     artifact_root,
+        "config_path":       config_path,
+        "checks":            checks,
+        "failure_count":     sum(1 for c in checks if c["status"] == "failed"),
+        "warning_count":     len(warnings),
+        "warnings":          warnings,
+        "placeholder_count": sum(1 for c in checks if c["status"] == "placeholder"),
+    }
+
+
+def write_json(path: str, data: dict) -> None:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(data, fh, indent=2)
+        fh.write("\n")
+    os.replace(tmp, path)
+
+
+# ---------------------------------------------------------------------------
+# Markdown output
+# ---------------------------------------------------------------------------
+
+def build_markdown(
+    artifact_root: str,
+    config_path: str,
+    timestamp: str,
+    checks: list,
+    json_path: str,
+) -> str:
+    ov       = overall_status(checks)
+    symbol   = _STATUS_SYMBOL.get(ov, "?")
+    failures     = [c for c in checks if c["status"] == "failed"]
+    warnings     = [c for c in checks if c["status"] == "warning"]
+    placeholders = [c for c in checks if c["status"] == "placeholder"]
+
+    lines: list[str] = []
+
+    # -- Header ---------------------------------------------------------------
+    lines += [
+        "# Validation Report",
+        "",
+        f"**Overall status**: {symbol} {ov.upper()}  ",
+        f"**Timestamp**: {timestamp}  ",
+        f"**Artifact root**: `{artifact_root}`  ",
+        f"**Config**: `{config_path}`  ",
+        "",
+    ]
+
+    # -- Check table ----------------------------------------------------------
+    lines += [
+        "## Check Summary",
+        "",
+        "| Check | Status | Notes |",
+        "|-------|--------|-------|",
+    ]
+    for c in checks:
+        sym    = _STATUS_SYMBOL.get(c["status"], "?")
+        badge  = f"{sym} {c['status'].upper()}"
+        reason = c.get("reason") or ""
+        lines.append(f"| {_display_name(c['name'])} | {badge} | {reason} |")
+    lines.append("")
+
+    # -- Warnings section -----------------------------------------------------
+    lines += ["## Warnings", ""]
+    if warnings:
+        for c in warnings:
+            reason = c.get("reason") or "No reason recorded."
+            lines += [
+                f"### ⚠️ {_display_name(c['name'])}",
+                "",
+                reason,
+                "",
+            ]
+    else:
+        lines += ["_No warnings._", ""]
+
+    # -- Failures section -----------------------------------------------------
+    lines += ["## Failures", ""]
+    if failures:
+        for c in failures:
+            reason = c.get("reason") or "No reason recorded."
+            lines += [
+                f"### ❌ {_display_name(c['name'])}",
+                "",
+                reason,
+                "",
+            ]
+    else:
+        lines += ["_No failures._", ""]
+
+    # -- Placeholder section --------------------------------------------------
+    if placeholders:
+        lines += ["## Placeholder Checks (not yet wired)", ""]
+        for c in placeholders:
+            reason = c.get("reason") or "Implementation pending."
+            lines.append(f"- **{_display_name(c['name'])}**: {reason}")
+        lines.append("")
+
+    # -- Footer ---------------------------------------------------------------
+    rel_json = os.path.basename(json_path)
+    lines += [
+        "---",
+        "",
+        f"*Machine-readable summary: [`{rel_json}`]({rel_json})*  ",
+        "*Generated by `tools/validate_remote.sh` → `tools/write_validation_report.py`*",
+        "",
+    ]
+
+    return "\n".join(lines)
+
+
+def write_md(path: str, content: str) -> None:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(content)
+    os.replace(tmp, path)
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Write validation_summary.json and validation_report.md.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("--artifact-root", required=True,
+                        help="Artifact root path validated against")
+    parser.add_argument("--config",        required=True,
+                        help="Config / test-kit YAML path")
+    parser.add_argument("--timestamp",     default=None,
+                        help="ISO8601 timestamp (default: now)")
+    parser.add_argument("--json-out",      required=True,
+                        help="Output path for validation_summary.json")
+    parser.add_argument("--md-out",        required=True,
+                        help="Output path for validation_report.md")
+    parser.add_argument(
+        "--check", nargs=3, action="append",
+        metavar=("NAME", "STATUS", "REASON"),
+        help="Check result triple (repeat for each check). "
+             "Pass empty string for REASON when there is none.",
+    )
+
+    args = parser.parse_args()
+
+    timestamp = args.timestamp or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    checks: list[dict] = []
+    for name, status, reason in (args.check or []):
+        if status not in _KNOWN_STATUSES:
+            print(
+                f"WARNING: unknown status '{status}' for check '{name}' "
+                f"(expected one of: {', '.join(sorted(_KNOWN_STATUSES))})",
+                file=sys.stderr,
+            )
+        checks.append({
+            "name":   name,
+            "status": status,
+            "reason": reason if reason else None,
+        })
+
+    Path(args.json_out).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.md_out).parent.mkdir(parents=True, exist_ok=True)
+
+    summary = build_summary(args.artifact_root, args.config, timestamp, checks)
+    write_json(args.json_out, summary)
+    print(f"[write_validation_report] Wrote {args.json_out}")
+
+    md = build_markdown(args.artifact_root, args.config, timestamp, checks, args.json_out)
+    write_md(args.md_out, md)
+    print(f"[write_validation_report] Wrote {args.md_out}")
+
+    if overall_status(checks) == "failed":
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

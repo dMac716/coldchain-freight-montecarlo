@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+# tools/healthcheck_validation.sh
+#
+# Strict pre-flight healthcheck for the remote validation workflow.
+# Every check is pass/fail. Exits nonzero as soon as all checks have run
+# if any failed (all checks always run so you see every problem at once).
+#
+# Suitable for CI, Codespaces postCreate verification, or manual gating
+# before a real validation run.
+#
+# Usage:
+#   bash tools/healthcheck_validation.sh [--config PATH]
+#
+# Options:
+#   --config PATH   Validation config YAML to probe (default: config/validation/defaults.yaml)
+#
+# Exit codes:
+#   0   All checks passed
+#   1   One or more checks failed
+#   2   Bad arguments
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Args
+# ---------------------------------------------------------------------------
+CONFIG_PATH="config/validation/defaults.yaml"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --config)
+      [[ $# -ge 2 ]] || { echo "ERROR: --config requires a value" >&2; exit 2; }
+      CONFIG_PATH="$2"; shift 2 ;;
+    -h|--help)
+      sed -n '2,/^$/p' "$0" | grep '^#' | sed 's/^# \{0,1\}//'
+      exit 0 ;;
+    *)
+      echo "ERROR: unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+_PASS=0
+_FAIL=0
+
+_pass() { echo "  PASS  $*"; _PASS=$(( _PASS + 1 )); }
+_fail() { echo "  FAIL  $*" >&2; _FAIL=$(( _FAIL + 1 )); }
+
+# ---------------------------------------------------------------------------
+# Check 1: gcloud or gsutil present
+# ---------------------------------------------------------------------------
+echo
+echo "── Google Cloud SDK ──────────────────────────────────────────────────"
+
+_CLOUD_FOUND=0
+for _tool in gcloud gsutil; do
+  if command -v "$_tool" > /dev/null 2>&1; then
+    _pass "$_tool: $(command -v "$_tool")"
+    _CLOUD_FOUND=1
+  fi
+done
+
+if [[ $_CLOUD_FOUND -eq 0 ]]; then
+  _fail "Neither gcloud nor gsutil found in PATH"
+  echo "        Install: curl -sSL https://sdk.cloud.google.com | bash -s -- --disable-prompts" >&2
+  echo "        Or (Debian/Ubuntu): sudo apt-get install google-cloud-cli" >&2
+fi
+
+# ---------------------------------------------------------------------------
+# Check 2: GOOGLE_APPLICATION_CREDENTIALS set and file is readable
+# ---------------------------------------------------------------------------
+echo
+echo "── Google credentials ────────────────────────────────────────────────"
+
+if [[ -z "${GOOGLE_APPLICATION_CREDENTIALS:-}" ]]; then
+  _fail "GOOGLE_APPLICATION_CREDENTIALS is not set"
+  echo "        Fix: export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json" >&2
+  echo "        Or:  gcloud auth application-default login" >&2
+else
+  if [[ -r "$GOOGLE_APPLICATION_CREDENTIALS" ]]; then
+    _pass "GOOGLE_APPLICATION_CREDENTIALS readable: $GOOGLE_APPLICATION_CREDENTIALS"
+  else
+    _fail "GOOGLE_APPLICATION_CREDENTIALS is set but file is not readable: $GOOGLE_APPLICATION_CREDENTIALS"
+    echo "        Fix: verify the file exists and has read permissions" >&2
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Check 3: Required R packages
+# ---------------------------------------------------------------------------
+echo
+echo "── R packages ────────────────────────────────────────────────────────"
+
+if ! command -v Rscript > /dev/null 2>&1; then
+  _fail "Rscript not found — cannot check R packages"
+  echo "        Fix: install R (https://www.r-project.org/) or run scripts/bootstrap.R" >&2
+else
+  _pass "Rscript: $(command -v Rscript)"
+  for _pkg in optparse jsonlite yaml digest data.table; do
+    if Rscript -e "stopifnot(requireNamespace('${_pkg}', quietly=TRUE))" \
+         > /dev/null 2>&1; then
+      _pass "R package: ${_pkg}"
+    else
+      _fail "R package missing: ${_pkg}"
+      echo "        Fix: Rscript -e \"install.packages('${_pkg}')\"" >&2
+      echo "        Or:  Rscript scripts/bootstrap.R   (restores full renv lockfile)" >&2
+    fi
+  done
+fi
+
+# ---------------------------------------------------------------------------
+# Check 4: Regression script invocable (syntax check — does not run it)
+# ---------------------------------------------------------------------------
+echo
+echo "── Regression script ─────────────────────────────────────────────────"
+
+_REG_SCRIPT="tools/verify_summary_runtime_split.R"
+
+if [[ ! -f "$_REG_SCRIPT" ]]; then
+  _fail "Regression script not found: $_REG_SCRIPT"
+  echo "        Expected path (relative to repo root): $_REG_SCRIPT" >&2
+elif ! Rscript --vanilla -e \
+       "parse(file='${_REG_SCRIPT}')" > /dev/null 2>&1; then
+  _fail "Regression script has parse errors: $_REG_SCRIPT"
+  echo "        Run manually to inspect: Rscript --vanilla -e \"parse(file='${_REG_SCRIPT}')\"" >&2
+else
+  _pass "Regression script parses cleanly: $_REG_SCRIPT"
+fi
+
+# ---------------------------------------------------------------------------
+# Check 5: Validation config exists and is valid YAML
+# ---------------------------------------------------------------------------
+echo
+echo "── Validation config ─────────────────────────────────────────────────"
+
+if [[ ! -f "$CONFIG_PATH" ]]; then
+  _fail "Config file not found: $CONFIG_PATH"
+  echo "        Fix: ensure config/validation/defaults.yaml exists in the repo root" >&2
+else
+  if command -v python3 > /dev/null 2>&1; then
+    if python3 -c "import yaml; yaml.safe_load(open('${CONFIG_PATH}'))" \
+         > /dev/null 2>&1; then
+      _pass "Config valid YAML: $CONFIG_PATH"
+    else
+      _fail "Config file is not valid YAML: $CONFIG_PATH"
+      echo "        Fix: python3 -c \"import yaml; yaml.safe_load(open('${CONFIG_PATH}'))\"" >&2
+    fi
+  else
+    _pass "Config file present (YAML parse skipped — python3 not available): $CONFIG_PATH"
+  fi
+fi
+
+# Check active override if set
+if [[ -n "${VALIDATION_CONFIG_OVERRIDE:-}" ]]; then
+  if [[ -r "$VALIDATION_CONFIG_OVERRIDE" ]]; then
+    _pass "VALIDATION_CONFIG_OVERRIDE readable: $VALIDATION_CONFIG_OVERRIDE"
+  else
+    _fail "VALIDATION_CONFIG_OVERRIDE set but not readable: $VALIDATION_CONFIG_OVERRIDE"
+    echo "        Fix: verify the file path and permissions" >&2
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+echo
+echo "══════════════════════════════════════════════════════════════════════"
+echo "  Checks passed: ${_PASS}   Checks failed: ${_FAIL}"
+echo "══════════════════════════════════════════════════════════════════════"
+echo
+
+if [[ $_FAIL -gt 0 ]]; then
+  echo "Healthcheck FAILED — resolve the issues above before running validation."
+  echo
+  exit 1
+fi
+
+echo "Healthcheck PASSED — ready to run:"
+echo
+echo "  bash tools/validate_remote.sh \\"
+echo "    --artifact-root \"\${ARTIFACT_ROOT}\" \\"
+echo "    --output-dir    \"\${OUTPUT_DIR:-outputs/validation}\""
+echo

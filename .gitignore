@@ -62,6 +62,9 @@ _targets/
 # outputs and artifacts
 outputs/
 
+# run data (keep data/derived tracked)
+runs/
+
 # Smoke test isolated output directories (all three lanes)
 runs/smoke_local_*/
 runs/smoke_codespace_*/
@@ -107,6 +110,9 @@ TTP Final Project -Transportation and Cold-Chain Implications of Refrigerated Do
 # local OSRM build artifacts
 data/osrm/map.osm.pbf
 data/osrm/map.osrm*
+
+# large OSM snapshot (kept outside git)
+sources/data/osm/us-latest.osm.pbf
 
 # local logs/scratch
 *.log

@@ -196,6 +196,37 @@ normalize_distance_mode <- function(distance_mode) {
   m
 }
 
+normalize_product_mode <- function(mode) {
+  if (is.null(mode) || !nzchar(as.character(mode))) {
+    stop("product_mode is required.")
+  }
+  m <- toupper(trimws(as.character(mode)))
+  if (m %in% c("REFRIGERATED", "REEFER", "REFRIG")) return("REFRIGERATED")
+  if (m %in% c("DRY", "DRY_VAN")) return("DRY")
+  stop("Invalid product_mode. Allowed values: DRY, REFRIGERATED.")
+}
+
+normalize_spatial_structure <- function(structure) {
+  if (is.null(structure) || !nzchar(as.character(structure))) {
+    stop("spatial_structure is required.")
+  }
+  s <- toupper(trimws(as.character(structure)))
+  if (grepl("CENTRAL", s, fixed = TRUE)) return("CENTRALIZED")
+  if (grepl("REGIONAL", s, fixed = TRUE)) return("REGIONALIZED")
+  if (grepl("SMOKE", s, fixed = TRUE)) return("SMOKE_LOCAL")
+  stop("Invalid spatial_structure. Allowed values: CENTRALIZED, REGIONALIZED, SMOKE_LOCAL.")
+}
+
+normalize_powertrain_config <- function(config) {
+  if (is.null(config) || !nzchar(as.character(config))) {
+    stop("powertrain_config is required.")
+  }
+  c0 <- toupper(trimws(as.character(config)))
+  if (grepl("BEV", c0, fixed = TRUE)) return("BEV_TRU_ELECTRIC")
+  if (grepl("DIESEL", c0, fixed = TRUE)) return("DIESEL_TRU_DIESEL")
+  stop("Invalid powertrain_config. Allowed values: BEV_TRU_ELECTRIC, DIESEL_TRU_DIESEL.")
+}
+
 validate_road_distance_fixed_cache <- function(df, retail_id = "PETCO_DAVIS_COVELL") {
   required <- c(
     "facility_id", "retail_id", "distance_km", "duration_min", "provider", "profile", "timestamp_utc"

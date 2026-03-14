@@ -1,0 +1,198 @@
+#!/usr/bin/env bash
+# tools/setup_validation_runner.sh
+#
+# Idempotent setup check for running remote validation in Codespaces.
+# Verifies gcloud/gsutil availability, required R packages, and validation
+# config, then prints next steps.
+#
+# Usage:
+#   bash tools/setup_validation_runner.sh
+#
+# Safe to re-run. Does not install R packages (renv handles that); does
+# not modify the renv.lock or any source files.
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+_ok()   { echo "  [OK]  $*"; }
+_warn() { echo "  [WARN] $*" >&2; }
+_fail() { echo "  [FAIL] $*" >&2; }
+_head() { echo; echo "==> $*"; }
+
+ERRORS=0
+WARNINGS=0
+
+require_cmd() {
+  local cmd="$1"
+  if command -v "$cmd" > /dev/null 2>&1; then
+    _ok "$cmd found: $(command -v "$cmd")"
+  else
+    _fail "$cmd not found"
+    ERRORS=$(( ERRORS + 1 ))
+    return 1
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# 1. Shell utilities needed by validate_remote.sh
+# ---------------------------------------------------------------------------
+_head "Shell utilities"
+
+for cmd in jq bc Rscript python3; do
+  require_cmd "$cmd" || true
+done
+
+# ---------------------------------------------------------------------------
+# 2. gcloud / gsutil
+# ---------------------------------------------------------------------------
+_head "Google Cloud SDK (gcloud / gsutil)"
+
+_GCLOUD_OK=0
+_GSUTIL_OK=0
+
+if command -v gcloud > /dev/null 2>&1; then
+  _ok "gcloud found: $(command -v gcloud)"
+  _GCLOUD_OK=1
+else
+  _warn "gcloud not found"
+  WARNINGS=$(( WARNINGS + 1 ))
+fi
+
+if command -v gsutil > /dev/null 2>&1; then
+  _ok "gsutil found: $(command -v gsutil)"
+  _GSUTIL_OK=1
+else
+  _warn "gsutil not found"
+  WARNINGS=$(( WARNINGS + 1 ))
+fi
+
+if [[ $_GCLOUD_OK -eq 0 && $_GSUTIL_OK -eq 0 ]]; then
+  echo
+  echo "  To install the Google Cloud SDK in this Codespace:"
+  echo
+  echo "    curl -sSL https://sdk.cloud.google.com | bash -s -- --disable-prompts"
+  echo "    exec -l \$SHELL"
+  echo "    gcloud init"
+  echo
+  echo "  Or, for Codespaces-specific one-liner (adds to PATH immediately):"
+  echo "    sudo apt-get install -y google-cloud-cli 2>/dev/null \\"
+  echo "      || pip install gsutil"
+  echo
+  echo "  NOTE: gsutil alone is sufficient if you only pull artifacts."
+  echo "        Full gcloud is required for GCS bucket admin or GCE launch."
+fi
+
+# Check for application-default credentials only if gcloud is present
+if [[ $_GCLOUD_OK -eq 1 ]]; then
+  _ADC="${GOOGLE_APPLICATION_CREDENTIALS:-${HOME}/.config/gcloud/application_default_credentials.json}"
+  if [[ -f "$_ADC" ]]; then
+    _ok "Application Default Credentials: $_ADC"
+  else
+    _warn "No ADC found at $_ADC — run: gcloud auth application-default login"
+    WARNINGS=$(( WARNINGS + 1 ))
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# 3. Required R packages
+# ---------------------------------------------------------------------------
+_head "R packages (runtime validation dependencies)"
+
+R_PKGS=(optparse jsonlite yaml digest data.table)
+
+for pkg in "${R_PKGS[@]}"; do
+  if Rscript -e "stopifnot(requireNamespace('${pkg}', quietly=TRUE))" \
+       > /dev/null 2>&1; then
+    _ok "R package: ${pkg}"
+  else
+    _fail "R package missing: ${pkg}"
+    ERRORS=$(( ERRORS + 1 ))
+    echo "       Fix: Rscript -e \"install.packages('${pkg}')\"" >&2
+    echo "       Or:  Rscript scripts/bootstrap.R  (installs all renv packages)" >&2
+  fi
+done
+
+# ---------------------------------------------------------------------------
+# 4. Validation config reachable
+# ---------------------------------------------------------------------------
+_head "Validation config"
+
+_DEFAULT_CFG="config/validation/defaults.yaml"
+if [[ -f "$_DEFAULT_CFG" ]]; then
+  _ok "defaults.yaml present"
+else
+  _fail "Missing: $_DEFAULT_CFG"
+  ERRORS=$(( ERRORS + 1 ))
+fi
+
+if [[ -n "${VALIDATION_CONFIG_OVERRIDE:-}" ]]; then
+  if [[ -f "$VALIDATION_CONFIG_OVERRIDE" ]]; then
+    _ok "override: $VALIDATION_CONFIG_OVERRIDE"
+  else
+    _warn "VALIDATION_CONFIG_OVERRIDE set but file not found: $VALIDATION_CONFIG_OVERRIDE"
+    WARNINGS=$(( WARNINGS + 1 ))
+  fi
+else
+  _ok "VALIDATION_CONFIG_OVERRIDE not set (defaults.yaml will be used)"
+fi
+
+if command -v python3 > /dev/null 2>&1 && [[ -f tools/load_validation_config.py ]]; then
+  if python3 tools/load_validation_config.py --key checks.memory.rss_limit_mb \
+       > /dev/null 2>&1; then
+    _ok "load_validation_config.py smoke-check passed"
+  else
+    _warn "load_validation_config.py smoke-check failed (pyyaml installed?)"
+    WARNINGS=$(( WARNINGS + 1 ))
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# 5. Validation entrypoint present and executable
+# ---------------------------------------------------------------------------
+_head "Validation entrypoint"
+
+if [[ -x tools/validate_remote.sh ]]; then
+  _ok "tools/validate_remote.sh is executable"
+else
+  _warn "tools/validate_remote.sh not executable — run: chmod +x tools/validate_remote.sh"
+  WARNINGS=$(( WARNINGS + 1 ))
+fi
+
+# ---------------------------------------------------------------------------
+# Summary + next steps
+# ---------------------------------------------------------------------------
+echo
+echo "================================================================"
+if [[ $ERRORS -gt 0 ]]; then
+  echo "  RESULT: $ERRORS error(s), $WARNINGS warning(s) — fix errors before running"
+else
+  echo "  RESULT: Ready ($WARNINGS warning(s))"
+fi
+echo "================================================================"
+echo
+echo "Next steps:"
+echo
+echo "  1. Set required env vars (see infra/azure/launch_shards.sh or"
+echo "     tools/validate_remote.sh --help for the full list):"
+echo
+echo "       export ARTIFACT_ROOT=/workspaces/coldchain-freight-montecarlo/outputs/local_smoke"
+echo "       export OUTPUT_DIR=/workspaces/coldchain-freight-montecarlo/outputs/validation"
+echo "       export TEMP_DIR=/tmp/validation_staging"
+echo
+echo "  2. Run smoke validation:"
+echo
+echo "       bash tools/validate_remote.sh \\"
+echo "         --artifact-root \"\$ARTIFACT_ROOT\" \\"
+echo "         --output-dir   \"\$OUTPUT_DIR\""
+echo
+echo "  3. Review outputs:"
+echo
+echo "       cat \"\$OUTPUT_DIR/validation_report.md\""
+echo "       cat \"\$OUTPUT_DIR/validation_summary.json\" | jq ."
+echo
+
+if [[ $ERRORS -gt 0 ]]; then
+  exit 1
+fi

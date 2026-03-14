@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""
+tools/load_validation_config.py
+
+Loads config/validation/defaults.yaml, optionally deep-merges a sparse
+override file on top, expands ${ENV_VAR} references in string values, and
+returns the merged configuration as a plain dict.
+
+Importable:
+    from tools.load_validation_config import load_config
+    cfg = load_config()
+    cfg = load_config(override_path="config/validation/codespaces.yaml")
+
+Standalone:
+    python3 tools/load_validation_config.py [--config PATH] [--override PATH]
+                                            [--format json|yaml]
+
+Environment variables:
+    VALIDATION_CONFIG_PATH      Override the defaults.yaml path (optional)
+    VALIDATION_CONFIG_OVERRIDE  Path to a sparse override file (optional)
+
+Merge semantics:
+    - Dicts are merged recursively (override wins leaf values).
+    - All other types (lists, scalars) are replaced wholesale by the override.
+    - ${ENV_VAR} references in string values are expanded after merging.
+
+Exit codes:
+    0   Success
+    1   File not found or YAML parse error
+"""
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+try:
+    import yaml
+except ImportError:
+    print("ERROR: pyyaml is required. Run: pip install pyyaml>=6.0", file=sys.stderr)
+    sys.exit(1)
+
+# ---------------------------------------------------------------------------
+# Repo root resolution (script-relative, works from any cwd)
+# ---------------------------------------------------------------------------
+
+_SCRIPT_DIR  = Path(__file__).resolve().parent
+_REPO_ROOT   = _SCRIPT_DIR.parent
+_DEFAULT_CFG = _REPO_ROOT / "config" / "validation" / "defaults.yaml"
+
+
+# ---------------------------------------------------------------------------
+# Core helpers
+# ---------------------------------------------------------------------------
+
+def _load_yaml(path: Path) -> dict:
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = yaml.safe_load(fh)
+    except FileNotFoundError:
+        print(f"ERROR: config file not found: {path}", file=sys.stderr)
+        sys.exit(1)
+    except yaml.YAMLError as exc:
+        print(f"ERROR: YAML parse error in {path}: {exc}", file=sys.stderr)
+        sys.exit(1)
+    return data or {}
+
+
+def _deep_merge(base: dict, override: dict) -> dict:
+    """
+    Recursively merge *override* onto *base*.
+    - dict values are merged recursively.
+    - All other types (list, scalar, None) are replaced by the override value.
+    Returns a new dict; neither input is mutated.
+    """
+    result = dict(base)
+    for key, ov_val in override.items():
+        base_val = result.get(key)
+        if isinstance(base_val, dict) and isinstance(ov_val, dict):
+            result[key] = _deep_merge(base_val, ov_val)
+        else:
+            result[key] = ov_val
+    return result
+
+
+def _expand_env(obj):
+    """
+    Walk *obj* and expand ${ENV_VAR} references in every string value.
+    Non-string leaves are returned unchanged.
+    """
+    if isinstance(obj, dict):
+        return {k: _expand_env(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_expand_env(item) for item in obj]
+    if isinstance(obj, str):
+        return os.path.expandvars(obj)
+    return obj
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+def load_config(
+    config_path: "str | Path | None" = None,
+    override_path: "str | Path | None" = None,
+) -> dict:
+    """
+    Load and return the merged validation configuration.
+
+    Parameters
+    ----------
+    config_path : path to defaults.yaml (default: config/validation/defaults.yaml
+                  relative to repo root, or VALIDATION_CONFIG_PATH env var).
+    override_path : path to a sparse override YAML (default: VALIDATION_CONFIG_OVERRIDE
+                    env var, or None to skip).
+
+    Returns
+    -------
+    dict  Merged configuration with ${ENV_VAR} references expanded.
+    """
+    # Resolve config path
+    if config_path is None:
+        config_path = os.environ.get("VALIDATION_CONFIG_PATH") or _DEFAULT_CFG
+    config_path = Path(config_path)
+
+    # Resolve override path
+    if override_path is None:
+        override_path = os.environ.get("VALIDATION_CONFIG_OVERRIDE")
+    override_path = Path(override_path) if override_path else None
+
+    cfg = _load_yaml(config_path)
+
+    if override_path is not None:
+        override = _load_yaml(override_path)
+        cfg = _deep_merge(cfg, override)
+
+    return _expand_env(cfg)
+
+
+# ---------------------------------------------------------------------------
+# Convenience accessors
+# ---------------------------------------------------------------------------
+
+def rss_limit_mb(cfg: dict) -> int:
+    return int(cfg["checks"]["memory"]["rss_limit_mb"])
+
+
+def required_artifacts(cfg: dict, source_name: str | None = None) -> list[str]:
+    """
+    Return the required artifact list for *source_name*, falling back to the
+    global default if the source does not override it.
+    """
+    global_list = cfg["checks"]["artifact_completeness"]["required_artifacts"]
+    if source_name is None:
+        return list(global_list)
+    for src in cfg.get("sources", []):
+        if src["name"] == source_name and "required_artifacts" in src:
+            return list(src["required_artifacts"])
+    return list(global_list)
+
+
+def expected_log_files(cfg: dict) -> list[str]:
+    return list(cfg["checks"]["logs"]["expected_log_files"])
+
+
+def rng_hash_rules(cfg: dict) -> dict:
+    return dict(cfg["checks"]["rng_hash"])
+
+
+def output_locations(cfg: dict) -> dict:
+    return dict(cfg["output_locations"])
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Load and print the merged validation configuration.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "--config", default=None,
+        help=f"Path to defaults YAML (default: {_DEFAULT_CFG})",
+    )
+    parser.add_argument(
+        "--override", default=None,
+        help="Path to sparse override YAML (default: $VALIDATION_CONFIG_OVERRIDE)",
+    )
+    parser.add_argument(
+        "--format", choices=["json", "yaml"], default="yaml",
+        help="Output format (default: yaml)",
+    )
+    parser.add_argument(
+        "--key", default=None,
+        help="Dot-separated key path to extract, e.g. checks.memory.rss_limit_mb",
+    )
+    args = parser.parse_args()
+
+    cfg = load_config(config_path=args.config, override_path=args.override)
+
+    # Optionally extract a single key path
+    if args.key:
+        parts = args.key.split(".")
+        value = cfg
+        for part in parts:
+            if not isinstance(value, dict) or part not in value:
+                print(f"ERROR: key '{args.key}' not found in config", file=sys.stderr)
+                sys.exit(1)
+            value = value[part]
+        cfg = value
+
+    if args.format == "json":
+        print(json.dumps(cfg, indent=2))
+    else:
+        print(yaml.dump(cfg, default_flow_style=False, sort_keys=False), end="")
+
+
+if __name__ == "__main__":
+    main()

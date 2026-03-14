@@ -70,30 +70,38 @@ Sys.setenv(R_LIBS_USER = library_target)
 log_event("INFO", "bootstrap", paste("Using R package library:", library_target))
 log_event("INFO", "bootstrap", paste("Active .libPaths():", paste(.libPaths(), collapse = " | ")))
 
+snapshot_marker <- file.path(path.expand("~"), ".cache", "coldchain_snapshot_restored")
+snapshot_restored <- file.exists(snapshot_marker)
+if (isTRUE(snapshot_restored)) {
+  log_event("INFO", "bootstrap", "Snapshot restore marker found; skipping renv::restore().")
+}
+
 # ---------------------------------------------------------------------------
 # renv.lock awareness — prefer locked versions when renv is available
 # ---------------------------------------------------------------------------
 renv_lock <- "renv.lock"
 if (file.exists(renv_lock)) {
-  log_event("INFO", "bootstrap", "renv.lock detected — attempting renv::restore() for locked package versions.")
-  renv_ok <- tryCatch({
-    if (!requireNamespace("renv", quietly = TRUE)) {
-      install.packages(
-        "renv",
-        lib = library_target,
-        repos = "https://cloud.r-project.org",
-        quiet = TRUE
-      )
+  if (!isTRUE(snapshot_restored)) {
+    log_event("INFO", "bootstrap", "renv.lock detected — attempting renv::restore() for locked package versions.")
+    renv_ok <- tryCatch({
+      if (!requireNamespace("renv", quietly = TRUE)) {
+        install.packages(
+          "renv",
+          lib = library_target,
+          repos = "https://cloud.r-project.org",
+          quiet = TRUE
+        )
+      }
+      renv::restore(prompt = FALSE)
+      TRUE
+    }, error = function(e) {
+      log_event("WARN", "bootstrap", paste("renv::restore() failed, falling back to manual install:", conditionMessage(e)))
+      FALSE
+    })
+    if (isTRUE(renv_ok)) {
+      log_event("INFO", "bootstrap", "renv::restore() succeeded.")
+      # Still verify the specific required packages below
     }
-    renv::restore(prompt = FALSE)
-    TRUE
-  }, error = function(e) {
-    log_event("WARN", "bootstrap", paste("renv::restore() failed, falling back to manual install:", conditionMessage(e)))
-    FALSE
-  })
-  if (isTRUE(renv_ok)) {
-    log_event("INFO", "bootstrap", "renv::restore() succeeded.")
-    # Still verify the specific required packages below
   }
 }
 

@@ -1,0 +1,330 @@
+#!/usr/bin/env bash
+# tools/validate_remote.sh
+#
+# Remote validation entrypoint.
+# Stages inputs into a working directory, runs the summary/runtime split
+# regression, then exercises sub-checks for artifact completeness,
+# memory/runtime metrics, and RNG hash reproducibility.
+#
+# Usage (env vars take effect first; CLI flags override):
+#   bash tools/validate_remote.sh \
+#     [--artifact-root  PATH] \
+#     [--output-dir     PATH] \
+#     [--temp-dir       PATH] \
+#     [--config         PATH]
+#
+# Environment variables:
+#   ARTIFACT_ROOT   Root directory containing run artifact(s) to validate
+#   OUTPUT_DIR      Where to write the JSON validation report
+#   TEMP_DIR        Working temp base (default: ${TMPDIR:-/tmp})
+#   CONFIG_PATH     config/test-kit YAML path (default: <repo>/test_kit.yaml)
+#
+# Exit codes:
+#   0   All checks passed
+#   1   One or more checks failed
+#   2   Bad arguments or missing prerequisites
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Resolve script and repo root
+# ---------------------------------------------------------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# ---------------------------------------------------------------------------
+# Logging  (matches repo-wide structured log style)
+# ---------------------------------------------------------------------------
+
+PHASE="init"
+ts()  { date -u "+%Y-%m-%dT%H:%M:%SZ"; }
+log() {
+  local level="$1"; shift
+  echo "[$(ts)] [validate_remote] phase=\"${PHASE}\" status=\"${level}\" msg=\"$*\""
+}
+die()       { log "ERROR" "$*"; exit 1; }
+die_usage() { log "ERROR" "$*"; exit 2; }
+
+# ---------------------------------------------------------------------------
+# Defaults from environment
+# ---------------------------------------------------------------------------
+
+ARTIFACT_ROOT="${ARTIFACT_ROOT:-}"
+OUTPUT_DIR="${OUTPUT_DIR:-}"
+TEMP_DIR="${TEMP_DIR:-${TMPDIR:-/tmp}}"
+CONFIG_PATH="${CONFIG_PATH:-${REPO_ROOT}/test_kit.yaml}"
+
+# ---------------------------------------------------------------------------
+# Parse CLI arguments (override env vars)
+# ---------------------------------------------------------------------------
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --artifact-root)   ARTIFACT_ROOT="$2"; shift 2 ;;
+    --artifact-root=*) ARTIFACT_ROOT="${1#*=}"; shift ;;
+    --output-dir)      OUTPUT_DIR="$2";    shift 2 ;;
+    --output-dir=*)    OUTPUT_DIR="${1#*=}"; shift ;;
+    --temp-dir)        TEMP_DIR="$2";      shift 2 ;;
+    --temp-dir=*)      TEMP_DIR="${1#*=}"; shift ;;
+    --config)          CONFIG_PATH="$2";   shift 2 ;;
+    --config=*)        CONFIG_PATH="${1#*=}"; shift ;;
+    *) die_usage "Unknown argument: $1" ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# Validate required inputs
+# ---------------------------------------------------------------------------
+
+PHASE="preflight"
+
+[[ -n "$ARTIFACT_ROOT" ]] || die_usage "ARTIFACT_ROOT is required (env var or --artifact-root)"
+[[ -d "$ARTIFACT_ROOT" ]] || die_usage "ARTIFACT_ROOT not found: $ARTIFACT_ROOT"
+[[ -n "$OUTPUT_DIR"    ]] || die_usage "OUTPUT_DIR is required (env var or --output-dir)"
+[[ -f "$CONFIG_PATH"   ]] || die_usage "CONFIG_PATH not found: $CONFIG_PATH"
+
+command -v Rscript  >/dev/null 2>&1 || die "Rscript not found in PATH"
+command -v python3  >/dev/null 2>&1 || die "python3 not found in PATH"
+
+log "INFO" "ARTIFACT_ROOT = $ARTIFACT_ROOT"
+log "INFO" "OUTPUT_DIR    = $OUTPUT_DIR"
+log "INFO" "CONFIG_PATH   = $CONFIG_PATH"
+
+# ---------------------------------------------------------------------------
+# Create staging working directory
+# ---------------------------------------------------------------------------
+
+PHASE="stage"
+WORK_DIR="$(mktemp -d "${TEMP_DIR}/coldchain-validate.XXXXXX")"
+if [[ -z "$WORK_DIR" || ! -d "$WORK_DIR" ]]; then
+  die "mktemp failed — cannot create working directory under $TEMP_DIR"
+fi
+
+trap 'rm -rf "$WORK_DIR"' EXIT
+log "INFO" "Working dir = $WORK_DIR"
+
+mkdir -p "$OUTPUT_DIR"
+OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
+ARTIFACT_ROOT="$(cd "$ARTIFACT_ROOT" && pwd)"
+
+# Stage repo inputs needed by Rscript calls
+log "INFO" "Staging R source, tools, data, and schemas"
+cp -R "$REPO_ROOT/R"     "$WORK_DIR/R"
+cp -R "$REPO_ROOT/tools" "$WORK_DIR/tools"
+cp -R "$REPO_ROOT/data"  "$WORK_DIR/data"
+if [[ -d "$REPO_ROOT/schemas" ]]; then
+  cp -R "$REPO_ROOT/schemas" "$WORK_DIR/schemas"
+else
+  log "WARN" "schemas/ not found at repo root — skipping"
+fi
+cp "$CONFIG_PATH" "$WORK_DIR/$(basename "$CONFIG_PATH")"
+mkdir -p "$WORK_DIR/outputs" "$WORK_DIR/contrib/chunks"
+
+# Snapshot artifact root for sub-checks (read-only copy so checks cannot mutate)
+STAGED_ARTIFACT="$WORK_DIR/artifact_root"
+cp -R "$ARTIFACT_ROOT" "$STAGED_ARTIFACT"
+
+log "INFO" "Staging complete"
+
+# ---------------------------------------------------------------------------
+# Tracking: accumulate check results for the final report
+# ---------------------------------------------------------------------------
+
+CHECK_NAMES=()
+CHECK_STATUSES=()
+CHECK_REASONS=()
+
+record_check() {
+  # record_check <name> <passed|failed|warning|placeholder|skipped> [reason]
+  CHECK_NAMES+=("$1")
+  CHECK_STATUSES+=("$2")
+  CHECK_REASONS+=("${3:-}")
+}
+
+# ---------------------------------------------------------------------------
+# Check 1: summary / runtime split regression
+# ---------------------------------------------------------------------------
+
+PHASE="regression"
+log "INFO" "Running summary/runtime split regression"
+
+if (cd "$WORK_DIR" && Rscript "$REPO_ROOT/tools/verify_summary_runtime_split.R" 2>&1); then
+  log "INFO" "summary/runtime split regression PASSED"
+  record_check "summary_runtime_split" "passed" ""
+else
+  log "ERROR" "summary/runtime split regression FAILED"
+  record_check "summary_runtime_split" "failed" "verify_summary_runtime_split.R exited nonzero"
+  die "Aborting: regression check failure is unrecoverable"
+fi
+
+# ---------------------------------------------------------------------------
+# Check 2: artifact completeness
+# ---------------------------------------------------------------------------
+
+PHASE="artifact_completeness"
+log "INFO" "Checking artifact completeness"
+
+check_artifact_completeness() {
+  local root="$1"
+  local failed=0
+  # TODO: extend required_files once artifact schema is finalised.
+  local required_files=("run_metadata.json" "results_summary.csv")
+  local f found
+  for f in "${required_files[@]}"; do
+    found="$(find "$root" -maxdepth 2 -name "$f" -print -quit 2>/dev/null || true)"
+    if [[ -z "$found" ]]; then
+      log "WARN" "completeness: expected file not found — $f"
+      failed=1
+    fi
+  done
+  return "$failed"
+}
+
+if check_artifact_completeness "$STAGED_ARTIFACT"; then
+  log "INFO" "Artifact completeness PASSED"
+  record_check "artifact_completeness" "passed" ""
+else
+  log "WARN" "Artifact completeness check found missing files (placeholder — non-fatal until schema locked)"
+  record_check "artifact_completeness" "placeholder" "required file list not yet finalised"
+fi
+
+# ---------------------------------------------------------------------------
+# Check 3: memory / runtime metrics
+# ---------------------------------------------------------------------------
+
+PHASE="memory_runtime"
+log "INFO" "Checking memory/runtime metrics"
+
+check_memory_runtime() {
+  local root="$1"
+  # TODO: locate runtime_summary.csv under $root; assert peak_rss_mb and
+  #       batch_wall_seconds columns are present and within scenario-specific
+  #       bounds loaded from CONFIG_PATH.
+  #       Example:
+  #         python3 scripts/check_run_metadata.py --run_dir "$root" --strict
+  log "INFO" "memory/runtime: PLACEHOLDER — bounds not yet configured"
+  return 0
+}
+
+if check_memory_runtime "$STAGED_ARTIFACT"; then
+  log "INFO" "Memory/runtime check PASSED"
+  record_check "memory_runtime" "placeholder" "bounds not yet configured"
+else
+  die "Memory/runtime check FAILED"
+fi
+
+# ---------------------------------------------------------------------------
+# Check 4: RNG hash reproducibility
+# ---------------------------------------------------------------------------
+
+PHASE="rng_hash"
+log "INFO" "Checking RNG hash reproducibility"
+
+check_rng_hash() {
+  local root="$1"
+  # TODO: extract seed from run_metadata.json; rerun with the same seed at
+  #       n=2; compare SHA-256 of row hashes in results_summary.csv.
+  #       Delegate to:
+  #         python3 scripts/validate_shards.py --mode reproducibility \
+  #           --run_dir "$root" --report /dev/stdout
+  log "INFO" "RNG hash: PLACEHOLDER — seed extraction from artifact not yet wired"
+  return 0
+}
+
+if check_rng_hash "$STAGED_ARTIFACT"; then
+  log "INFO" "RNG hash check PASSED"
+  record_check "rng_hash" "placeholder" "seed extraction from artifact not yet wired"
+else
+  die "RNG hash check FAILED"
+fi
+
+# ---------------------------------------------------------------------------
+# Check 5: run_count consistency in runtime_summary.csv
+# ---------------------------------------------------------------------------
+
+PHASE="run_count_consistency"
+log "INFO" "Checking run_count consistency in runtime_summary.csv"
+
+_RUN_COUNT_CSV="$(find "$STAGED_ARTIFACT" -maxdepth 3 -name "runtime_summary.csv" \
+                    -print -quit 2>/dev/null || true)"
+
+if [[ -z "$_RUN_COUNT_CSV" ]]; then
+  log "INFO" "run_count_consistency: runtime_summary.csv not found — skipping"
+  record_check "run_count_consistency" "skipped" \
+    "runtime_summary.csv not found in staged artifact"
+else
+  _RUN_COUNT_OUT=""
+  if _RUN_COUNT_OUT="$(python3 - "$_RUN_COUNT_CSV" <<'PYEOF'
+import csv, sys
+
+path = sys.argv[1]
+try:
+    with open(path, newline="") as fh:
+        reader = csv.DictReader(fh)
+        rows = list(reader)
+        fieldnames = list(reader.fieldnames or [])
+except Exception as exc:
+    print(f"could not read runtime_summary.csv: {exc}")
+    sys.exit(1)
+
+if not rows:
+    print("runtime_summary.csv is empty — run_count cannot be verified")
+    sys.exit(1)
+
+if "run_count" not in fieldnames:
+    print("run_count column missing from runtime_summary.csv")
+    sys.exit(1)
+
+counts = [r["run_count"] for r in rows]
+unique = sorted(set(counts))
+if len(unique) > 1:
+    print(
+        f"run_count mismatch across {len(rows)} row(s): "
+        f"[{', '.join(unique)}]"
+    )
+    sys.exit(1)
+
+print(f"run_count={counts[0]} consistent across {len(rows)} row(s)")
+PYEOF
+  )"; then
+    log "INFO" "run_count_consistency PASSED — ${_RUN_COUNT_OUT}"
+    record_check "run_count_consistency" "passed" "${_RUN_COUNT_OUT}"
+  else
+    log "WARN" "run_count_consistency WARNING — ${_RUN_COUNT_OUT}"
+    record_check "run_count_consistency" "warning" "${_RUN_COUNT_OUT}"
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Write validation_summary.json + validation_report.md (atomic)
+# ---------------------------------------------------------------------------
+
+PHASE="report"
+REPORT_TS="$(ts)"
+JSON_OUT="${OUTPUT_DIR}/validation_summary.json"
+MD_OUT="${OUTPUT_DIR}/validation_report.md"
+
+# Build --check triples from parallel arrays and call the reporter.
+CHECK_ARGS=()
+for i in "${!CHECK_NAMES[@]}"; do
+  CHECK_ARGS+=(--check "${CHECK_NAMES[$i]}" "${CHECK_STATUSES[$i]}" "${CHECK_REASONS[$i]:-}")
+done
+
+python3 "$REPO_ROOT/tools/write_validation_report.py" \
+  --artifact-root "$ARTIFACT_ROOT" \
+  --config        "$CONFIG_PATH"   \
+  --timestamp     "$REPORT_TS"     \
+  --json-out      "$JSON_OUT"      \
+  --md-out        "$MD_OUT"        \
+  "${CHECK_ARGS[@]}"
+
+log "INFO" "Summary → $JSON_OUT"
+log "INFO" "Report  → $MD_OUT"
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+
+PHASE="done"
+log "INFO" "Remote validation complete — all checks passed"

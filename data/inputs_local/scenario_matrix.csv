@@ -1,10 +1,10 @@
-variant_id,scenario_id,powertrain,trailer_type,refrigeration_mode,grid_case,run_group,status,notes
-CENTRALIZED_DIESEL_DRY,CENTRALIZED,diesel,dry_van,none,NA,BASE,OK,Centralized diesel dry-van baseline.
-CENTRALIZED_DIESEL_REEFER,CENTRALIZED,diesel,refrigerated,diesel_tru,NA,BASE,OK,Centralized diesel refrigerated case.
-CENTRALIZED_BEV_DRY,CENTRALIZED,bev,dry_van,none,US_AVG,BASE,OK,Centralized BEV dry-van case derived from energy terms.
-CENTRALIZED_BEV_REEFER,CENTRALIZED,bev,refrigerated,electric_tru,US_AVG,BASE,OK,Centralized BEV refrigerated case with electric TRU derived from energy terms.
-REGIONALIZED_DIESEL_DRY,REGIONALIZED,diesel,dry_van,none,NA,BASE,OK,Regionalized diesel dry-van baseline.
-REGIONALIZED_DIESEL_REEFER,REGIONALIZED,diesel,refrigerated,diesel_tru,NA,BASE,OK,Regionalized diesel refrigerated case.
-REGIONALIZED_BEV_DRY,REGIONALIZED,bev,dry_van,none,US_AVG,BASE,OK,Regionalized BEV dry-van case derived from energy terms.
-REGIONALIZED_BEV_REEFER,REGIONALIZED,bev,refrigerated,electric_tru,US_AVG,BASE,OK,Regionalized BEV refrigerated case with electric TRU derived from energy terms.
-SMOKE_LOCAL_DIESEL_REEFER,SMOKE_LOCAL,diesel,refrigerated,diesel_tru,NA,SMOKE_LOCAL,SMOKE_READY,Synthetic smoke variant.
+variant_id,scenario_id,product_mode,spatial_structure,powertrain,powertrain_config,trailer_type,refrigeration_mode,grid_case,run_group,status,notes
+CENTRALIZED_DIESEL_DRY,CENTRALIZED,DRY,CENTRALIZED,diesel,DIESEL_TRU_DIESEL,dry_van,none,NA,BASE,OK,Centralized diesel dry-van baseline.
+CENTRALIZED_DIESEL_REEFER,CENTRALIZED,REFRIGERATED,CENTRALIZED,diesel,DIESEL_TRU_DIESEL,refrigerated,diesel_tru,NA,BASE,OK,Centralized diesel refrigerated case.
+CENTRALIZED_BEV_DRY,CENTRALIZED,DRY,CENTRALIZED,bev,BEV_TRU_ELECTRIC,dry_van,none,US_AVG,BASE,OK,Centralized BEV dry-van case derived from energy terms.
+CENTRALIZED_BEV_REEFER,CENTRALIZED,REFRIGERATED,CENTRALIZED,bev,BEV_TRU_ELECTRIC,refrigerated,electric_tru,US_AVG,BASE,OK,Centralized BEV refrigerated case with electric TRU derived from energy terms.
+REGIONALIZED_DIESEL_DRY,REGIONALIZED,DRY,REGIONALIZED,diesel,DIESEL_TRU_DIESEL,dry_van,none,NA,BASE,OK,Regionalized diesel dry-van baseline.
+REGIONALIZED_DIESEL_REEFER,REGIONALIZED,REFRIGERATED,REGIONALIZED,diesel,DIESEL_TRU_DIESEL,refrigerated,diesel_tru,NA,BASE,OK,Regionalized diesel refrigerated case.
+REGIONALIZED_BEV_DRY,REGIONALIZED,DRY,REGIONALIZED,bev,BEV_TRU_ELECTRIC,dry_van,none,US_AVG,BASE,OK,Regionalized BEV dry-van case derived from energy terms.
+REGIONALIZED_BEV_REEFER,REGIONALIZED,REFRIGERATED,REGIONALIZED,bev,BEV_TRU_ELECTRIC,refrigerated,electric_tru,US_AVG,BASE,OK,Regionalized BEV refrigerated case with electric TRU derived from energy terms.
+SMOKE_LOCAL_DIESEL_REEFER,SMOKE_LOCAL,REFRIGERATED,SMOKE_LOCAL,diesel,DIESEL_TRU_DIESEL,refrigerated,diesel_tru,NA,SMOKE_LOCAL,SMOKE_READY,Synthetic smoke variant.

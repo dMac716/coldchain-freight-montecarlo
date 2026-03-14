@@ -129,6 +129,74 @@ if [[ -f .pre-commit-config.yaml ]] && command -v git >/dev/null 2>&1; then
 fi
 
 # ---------------------------------------------------------------------------
+# Optional: restore cached R packages from GCS snapshot
+# ---------------------------------------------------------------------------
+# To enable, set SNAPSHOT_BUCKET and SNAPSHOT_PREFIX (defaults below) and
+# ensure gcloud/gsutil auth is available in the Codespace.
+restore_from_gcs_snapshot() {
+  local bucket="${SNAPSHOT_BUCKET:-coldchain-freight-sources}"
+  local prefix="${SNAPSHOT_PREFIX:-codespace-snapshots}"
+  local marker="${HOME}/.cache/coldchain_snapshot_restored"
+  local latest_json
+  local tarball
+
+  if [[ "${RESTORE_SNAPSHOT:-true}" != "true" ]]; then
+    echo "[postCreate] Snapshot restore disabled (RESTORE_SNAPSHOT=${RESTORE_SNAPSHOT:-false})."
+    return 0
+  fi
+  if [[ -f "$marker" ]]; then
+    echo "[postCreate] Snapshot already restored; skipping."
+    return 0
+  fi
+  if ! command -v gsutil >/dev/null 2>&1; then
+    echo "[postCreate] gsutil not found; skipping snapshot restore."
+    return 0
+  fi
+  if ! gsutil ls "gs://${bucket}/" >/dev/null 2>&1; then
+    echo "[postCreate] Cannot access gs://${bucket}/; skipping snapshot restore."
+    return 0
+  fi
+
+  latest_json="/tmp/coldchain_snapshot_latest.json"
+  if ! gsutil cp "gs://${bucket}/${prefix}/latest.json" "$latest_json" >/dev/null 2>&1; then
+    echo "[postCreate] latest.json not found; skipping snapshot restore."
+    return 0
+  fi
+
+  tarball="$(python3 - <<'PY'
+import json
+import sys
+with open("/tmp/coldchain_snapshot_latest.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
+print(data.get("tarball", ""))
+PY
+  )"
+  if [[ -z "$tarball" ]]; then
+    echo "[postCreate] Snapshot tarball not specified; skipping."
+    return 0
+  fi
+
+  echo "[postCreate] Restoring R packages from gs://${bucket}/${prefix}/${tarball} ..."
+  gsutil cp "gs://${bucket}/${prefix}/${tarball}" /tmp/coldchain_snapshot.tar.gz
+  mkdir -p /tmp/coldchain_snapshot_extract
+  tar xzf /tmp/coldchain_snapshot.tar.gz -C /tmp/coldchain_snapshot_extract
+
+  if [[ -d /tmp/coldchain_snapshot_extract/site-library ]]; then
+    mkdir -p "${R_LIBS_USER}"
+    rsync -a /tmp/coldchain_snapshot_extract/site-library/ "${R_LIBS_USER}/"
+  fi
+  if [[ -d /tmp/coldchain_snapshot_extract/renv-cache ]]; then
+    mkdir -p "${RENV_PATHS_CACHE}"
+    rsync -a /tmp/coldchain_snapshot_extract/renv-cache/ "${RENV_PATHS_CACHE}/"
+  fi
+
+  touch "$marker"
+  echo "[postCreate] Snapshot restore complete."
+}
+
+restore_from_gcs_snapshot
+
+# ---------------------------------------------------------------------------
 # Smoke-check: verify validation config loads cleanly
 # ---------------------------------------------------------------------------
 if [[ -f config/validation/defaults.yaml ]]; then
