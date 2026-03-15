@@ -10,6 +10,9 @@
 
 We are running a large-scale Monte Carlo simulation and need compute power. **You can help by opening a GitHub Codespace** -- it automatically starts running simulations. No setup, no commands, no configuration.
 
+> **UC Davis students**: You get free Codespace hours through GitHub Education.
+> If you haven't already, [apply for GitHub Education benefits](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student) using your `@ucdavis.edu` email. Approval is usually instant and gives you **90 core-hours/month** of free Codespace compute -- enough to run thousands of simulations for this project.
+
 ### Step 1: Click this button
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dMac716/coldchain-freight-montecarlo?ref=hotfix/derived-bootstrap-fix)
