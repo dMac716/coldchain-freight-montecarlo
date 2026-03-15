@@ -67,6 +67,7 @@ runs/smoke_local_*/
 runs/smoke_codespace_*/
 runs/smoke_gcp_*/
 contrib/chunks/
+# contrib/results/ is NOT ignored — contributor PRs push results there
 data/cache/
 
 # local ad-hoc R library (used for manual installs)
