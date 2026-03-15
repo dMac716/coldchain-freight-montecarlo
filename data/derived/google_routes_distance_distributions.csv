@@ -1,1 +1,3 @@
-""
+distance_distribution_id,scenario_id,source_zip,commodity_filter,mode_filter,distance_model,p05_miles,p50_miles,p95_miles,mean_miles,min_miles,max_miles,n_records,status,source_id,notes
+dist_centralized_food_truck_2024,CENTRALIZED,google_routes_api_cached_od,food_sctg_01_08,truck,triangular_fit,191.272345,317.261567,1522.151883,443.641644,185.338250,2848.215173,99,OK,google_routes_api_cached_od,"Weighted by tons from faf_top_od_flows.csv and Google Routes API cached OD distances."
+dist_regionalized_food_truck_2024,REGIONALIZED,google_routes_api_cached_od,food_sctg_01_08,truck,triangular_fit,191.272345,314.452348,531.153066,331.925498,150.478704,754.114720,80,OK,google_routes_api_cached_od,"Weighted by tons from faf_top_od_flows.csv and Google Routes API cached OD distances."

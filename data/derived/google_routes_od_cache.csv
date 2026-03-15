@@ -1,2441 +1,640 @@
-"origin_id","dest_id","road_distance_miles","road_duration_minutes","status","error","generated_at_utc","api_provider"
-"190","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"319","319",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","279",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","489",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"380","380",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"460","460",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","209",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","69",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"299","299",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","279",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"160","160",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"122","129",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"50","50",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"539","539",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"189","189",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","172",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"229","223",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"379","379",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"129","129",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"269","269",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"89","89",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"399","399",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","271",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"280","280",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"139","139",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"429","429",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"219","219",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"271","279",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"229","221",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","380",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"19","19",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"300","160",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"460","319",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"171","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"460","380",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"460","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"419","419",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"519","519",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"269","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"479","479",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"486","489",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","261",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","484",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"380","271",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"484","489",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"409","202",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"311","319",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"160","300",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"484","81",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"380","460",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"269","183",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"369","423",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"64","69",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"64","261",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"363","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","189",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","311",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"65","69",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"300","300",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","202",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"171","223",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"350","350",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"411","539",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"182","189",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","64",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"539","531",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"261","269",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"64","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","551",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"539","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"171","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","64",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"409","489",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"369","369",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","319",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"471","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"172","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"262","269",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"222","223",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"319","81",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"409","409",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"201","209",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"487","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","423",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"380","279",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","321",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","486",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"393","399",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","311",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"479","139",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","69",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"311","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"249","519",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"319","89",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"20","20",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"551","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","65",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","350",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"189","183",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","41",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","62",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"64","64",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"399","393",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"139","131",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"171","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","341",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"160","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"399","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","363",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"459","459",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"341","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"280","19",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"299","292",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","531",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"364","369",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"131","131",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","223",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"487","341",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"319","311",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"229","229",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"486","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","486",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"261","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","484",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"379","519",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"319","209",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"399","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"531","539",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"129","19",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"472","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"81","89",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"129","122",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"299","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"183","189",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"487","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"484","484",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","271",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"409","402",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"129","124",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","539",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"181","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"261","399",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"299","64",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"560","560",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"62","69",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"42","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"189","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","531",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"379","459",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"131","139",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","460",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","131",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","409",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"519","429",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"364","364",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","261",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","409",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","292",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"160","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"230","341",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"363","363",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"484","486",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"487","131",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"129","139",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"124","129",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"371","379",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"69","484",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"280","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","131",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"279","311",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"486","486",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"202","209",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"189","182",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"89","81",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"539","411",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"230","363",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"479","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"489","41",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"341","341",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"49","49",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"479","19",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"392","399",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"399","183",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"124","122",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"171","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"249","249",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"129","123",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"299","50",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"172","172",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"160","539",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"223","223",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"488","489",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"531","531",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"271","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"394","189",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","491",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","62",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","190",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","429",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"299","291",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","489",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"209","201",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"230","230",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"41","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"262","189",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"271","271",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"559","179",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"394","399",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"249","429",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"460","279",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"513","519",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"409","209",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","299",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"131","132",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"399","392",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"65","61",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"551","171",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"183","399",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"190","209",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"179","559",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"61","63",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"123","129",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
-"122","122",NA,NA,"ERROR","{
-  ""error"": {
-    ""code"": 403,
-    ""message"": ""Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."",
-    ""status"": ""PERMISSION_DENIED""
-  }
-}
-curl: (6) Could not resolve host: application
-curl: (6) Could not resolve host: AIzaSyCC-Ht_M7WIPCgaFiW95Uxm9If9EVtXPIw
-curl: (3) URL rejected: Bad hostname","2026-02-17T05:26:32Z","google_routes_v2"
+origin_id,dest_id,road_distance_miles,road_duration_minutes,road_duration_minutes_static,status,error,generated_at_utc,api_provider,routing_preference
+190,279,362.509196,338.200000,330.766667,OK,"",2026-03-15T08:27:07Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+122,129,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:08Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,172,252.867628,247.500000,249.883333,OK,"",2026-03-15T08:27:08Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+229,223,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""30s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:08Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,171,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+279,271,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+271,279,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+229,221,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""30s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+279,380,309.554079,290.716667,290.266667,OK,"",2026-03-15T08:27:10Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+300,160,520.459889,534.900000,535.400000,OK,"",2026-03-15T08:27:10Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,061,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:11Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+460,319,280.268855,285.800000,286.166667,OK,"",2026-03-15T08:27:11Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+171,179,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:11Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+460,380,273.478510,286.183333,288.216667,OK,"",2026-03-15T08:27:11Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+460,190,481.667064,445.766667,444.883333,OK,"",2026-03-15T08:27:12Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+269,559,516.281789,457.766667,464.333333,OK,"",2026-03-15T08:27:12Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+279,559,317.261567,306.666667,304.683333,OK,"",2026-03-15T08:27:13Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+486,489,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:13Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,261,2359.809960,2039.900000,2059.650000,OK,"",2026-03-15T08:27:13Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,484,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:15Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+380,271,308.367882,297.366667,288.316667,OK,"",2026-03-15T08:27:15Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+484,489,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:15Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+409,202,260.572009,227.533333,226.500000,OK,"",2026-03-15T08:27:15Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+311,319,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:16Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+160,300,520.177787,531.500000,530.566667,OK,"",2026-03-15T08:27:16Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+484,081,769.397345,706.483333,716.350000,OK,"",2026-03-15T08:27:16Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,179,314.452348,283.866667,283.650000,OK,"",2026-03-15T08:27:17Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+380,460,255.771917,283.816667,283.916667,OK,"",2026-03-15T08:27:17Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+269,183,263.420996,252.950000,251.933333,OK,"",2026-03-15T08:27:18Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+369,423,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:18Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+064,069,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:18Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+064,261,2359.809960,2039.900000,2059.650000,OK,"",2026-03-15T08:27:18Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+363,061,2848.215173,2479.683333,2494.483333,OK,"",2026-03-15T08:27:19Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,189,191.272345,191.766667,196.283333,OK,"",2026-03-15T08:27:21Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+209,311,261.983143,266.233333,269.833333,OK,"",2026-03-15T08:27:21Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+065,069,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:21Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+209,202,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:22Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+171,223,792.353903,745.416667,755.433333,OK,"",2026-03-15T08:27:22Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+411,539,374.604808,411.883333,410.833333,OK,"",2026-03-15T08:27:23Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+559,061,2171.174093,1907.500000,1892.933333,OK,"",2026-03-15T08:27:23Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,171,2072.645749,1783.100000,1797.966667,OK,"",2026-03-15T08:27:24Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+182,189,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:25Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,064,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:25Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+279,190,363.096392,332.200000,331.216667,OK,"",2026-03-15T08:27:26Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+539,531,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:26Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,061,1522.151883,1320.166667,1339.766667,OK,"",2026-03-15T08:27:27Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+261,269,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:27Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+064,061,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:28Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+559,551,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:28Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+539,061,944.784334,919.933333,931.700000,OK,"",2026-03-15T08:27:28Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+171,061,2073.059582,1803.100000,1803.883333,OK,"",2026-03-15T08:27:29Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,064,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:30Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+409,489,374.236956,344.283333,344.483333,OK,"",2026-03-15T08:27:30Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,319,373.398726,354.900000,356.450000,OK,"",2026-03-15T08:27:30Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+471,061,2150.631562,1877.866667,1887.200000,OK,"",2026-03-15T08:27:31Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,171,968.864332,839.116667,855.500000,OK,"",2026-03-15T08:27:32Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+172,179,253.175207,245.566667,246.883333,OK,"",2026-03-15T08:27:32Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+262,269,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:33Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+222,223,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""30s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:33Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,061,1835.965462,1588.333333,1595.383333,OK,"",2026-03-15T08:27:33Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+319,081,475.168764,444.533333,447.666667,OK,"",2026-03-15T08:27:34Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+201,209,350.119676,332.833333,339.216667,OK,"",2026-03-15T08:27:35Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+487,061,1522.151883,1320.266667,1339.766667,OK,"",2026-03-15T08:27:35Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,423,2848.082200,2471.566667,2493.800000,OK,"",2026-03-15T08:27:36Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+380,279,308.367882,297.483333,288.316667,OK,"",2026-03-15T08:27:37Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,321,533.317923,571.983333,572.266667,OK,"",2026-03-15T08:27:37Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,486,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:38Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+393,399,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:38Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,311,373.398726,354.866667,356.450000,OK,"",2026-03-15T08:27:38Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+479,139,342.778175,314.333333,323.950000,OK,"",2026-03-15T08:27:39Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,069,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:39Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+311,190,372.459835,350.266667,354.666667,OK,"",2026-03-15T08:27:40Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+249,519,187.263879,180.450000,191.400000,OK,"",2026-03-15T08:27:40Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+319,089,475.168764,444.616667,447.666667,OK,"",2026-03-15T08:27:40Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+551,559,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:41Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,065,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:41Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,350,550.887194,507.133333,511.816667,OK,"",2026-03-15T08:27:41Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+189,183,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:42Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,041,,,,ERROR_NO_DISTANCE,"{}",2026-03-15T08:27:42Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,062,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:42Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+399,393,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:43Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+139,131,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:43Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,341,2848.082200,2471.616667,2493.800000,OK,"",2026-03-15T08:27:43Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+160,559,1509.691526,1335.983333,1344.850000,OK,"",2026-03-15T08:27:44Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+399,190,683.047254,602.866667,619.916667,OK,"",2026-03-15T08:27:45Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,171,2072.645749,1783.050000,1797.966667,OK,"",2026-03-15T08:27:46Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,061,2073.059582,1803.066667,1803.883333,OK,"",2026-03-15T08:27:47Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,363,2848.082200,2471.600000,2493.800000,OK,"",2026-03-15T08:27:48Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,559,2170.512333,1875.266667,1893.683333,OK,"",2026-03-15T08:27:50Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+341,061,2848.215173,2479.666667,2494.483333,OK,"",2026-03-15T08:27:51Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+280,019,222.100433,229.216667,231.800000,OK,"",2026-03-15T08:27:53Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+299,292,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:53Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,531,944.087156,905.050000,924.016667,OK,"",2026-03-15T08:27:53Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+364,369,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:54Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,223,792.353903,745.250000,755.433333,OK,"",2026-03-15T08:27:54Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+487,341,1753.879842,1555.433333,1572.100000,OK,"",2026-03-15T08:27:55Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+319,311,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:27:56Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+486,061,1522.151883,1320.483333,1339.766667,OK,"",2026-03-15T08:27:56Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,486,1523.200758,1314.100000,1343.133333,OK,"",2026-03-15T08:27:57Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+261,061,2359.319698,2050.766667,2059.800000,OK,"",2026-03-15T08:27:58Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,484,1523.200758,1314.083333,1343.133333,OK,"",2026-03-15T08:27:59Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+379,519,213.211719,194.050000,197.900000,OK,"",2026-03-15T08:28:00Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+319,209,265.378316,266.266667,269.866667,OK,"",2026-03-15T08:28:00Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+399,061,2392.259828,2083.166667,2107.633333,OK,"",2026-03-15T08:28:01Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+531,539,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:02Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+129,019,528.025084,517.166667,537.100000,OK,"",2026-03-15T08:28:03Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+472,061,2150.631562,1877.933333,1887.200000,OK,"",2026-03-15T08:28:03Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+081,089,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:04Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,190,313.906784,284.000000,282.716667,OK,"",2026-03-15T08:28:04Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+129,122,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:05Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+299,061,1839.048706,1621.700000,1613.850000,OK,"",2026-03-15T08:28:05Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,559,355.607005,333.300000,326.333333,OK,"",2026-03-15T08:28:06Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+183,189,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:07Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+209,171,567.368443,493.766667,501.950000,OK,"",2026-03-15T08:28:07Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+487,171,968.864332,838.900000,855.500000,OK,"",2026-03-15T08:28:07Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,271,362.509196,338.183333,330.766667,OK,"",2026-03-15T08:28:08Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+409,402,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+129,124,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,539,944.087156,904.983333,924.016667,OK,"",2026-03-15T08:28:09Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+181,179,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:10Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+261,399,289.612414,268.800000,270.766667,OK,"",2026-03-15T08:28:10Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+299,064,1839.048706,1621.750000,1613.850000,OK,"",2026-03-15T08:28:10Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+062,069,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:11Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+042,061,,,,ERROR_NO_DISTANCE,"{}",2026-03-15T08:28:11Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+189,179,190.580137,191.516667,195.350000,OK,"",2026-03-15T08:28:12Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,531,944.087156,904.966667,924.016667,OK,"",2026-03-15T08:28:12Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+379,459,185.338250,169.583333,172.350000,OK,"",2026-03-15T08:28:13Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+131,139,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:13Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+279,460,394.930481,410.016667,409.400000,OK,"",2026-03-15T08:28:13Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,131,753.758674,696.783333,696.683333,OK,"",2026-03-15T08:28:14Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+209,409,260.843549,227.583333,227.350000,OK,"",2026-03-15T08:28:15Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+519,429,340.945130,335.466667,345.200000,OK,"",2026-03-15T08:28:15Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,261,2359.809960,2039.616667,2059.650000,OK,"",2026-03-15T08:28:16Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,409,373.923785,341.616667,341.700000,OK,"",2026-03-15T08:28:17Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,292,252.867628,247.033333,249.883333,OK,"",2026-03-15T08:28:17Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+160,179,1550.892786,1386.966667,1395.383333,OK,"",2026-03-15T08:28:18Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+230,341,531.153066,498.866667,519.100000,OK,"",2026-03-15T08:28:18Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+484,486,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:19Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+487,131,1023.495909,960.116667,981.216667,OK,"",2026-03-15T08:28:19Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+129,139,366.732656,337.650000,355.100000,OK,"",2026-03-15T08:28:20Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+124,129,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:20Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+371,379,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:21Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+069,484,1523.200758,1314.016667,1343.133333,OK,"",2026-03-15T08:28:21Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+280,061,1988.482885,1752.983333,1761.516667,OK,"",2026-03-15T08:28:22Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+559,131,1118.472496,977.166667,983.883333,OK,"",2026-03-15T08:28:23Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+279,311,560.074167,560.333333,562.366667,OK,"",2026-03-15T08:28:24Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+202,209,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:24Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+189,182,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:25Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+089,081,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:25Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+539,411,375.605837,424.083333,415.450000,OK,"",2026-03-15T08:28:25Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+230,363,531.153066,498.866667,519.100000,OK,"",2026-03-15T08:28:26Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+479,061,2150.631562,1877.816667,1887.200000,OK,"",2026-03-15T08:28:26Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+489,041,,,,ERROR_NO_DISTANCE,"{}",2026-03-15T08:28:27Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+479,019,251.125925,251.483333,258.050000,OK,"",2026-03-15T08:28:28Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+392,399,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:28Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+399,183,218.624483,211.350000,218.716667,OK,"",2026-03-15T08:28:28Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+124,122,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:29Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+171,559,370.142741,318.966667,319.683333,OK,"",2026-03-15T08:28:29Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+129,123,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:29Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+299,050,315.683906,322.583333,329.616667,OK,"",2026-03-15T08:28:29Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+160,539,554.982030,559.150000,560.566667,OK,"",2026-03-15T08:28:30Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+488,489,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:30Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+271,559,317.261567,306.666667,304.683333,OK,"",2026-03-15T08:28:31Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+559,171,369.858153,320.400000,321.233333,OK,"",2026-03-15T08:28:31Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+394,189,218.624483,211.366667,218.716667,OK,"",2026-03-15T08:28:31Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,491,754.114720,683.450000,700.450000,OK,"",2026-03-15T08:28:32Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,062,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:32Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+559,190,356.378127,345.183333,326.850000,OK,"",2026-03-15T08:28:33Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,429,716.611240,656.333333,673.433333,OK,"",2026-03-15T08:28:33Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+299,291,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:34Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+209,489,589.988219,524.600000,528.466667,OK,"",2026-03-15T08:28:34Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,171,314.452348,283.633333,283.650000,OK,"",2026-03-15T08:28:35Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+209,201,349.664211,333.933333,339.716667,OK,"",2026-03-15T08:28:35Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+041,061,,,,ERROR_NO_DISTANCE,"{}",2026-03-15T08:28:35Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+262,189,263.420996,252.800000,251.933333,OK,"",2026-03-15T08:28:35Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+559,179,369.858153,320.400000,321.233333,OK,"",2026-03-15T08:28:36Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+394,399,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:37Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+249,429,164.826165,172.766667,179.200000,OK,"",2026-03-15T08:28:37Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+460,279,395.789837,404.433333,407.266667,OK,"",2026-03-15T08:28:37Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+513,519,150.478704,149.316667,155.500000,OK,"",2026-03-15T08:28:38Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+409,209,260.572009,227.566667,226.500000,OK,"",2026-03-15T08:28:38Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,299,306.964825,301.683333,304.466667,OK,"",2026-03-15T08:28:38Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+131,132,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:39Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+399,392,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:39Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+065,061,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:40Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+551,171,369.858153,320.366667,321.233333,OK,"",2026-03-15T08:28:40Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+183,399,209.858178,214.000000,222.216667,OK,"",2026-03-15T08:28:40Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+190,209,446.960376,404.700000,408.666667,OK,"",2026-03-15T08:28:41Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+179,559,370.142741,318.983333,319.683333,OK,"",2026-03-15T08:28:41Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+061,063,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:41Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
+123,129,,,,ERROR_NO_DISTANCE,"{
+  ""routes"": [
+    {
+      ""duration"": ""0s"",
+      ""staticDuration"": ""0s""
+    }
+  ]
+}",2026-03-15T08:28:42Z,google_routes_v2_shell_traffic,TRAFFIC_AWARE_OPTIMAL
