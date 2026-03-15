@@ -119,7 +119,8 @@ fi
 # ── Run configuration ─────────────────────────────────────────────────────
 SEED=${SEED:-$((RANDOM + 16000))}
 N=${N:-200}
-BATCH_NUM=1
+BATCH_NUM=0
+SESSION_TOTAL_RUNS=0
 
 run_batch() {
   local SEED="$1"
@@ -246,9 +247,12 @@ run_batch() {
   local END_TIME=$(date +%s)
   local DURATION=$(( (END_TIME - START_TIME) / 60 ))
 
+  SESSION_TOTAL_RUNS=$((SESSION_TOTAL_RUNS + TOTAL_RUNS))
+
   echo ""
   echo -e "  ${GREEN}${BOLD}BATCH #${BATCH_NUM} COMPLETE${RESET}"
   echo -e "  Runs produced:  ${BOLD}${TOTAL_RUNS}${RESET}"
+  echo -e "  Session total:  ${BOLD}${SESSION_TOTAL_RUNS}${RESET}"
   echo -e "  Duration:       ${BOLD}${DURATION} minutes${RESET}"
   echo -e "  Seed:           ${BOLD}${SEED}${RESET}"
   echo ""
@@ -347,6 +351,7 @@ run_scenario() {
 export -f run_scenario
 
 # ── Run first batch ────────────────────────────────────────────────────────
+BATCH_NUM=1
 run_batch "$SEED" "$N" "$BATCH_NUM"
 
 # ── Interactive loop: offer to run more ────────────────────────────────────
@@ -378,11 +383,36 @@ while true; do
       run_batch "$SEED" "$N" "$BATCH_NUM"
       ;;
     3|"")
-      banner "Thank you for contributing!"
-      echo -e "  Your simulation runs help advance transportation"
-      echo -e "  emissions research at UC Davis."
+      CONTRIBUTOR="$(git config user.name 2>/dev/null || whoami)"
+      DATE_STR="$(date -u +"%B %d, %Y")"
+
       echo ""
-      echo -e "  ${DIM}Results submitted automatically as pull requests.${RESET}"
+      echo ""
+      echo -e "${CYAN}    +----------------------------------------------------------+${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     ${BOLD}${GREEN}Cold-Chain Freight Monte Carlo${RESET}                        ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     ${DIM}UC Davis Transportation Research${RESET}                      ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                 ---- * * * ----                           ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}              ${BOLD}\"I DID MY PART\"${RESET}                             ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     This certifies that                                  ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}       ${BOLD}${GREEN}${CONTRIBUTOR}${RESET}                                       ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     contributed ${BOLD}${SESSION_TOTAL_RUNS}${RESET} Monte Carlo simulation runs    ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     across ${BOLD}${BATCH_NUM}${RESET} batch(es) to advance research on        ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     freight emissions under alternative powertrain        ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     and spatial distribution scenarios.                   ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                 ---- * * * ----                           ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     ${DIM}${DATE_STR}${RESET}                                    ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}     ${DIM}Results submitted as pull request(s)${RESET}               ${CYAN}|${RESET}"
+      echo -e "${CYAN}    |${RESET}                                                          ${CYAN}|${RESET}"
+      echo -e "${CYAN}    +----------------------------------------------------------+${RESET}"
+      echo ""
       echo -e "  ${DIM}To run more later: bash tools/codespace_autorun.sh${RESET}"
       echo ""
       exit 0
