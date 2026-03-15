@@ -1,7 +1,10 @@
 {
   "name": "coldchain-freight-montecarlo",
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "postCreateCommand": "bash .devcontainer/postCreate.sh && Rscript scripts/bootstrap.R",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "postCreateCommand": "mkdir -p sources/data/osm outputs && echo 'Ready for simulation'",
   "mounts": [
     "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/home/codespace/.cache/R/renv,type=bind,consistency=cached"
   ],
@@ -9,9 +12,7 @@
     "vscode": {
       "extensions": [
         "REditorSupport.r",
-        "quarto.quarto",
         "ms-python.python",
-        "ms-toolsai.jupyter",
         "timonwong.shellcheck"
       ],
       "settings": {
