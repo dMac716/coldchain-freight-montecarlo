@@ -10,19 +10,17 @@ website:
       - href: index.qmd
         text: Home
       - href: viz/flow_map.qmd
-        text: Flow Map
+        text: Route Map
       - href: viz/scenario_explorer.qmd
         text: Scenario Explorer
-      - href: route_sim_animation.qmd
-        text: Route Simulator
       - href: viz/transport_results.qmd
         text: Transport Results
       - href: methodology_results.qmd
-        text: Methodology & Results
-      - href: team_runs.qmd
-        text: Team Runs
-      - href: repo_system_guide.qmd
-        text: System Guide
+        text: Methodology
+      - href: route_sim_animation.qmd
+        text: Animations
+      - href: contribute.qmd
+        text: Contribute Compute
 
 format:
   html:

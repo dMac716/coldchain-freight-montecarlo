@@ -1,0 +1,136 @@
+---
+title: "Contribute Compute"
+---
+
+::: {.hero}
+# Help Us Run Simulations
+
+This research project needs Monte Carlo simulation runs across thousands of seeds and four scenario dimensions. You can contribute compute power using GitHub Codespaces --- no local setup required.
+
+::: {.cta-row}
+[Open a Codespace](#codespace-quickstart){.btn-pill}
+[macOS Setup](#macos-quickstart){.btn-pill}
+[View Results](viz/transport_results.qmd){.btn-pill}
+:::
+:::
+
+## What We Are Computing { .section-title }
+
+::: {.panel}
+Each simulation run models a refrigerated dog food freight shipment from a distribution facility to a retail store under realistic conditions:
+
+- **4 scenario combinations**: (dry vs refrigerated) x (diesel vs BEV powertrain)
+- **Paired-origin design**: centralized (Topeka, KS) vs regionalized (Ennis, TX) distribution
+- **Stochastic traffic**: time-of-day speed variation, incident delays, charging queues
+- **Full cold-chain physics**: TRU power draw, BEV charging stops, HOS rest breaks
+
+Each worker runs `n=200-500` Monte Carlo draws per scenario, producing `1,600-4,000` paired runs per batch.
+The functional unit is **kg CO2e per 1,000 kcal delivered to retail**.
+:::
+
+## Codespace Quickstart { .section-title #codespace-quickstart }
+
+::: {.panel}
+**Time**: ~5 minutes setup, then runs autonomously.
+**Cost**: Free with GitHub education or included Codespace hours.
+
+1. **Fork** this repository to your GitHub account
+2. Click **Code > Codespaces > Create codespace on `hotfix/derived-bootstrap-fix`**
+3. Wait for the environment to build (~3-5 minutes)
+4. Open a terminal and run:
+
+```bash
+N=200 SEED=$((RANDOM + 16000)) bash tools/codespace_run_production.sh
+```
+
+That's it. The script validates the environment, then runs all 4 scenarios with your unique seed.
+
+**For maximum throughput** (runs 2 scenarios in parallel):
+
+```bash
+export R_LIBS_USER="$HOME/.local/share/R/site-library"
+mkdir -p sources/data/osm outputs
+SEED=$((RANDOM + 16000))
+STAMP="contribution_seed${SEED}_$(hostname -s)"
+
+# Worker A: dry scenarios (background)
+nohup bash -c "
+  for PW in diesel bev; do
+    Rscript tools/run_route_sim_mc.R --config test_kit.yaml \
+      --scenario ANALYSIS_CORE --product_type dry --powertrain \$PW \
+      --paired_origin_networks true --traffic_mode stochastic \
+      --n 200 --seed $SEED --artifact_mode summary_only \
+      --bundle_root outputs/run_bundle/${STAMP}/dry_\${PW} \
+      --summary_out outputs/run_bundle/${STAMP}/dry_\${PW}/summary.csv \
+      --runs_out outputs/run_bundle/${STAMP}/dry_\${PW}/runs.csv
+  done
+" > /tmp/worker_A.log 2>&1 &
+
+# Worker B: refrigerated scenarios (background)
+nohup bash -c "
+  for PW in diesel bev; do
+    Rscript tools/run_route_sim_mc.R --config test_kit.yaml \
+      --scenario ANALYSIS_CORE --product_type refrigerated --powertrain \$PW \
+      --paired_origin_networks true --traffic_mode stochastic \
+      --n 200 --seed $SEED --artifact_mode summary_only \
+      --bundle_root outputs/run_bundle/${STAMP}/refrigerated_\${PW} \
+      --summary_out outputs/run_bundle/${STAMP}/refrigerated_\${PW}/summary.csv \
+      --runs_out outputs/run_bundle/${STAMP}/refrigerated_\${PW}/runs.csv
+  done
+" > /tmp/worker_B.log 2>&1 &
+
+echo "Running. Monitor: tail -f /tmp/worker_A.log"
+```
+:::
+
+## macOS Quickstart { .section-title #macos-quickstart }
+
+::: {.panel}
+**Requirements**: macOS with Homebrew (or willingness to install it). ~2 min setup if R is already installed.
+
+```bash
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+The script installs R (via Homebrew), required packages, validates the derived data, runs a smoke test, and launches production.
+
+Monitor progress: `tail -f /tmp/coldchain_worker.log`
+:::
+
+## How Results Are Used { .section-title }
+
+::: {.panel}
+Each run produces paired comparisons (centralized vs regionalized distribution) under Common Random Numbers (CRN), enabling statistically fair scenario deltas. Results are aggregated across all contributors to build convergent distributions of:
+
+- Transport CO2 emissions per functional unit
+- Trip duration and driver hours
+- BEV charging frequency and delay
+- Diesel refueling patterns
+- Cold-chain energy burden breakdown
+
+These feed the graduate-level analysis documented in the [Methodology](methodology_results.qmd) page.
+:::
+
+## Uploading Results { .section-title }
+
+::: {.panel}
+After your run completes, the results are in `outputs/run_bundle/`. To share them:
+
+**Option 1 --- GitHub Issue** (simplest): Tar the output and attach to an issue:
+
+```bash
+cd ~/coldchain-repo  # or /workspaces/coldchain-freight-montecarlo in Codespace
+tar czf my_results.tar.gz outputs/run_bundle/
+# Attach my_results.tar.gz to a GitHub issue on this repo
+```
+
+**Option 2 --- GCS upload** (if you have `gsutil` configured):
+
+```bash
+GCS_BUCKET=coldchain-freight-sources N=200 SEED=20001 \
+bash tools/worker_run_and_upload.sh
+```
+:::

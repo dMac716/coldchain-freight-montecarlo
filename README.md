@@ -1,15 +1,28 @@
 # Coldchain Freight Monte Carlo
 
-Distributed Monte Carlo simulation for refrigerated dog food freight impacts under a locked research scope.
+Distributed Monte Carlo simulation for refrigerated dog food freight emissions under alternative spatial and powertrain scenarios. Graduate-level transportation policy research at UC Davis.
 
-## Local-Only Runtime Note
-This branch is configured for local-only execution with pre-installed data (including large map artifacts).
+## Contribute Compute
 
-- External contribution/data features are currently disabled:
-  - BigQuery/GCS publish and refresh workflows
-  - External dataset sync/download scripts
-  - Optional FAF BigQuery ingestion pipeline
-- Core simulation remains active for local deterministic runs.
+We need Monte Carlo simulation runs. You can help by running simulations in a GitHub Codespace:
+
+1. **Fork** this repository
+2. **Create a Codespace** on the `hotfix/derived-bootstrap-fix` branch
+3. Run: `N=200 SEED=$((RANDOM + 16000)) bash tools/codespace_run_production.sh`
+
+Or on any Mac:
+```bash
+git clone --branch hotfix/derived-bootstrap-fix \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+See [Contribute Compute](https://dmac716.github.io/coldchain-freight-montecarlo/contribute.html) for full instructions.
+
+## Current Status
+
+Production runs active across GCP, Azure, Codespace, and local workers using traffic-aware Google Routes data (`TRAFFIC_AWARE_OPTIMAL`). All route geometry, OD caches, and BEV charging plans use the fixed shell-based pipeline (bypassing R `system2()` header mangling that caused 403 errors).
 
 Project scope updated to match proposal PDF (March 2026):
 - `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`
