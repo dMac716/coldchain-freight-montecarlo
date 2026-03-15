@@ -33,16 +33,18 @@ while IFS= read -r src; do
 done < <(grep -R -l 'dl.yarnpkg.com/debian' /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true)
 
 # Install current R from CRAN rather than Ubuntu's older distro package.
+# Detect Ubuntu codename for the correct CRAN repo line.
+UBUNTU_CODENAME="$(lsb_release -cs 2>/dev/null || echo focal)"
 sudo install -d -m 0755 /etc/apt/keyrings
 if [[ ! -f /etc/apt/keyrings/cran.gpg ]]; then
   curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
     | gpg --dearmor \
     | sudo tee /etc/apt/keyrings/cran.gpg >/dev/null
 fi
+CRAN_REPO="deb [signed-by=/etc/apt/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu ${UBUNTU_CODENAME}-cran40/"
 if [[ ! -f /etc/apt/sources.list.d/cran-r.list ]] \
-  || ! grep -q 'cloud.r-project.org/bin/linux/ubuntu focal-cran40/' /etc/apt/sources.list.d/cran-r.list; then
-  echo "deb [signed-by=/etc/apt/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" \
-    | sudo tee /etc/apt/sources.list.d/cran-r.list >/dev/null
+  || ! grep -qF "${UBUNTU_CODENAME}-cran40/" /etc/apt/sources.list.d/cran-r.list; then
+  echo "$CRAN_REPO" | sudo tee /etc/apt/sources.list.d/cran-r.list >/dev/null
 fi
 
 # ---------------------------------------------------------------------------
