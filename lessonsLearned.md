@@ -103,3 +103,61 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - `bev_route_plans.csv` must be treated as cache-like derived state tied to the current routes file. When routes change, stale BEV plan coverage causes silent fallback behavior in BEV runs unless preflight regenerates and revalidates the plans.
 - Avoid multiple ambiguous repo checkouts on the same VM (`~/coldchain-freight-montecarlo` vs `~/work/coldchain-freight-montecarlo`). Pick one canonical path per runner and launch only from that checkout.
 - Do not assume per-VM env helper files like `~/.config/gcloud/coldchain-freight-ttp211.env` exist. Launch paths should work with either that file or an already-activated service account.
+
+## March 15, 2026 — Google Routes shell migration
+
+- R's `system2("curl", ...)` and `httr` mangle multi-word HTTP headers. `Authorization: Bearer <token>` gets split so "Bearer" is treated as a hostname, producing 403 errors. Direct bash `curl` with `-H` as separate shell args is the only reliable path.
+- All Google Routes API scripts were migrated from R to bash (`route_precompute_google.sh`, `build_google_routes_cache_traffic.sh`). The R versions are deprecated with `stop()` messages.
+- Traffic-aware routing (`TRAFFIC_AWARE_OPTIMAL`) requires three headers: `Authorization: Bearer`, `X-Goog-User-Project`, and `X-Goog-Api-Key`. Missing any one silently fails or returns 403.
+- Auto-acquire tokens via `gcloud auth print-access-token` in scripts rather than requiring the user to export `TOKEN`. Tokens expire after ~60 minutes.
+
+## March 15, 2026 — Multi-cloud worker fleet operations
+
+### GCP (Google Cloud)
+- `e2-standard-4` (16GB) can OOM on refrigerated BEV scenarios with `n=500`. Use `e2-standard-8` (32GB).
+- SSH drops kill `Rscript` unless launched via `nohup`. Always wrap sim commands in `nohup bash -c '...' > log 2>&1 &`.
+- GCP CPU quota is per-project (32 vCPU default). Terminated VMs still consume quota until deleted.
+- Image the disk of a working VM (`gcloud compute images create`) for instant cloning. Can only image stopped VMs.
+- `worker_run_and_upload.sh` pattern: run sim → tar → `gsutil cp` to GCS → clean local. This is the only reliable way to get results off ephemeral VMs.
+- Queue multiple batch loops with different seed blocks using flag files (`/tmp/weekend_queued.flag`) to prevent duplicate queuing.
+
+### Azure
+- Azure for Students: 6 vCPU regional limit per subscription, region-locked by policy (only `westus2` allowed on education subs).
+- Use multiple subscriptions to multiply quota (6 vCPU x 2 subs = 12 vCPU).
+- `Standard_B2s` may fail on some subs; try `Standard_B2s_v2` (different VM family, same 2 vCPU).
+- Azure CLI 2.84 has a bug that swallows quota-exceeded errors as `RuntimeError: The content for this response was already consumed`. Always check `az vm list` after a failed create to see if it actually succeeded.
+- `az vm generalize` + `az image create --hyper-v-generation V2` for Gen2 VMs.
+- Stage repo as tarball via SCP, not git clone — faster and avoids auth issues on fresh VMs.
+
+### Codespace
+- `postCreateCommand` runs during build. If R install takes too long, the Codespace times out or the build gets cached without R.
+- The `universal:2` base image is Ubuntu 20.04 (focal). Building a custom Dockerfile failed silently on Codespaces (fell back to Alpine). Stick with `"image": "universal:2"` and install R in `postCreateCommand`.
+- Codespace idle timeout wipes the container filesystem. Results must be committed/pushed or tarred before the user walks away.
+- `$RANDOM` in bash gives 0-32767 — sufficient for seed uniqueness across contributor Codespaces (collision probability negligible at our scale).
+- Auto-submit results as PRs using `gh pr create` — the `gh` CLI is pre-authenticated in every Codespace.
+- Run 2 parallel sim workers on 4-core Codespaces (dry + refrigerated in parallel). 8-core can handle 3.
+
+### Camber Cloud
+- Ubuntu 22.04 container, non-root user `camber`. No `sudo`, no `apt-get`.
+- Stash files mount to `/home/camber/workdir/` (not `/input/`). Job `--path` maps directly to the working directory.
+- No R pre-installed. No conda. Spack is present but its environment is locked — `spack install --add r` hits concretizer conflicts.
+- **Install R via micromamba** (works without root):
+  ```bash
+  curl -fsSL https://micro.mamba.pm/api/micromamba/linux-64/latest | tar xj bin/micromamba
+  export MAMBA_ROOT_PREFIX=/tmp/mamba
+  /tmp/bin/micromamba create -y -n sim -c conda-forge r-base r-data.table r-optparse r-yaml r-jsonlite r-digest
+  /tmp/bin/micromamba run -n sim Rscript my_script.R
+  ```
+- Cannot use `micromamba activate` in job scripts (subprocess shell). Must use `micromamba run -n sim <cmd>`.
+- `tar xzf` in workdir fails if stash already has files with the same names. Always extract to `/tmp/`.
+- R compile from source fails due to missing zlib headers (no root to install them). Micromamba is the only path.
+- "small" tier = 96 CPUs. R is single-threaded for our sim, so the CPUs don't help throughput directly, but micromamba install and R package compilation are faster.
+- Job results must be written to `/home/camber/workdir/` to persist in stash after job completion.
+- Camber API key can be set via `--api-key` flag or `CAMBER_API_KEY` env var.
+
+### General multi-cloud lessons
+- Assign non-overlapping seed blocks to each cloud/worker to guarantee unique runs. Use large gaps (1000+) between blocks.
+- Every worker script should tar results after each batch — crash-resilient incremental output.
+- `packing_efficiency` was missing from `test_kit.yaml`, causing `cases_per_pallet_draw=0` and a warning on every run. Always validate config completeness with a smoke test before scaling up.
+- The `sources/data/osm` directory is expected but optional. Create it as an empty placeholder (`mkdir -p sources/data/osm`) to suppress warnings.
+- For contributor-facing scripts, detect the OS and install R appropriately (Alpine: `apk`, Ubuntu: `apt`, macOS: `brew`). Never assume a specific package manager.
