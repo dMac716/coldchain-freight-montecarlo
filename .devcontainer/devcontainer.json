@@ -1,9 +1,6 @@
 {
   "name": "coldchain-freight-montecarlo",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
-  },
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
   "postCreateCommand": "bash tools/codespace_autorun.sh",
   "mounts": [
     "source=${localWorkspaceFolder}/.devcontainer/r-pkg-cache,target=/home/codespace/.cache/R/renv,type=bind,consistency=cached"

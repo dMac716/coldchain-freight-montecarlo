@@ -22,8 +22,29 @@ echo "[autorun] Detected $CPUS CPU cores"
 
 # ── Ensure R and packages are installed ─────────────────────────────────────
 if ! command -v Rscript >/dev/null 2>&1; then
-  echo "[autorun] R not found — running postCreate bootstrap"
-  bash .devcontainer/postCreate.sh
+  echo "[autorun] R not found — installing"
+  export DEBIAN_FRONTEND=noninteractive
+  if command -v apk >/dev/null 2>&1; then
+    # Alpine
+    sudo apk add --no-cache R R-dev curl-dev openssl-dev jq gawk bash 2>&1 | tail -3
+  elif command -v apt-get >/dev/null 2>&1; then
+    # Ubuntu/Debian — disable stale Yarn source, add CRAN repo
+    for src in $(grep -R -l 'dl.yarnpkg.com/debian' /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true); do
+      sudo sed -i '/dl\.yarnpkg\.com\/debian/{/^#/!s/^/# disabled: /}' "$src"
+    done
+    CODENAME="$(lsb_release -cs 2>/dev/null || echo focal)"
+    sudo install -d -m 0755 /etc/apt/keyrings
+    curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
+      | gpg --dearmor | sudo tee /etc/apt/keyrings/cran.gpg >/dev/null
+    echo "deb [signed-by=/etc/apt/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu ${CODENAME}-cran40/" \
+      | sudo tee /etc/apt/sources.list.d/cran-r.list >/dev/null
+    sudo apt-get update -qq
+    sudo apt-get install -y -qq r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev jq gawk 2>&1 | tail -3
+  else
+    echo "[autorun] ERROR: no supported package manager (need apk or apt-get)"
+    exit 1
+  fi
+  echo "[autorun] R installed: $(Rscript --version 2>&1)"
 fi
 
 # Check packages — install if missing (handles image cache miss)
