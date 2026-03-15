@@ -2,27 +2,52 @@
 
 Distributed Monte Carlo simulation for refrigerated dog food freight emissions under alternative spatial and powertrain scenarios. Graduate-level transportation policy research at UC Davis.
 
-## Contribute Compute
+## Help Us Reach 250,000 Simulation Runs
 
-We need Monte Carlo simulation runs. You can help by running simulations in a GitHub Codespace:
+We need compute power. **Opening a Codespace automatically starts running simulations** --- no commands needed.
 
-1. **Fork** this repository
-2. **Create a Codespace** on the `hotfix/derived-bootstrap-fix` branch
-3. Run: `N=200 SEED=$((RANDOM + 16000)) bash tools/codespace_run_production.sh`
+### One-click Codespace (easiest)
 
-Or on any Mac:
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dMac716/coldchain-freight-montecarlo?ref=hotfix/derived-bootstrap-fix)
+
+That's it. The Codespace builds, validates the environment, and auto-launches simulations sized to your VM:
+
+| Codespace size | Parallel workers | Runs per session |
+|---------------|:----------------:|:----------------:|
+| 2-core | 1 | ~1,600 |
+| 4-core | 2 | ~1,600 |
+| 8-core | 3 | ~1,600 |
+
+Monitor progress: `tail -f /tmp/autorun_A.log`
+
+When done, tar and attach results to an [issue](https://github.com/dMac716/coldchain-freight-montecarlo/issues):
 ```bash
-git clone --branch hotfix/derived-bootstrap-fix \
+tar czf my_results.tar.gz outputs/run_bundle/
+```
+
+### macOS (any Mac with Homebrew)
+
+```bash
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
   https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
 cd ~/coldchain-repo
 N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
 ```
 
-See [Contribute Compute](https://dmac716.github.io/coldchain-freight-montecarlo/contribute.html) for full instructions.
+Installs R, validates data, launches production. ~2 min setup.
+
+### What gets computed
+
+Each run models a refrigerated dog food shipment from factory to retail under realistic conditions:
+- 4 scenario combos: (dry / refrigerated) x (diesel / BEV powertrain)
+- Paired-origin design with Common Random Numbers for fair comparisons
+- Stochastic traffic, BEV charging queues, HOS rest breaks, cold-chain physics
+
+**Functional unit**: kg CO2e per 1,000 kcal delivered to retail.
 
 ## Current Status
 
-Production runs active across GCP, Azure, Codespace, and local workers using traffic-aware Google Routes data (`TRAFFIC_AWARE_OPTIMAL`). All route geometry, OD caches, and BEV charging plans use the fixed shell-based pipeline (bypassing R `system2()` header mangling that caused 403 errors).
+Production runs active across 9 workers (GCP, Azure, Codespace, local) using traffic-aware Google Routes data. Target: 250,000 paired MC runs by Monday March 17.
 
 Project scope updated to match proposal PDF (March 2026):
 - `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`
