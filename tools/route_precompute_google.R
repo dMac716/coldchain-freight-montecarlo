@@ -1,4 +1,28 @@
 #!/usr/bin/env Rscript
+#
+# DEPRECATED — 2026-03-15
+#
+# This R script used system2("curl", ...) to call the Google Routes API.
+# R's system2() mangles multi-word HTTP headers: "Authorization: Bearer <token>"
+# gets split so "Bearer" is treated as a hostname, producing 403 errors.
+#
+# Use the shell replacement instead:
+#   bash tools/route_precompute_google.sh --routing_preference TRAFFIC_AWARE_OPTIMAL
+#
+# The shell script also adds traffic-aware routing support (duration_s_static).
+
+stop(paste(
+  "tools/route_precompute_google.R is DEPRECATED due to R system2() header mangling",
+  "causing 403 errors with the Google Routes API.",
+  "",
+  "Use the shell replacement:",
+  "  bash tools/route_precompute_google.sh \\",
+  "    --routing_preference TRAFFIC_AWARE_OPTIMAL \\",
+  "    --output data/derived/routes_facility_to_petco.csv",
+  "",
+  "See tools/route_precompute_google.sh header for full usage.",
+  sep = "\n"
+))
 
 suppressPackageStartupMessages({
   library(optparse)

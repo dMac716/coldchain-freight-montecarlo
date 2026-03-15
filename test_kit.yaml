@@ -336,6 +336,40 @@ test_kit:
           min: 38000
           mode: 43000
           max: 45000
+    pallet:
+      length_in: 48
+      width_in: 40
+      clearance_xy_in: 1.0
+      clearance_z_in: 2.0
+      max_stack_height_in:
+        dry: 84
+        refrigerated: 72
+      packing_efficiency:
+        distribution:
+          type: triangular
+          min: 0.85
+          mode: 0.95
+          max: 1.00
+    packaging:
+      pallet_tare_lb:
+        distribution:
+          type: triangular
+          min: 35
+          mode: 45
+          max: 55
+      case_tare_lb:
+        dry:
+          distribution:
+            type: triangular
+            min: 1.5
+            mode: 2.0
+            max: 3.0
+        refrigerated:
+          distribution:
+            type: triangular
+            min: 0.8
+            mode: 1.2
+            max: 1.8
     products:
       dry:
         unit_name: "bag_30lb"

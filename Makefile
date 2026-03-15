@@ -45,6 +45,7 @@ STATION_ANCHOR_STEP  ?= 40
 STATION_RADIUS_M     ?= 30000
 STATION_MIN_KW       ?= 0
 STATION_CONNECTOR_TYPES ?=
+ROUTING_PREFERENCE   ?= TRAFFIC_AWARE_OPTIMAL
 
 # -- Route simulation ---------------------------------------------------------
 SIM_FACILITY         ?= FACILITY_REFRIG_ENNIS
@@ -78,6 +79,7 @@ SITE_RUNS_N  ?= 50
   pilot-congestion-run summarize-charging-events render-charging-plots compare-charger-scenarios \
   route-sim route-sim-mc route-sim-coord route-sim-summary \
   bq setup-bq publish-run refresh-site-bq \
+  route-chain distances-petco routes-petco elevation ev-stations-cache bev-route-plans \
   derive-ui ui proposal
 
 # ===========================================================================
@@ -218,8 +220,8 @@ check-run-metadata: ## Cross-check metadata consistency for one run (RUN_DIR req
 distances-petco: ## Compute road distances from facility to Petco Davis/Covell (PROVIDER)
 	Rscript tools/compute_road_distance_fixed_destination.R --provider $(PROVIDER) --retail_id PETCO_DAVIS_COVELL --profile driving --output data/derived/road_distance_facility_to_retail.csv
 
-routes-petco: ## Pre-compute Google routes to Petco (ROUTE_ALTS)
-	Rscript tools/route_precompute_google.R --retail_id PETCO_DAVIS_COVELL --route_alts $(ROUTE_ALTS) --output data/derived/routes_facility_to_petco.csv
+routes-petco: ## Pre-compute Google routes to Petco (ROUTE_ALTS, ROUTING_PREFERENCE)
+	bash tools/route_precompute_google.sh --retail_id PETCO_DAVIS_COVELL --route_alts $(ROUTE_ALTS) --routing_preference $(ROUTING_PREFERENCE) --output data/derived/routes_facility_to_petco.csv
 
 elevation: ## Sample elevation profiles along routes (ROUTE_SAMPLE_M)
 	Rscript tools/elevation_profile_google.R --routes data/derived/routes_facility_to_petco.csv --sample_m $(ROUTE_SAMPLE_M) --output data/derived/route_elevation_profiles.csv
@@ -229,6 +231,11 @@ ev-stations-cache: ## Cache EV charging stations along corridor (STATION_* vars)
 
 bev-route-plans: ## Compute BEV charging route plans (requires routes + stations cache)
 	Rscript tools/route_precompute_bev_with_charging_google.R --routes data/derived/routes_facility_to_petco.csv --stations data/derived/ev_charging_stations_corridor.csv --output data/derived/bev_route_plans.csv
+
+route-chain: ## Regenerate full route chain: routes → stations → BEV plans (traffic-aware)
+	$(MAKE) routes-petco ROUTING_PREFERENCE=$(ROUTING_PREFERENCE) ROUTE_ALTS=$(ROUTE_ALTS)
+	$(MAKE) ev-stations-cache
+	$(MAKE) bev-route-plans
 
 # ===========================================================================
 ##@ Route simulation  (SIM_* variables)

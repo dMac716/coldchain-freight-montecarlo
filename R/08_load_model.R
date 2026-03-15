@@ -105,6 +105,7 @@ sample_product_packaging <- function(seed, product_type, test_kit) {
   pallet_tare_lb_draw <- as.numeric(sim_pick_distribution(pkg$pallet_tare_lb, rng = rng))
   case_tare_lb_draw <- as.numeric(sim_pick_distribution(pkg$case_tare_lb[[pt]], rng = rng))
   packing_efficiency_draw <- as.numeric(sim_pick_distribution(pal$packing_efficiency, rng = rng))
+  if (!is.finite(packing_efficiency_draw)) packing_efficiency_draw <- 1.0
 
   pallet_L <- as.numeric(pal$length_in %||% 48)
   pallet_W <- as.numeric(pal$width_in %||% 40)
