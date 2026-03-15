@@ -10,8 +10,8 @@
 
 We are running a large-scale Monte Carlo simulation and need compute power. **You can help by opening a GitHub Codespace** -- it automatically starts running simulations. No setup, no commands, no configuration.
 
-> **UC Davis students**: You get free Codespace hours through GitHub Education.
-> If you haven't already, [apply for GitHub Education benefits](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student) using your `@ucdavis.edu` email. Approval is usually instant and gives you **90 core-hours/month** of free Codespace compute -- enough to run thousands of simulations for this project.
+> **Students at UC Davis, De Anza, and other California colleges**: You get free Codespace hours through GitHub Education.
+> If you haven't already, [apply for GitHub Education benefits](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student) using your `.edu` email. Approval is usually instant and gives you **90 core-hours/month** of free Codespace compute -- enough to run thousands of simulations for this project.
 
 ### Step 1: Click this button
 
@@ -121,7 +121,9 @@ Results upload to Google Cloud Storage after each batch. All workers use traffic
 
 ---
 
-## Alternative: Run on Your Mac
+## Alternative: Run on Your Own Computer
+
+### macOS
 
 ```bash
 git clone --branch hotfix/derived-bootstrap-fix --single-branch \
@@ -131,6 +133,44 @@ N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.s
 ```
 
 Installs R via Homebrew, validates data, launches production. ~2 minutes to start producing runs.
+
+### Linux (Ubuntu/Debian)
+
+```bash
+sudo apt-get install -y r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev jq gawk
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+### Windows (via WSL)
+
+1. Install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install): open PowerShell as admin and run `wsl --install`
+2. Open the Ubuntu terminal that WSL installs, then:
+
+```bash
+sudo apt-get update && sudo apt-get install -y r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev jq gawk git
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+### Submitting results from your computer
+
+After your runs complete, submit them as a pull request (requires [GitHub CLI](https://cli.github.com/)):
+
+```bash
+cd ~/coldchain-repo
+gh auth login                # one-time setup
+bash tools/submit_results.sh # auto-creates branch + PR with your results
+```
+
+Or manually tar and attach to an [issue](https://github.com/dMac716/coldchain-freight-montecarlo/issues):
+```bash
+tar czf my_results.tar.gz outputs/run_bundle/
+```
 
 ---
 
