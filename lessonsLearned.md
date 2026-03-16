@@ -161,3 +161,18 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - `packing_efficiency` was missing from `test_kit.yaml`, causing `cases_per_pallet_draw=0` and a warning on every run. Always validate config completeness with a smoke test before scaling up.
 - The `sources/data/osm` directory is expected but optional. Create it as an empty placeholder (`mkdir -p sources/data/osm`) to suppress warnings.
 - For contributor-facing scripts, detect the OS and install R appropriately (Alpine: `apk`, Ubuntu: `apt`, macOS: `brew`). Never assume a specific package manager.
+
+### Queue chaining / pgrep self-match bug (March 16, 2026)
+- `while pgrep -f run_route_sim_mc > /dev/null` inside a `nohup bash -c '...'` block matches **its own process command string**, causing the wait loop to exit immediately instead of waiting for the actual R process. This silently killed every queued follow-up batch on GCP and Azure overnight — an estimated 80,000 lost runs.
+- **Fix**: never use `pgrep -f <pattern>` to wait for a process when the wait script itself contains that pattern in its command string. Use a PID file, a flag file, or `wait $PID` instead. Or chain batches sequentially in one script rather than queuing a second script that waits for the first.
+- The safest pattern for multi-batch loops is a single `for SEED in ... ; do ... done` in one nohup, not separate nohup processes that try to detect when the previous one finished.
+- This bug affected every "queue more batches after current finishes" command issued via SSH. The direct marathon loops (single `for` in one nohup) worked correctly. Always prefer direct loops over layered wait-and-launch patterns.
+
+### Deepnote operational lessons (March 16, 2026)
+- "Unlimited projects" share underlying infrastructure. Launching 20 concurrent projects saturated network and caused git clone + R package install failures across all of them.
+- Stagger project launches: 5 at a time, wait for stabilization, then add more.
+- The R with Libs environment has R pre-installed but the system library is read-only. Packages must install to a user library (`/root/R_libs` or `~/R_libs`) and `R_LIBS` must be set on every `Rscript` invocation.
+- Lock file errors (`00LOCK-*`) persist from failed installs. Always `rm -rf /usr/local/lib/R/site-library/00LOCK-* /root/R_libs/00LOCK-*` before retrying.
+- Terminal line wrapping breaks long `Rscript` commands. Write a shell script file (`cat > /tmp/run.sh << 'EOF'`) instead of pasting inline commands.
+- Deepnote Python notebooks can shell out via `os.system()`, but R notebooks parse the cell as R. Use the terminal for bash workflows.
+- Set idle timeout to 24h in project settings to keep marathon runs alive.
