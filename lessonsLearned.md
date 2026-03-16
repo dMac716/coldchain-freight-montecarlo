@@ -176,3 +176,19 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - Terminal line wrapping breaks long `Rscript` commands. Write a shell script file (`cat > /tmp/run.sh << 'EOF'`) instead of pasting inline commands.
 - Deepnote Python notebooks can shell out via `os.system()`, but R notebooks parse the cell as R. Use the terminal for bash workflows.
 - Set idle timeout to 24h in project settings to keep marathon runs alive.
+- **Deepnote is unreliable for production runs.** Across every attempt (20+ projects, 2 marathon runs, multiple restarts), Deepnote produced zero durable results. Machines crash from OOM at 100% CPU, `/tmp` is wiped on recycle, the "R with Libs" environment has a read-only system library, and there's no way to auto-upload results to external storage. Use Deepnote only as a contributor-facing demo, not as a fleet worker.
+
+### Consolidation and result durability (March 16, 2026)
+- **Always upload results to GCS after each batch.** Local disk, Codespace filesystem, and Deepnote `/tmp` are all ephemeral. Only GCS and Camber stash survived across all sessions. The `worker_run_and_upload.sh` pattern (tar → gsutil → clean) is the only reliable path for cloud workers.
+- Azure and Codespace results must be explicitly pulled to GCS before killing VMs — they have no auto-upload mechanism. Use SCP to pull tarballs to local, then `gsutil cp` to GCS.
+- **Separate result buckets from legacy data.** All new traffic-aware results went to `gs://coldchain-freight-sources/runs/` which had no pre-fix data. Verify with timestamps before aggregating — every tarball should be dated March 15+ (post traffic-aware fix).
+- Codespace containers recycle aggressively. `nohup` processes do NOT survive Codespace restarts — the entire container is replaced. Results must be pushed to git or GCS before any batch completes, not after all batches finish. The auto-PR watchdog pattern was correct but the container died before any batch completed.
+- GCP `worker_run_and_upload.sh` is the gold standard: run → tar → gsutil upload → clean local. It auto-uploads after each batch and survived every failure mode. All other platforms should replicate this pattern.
+- When shutting down the fleet, pull results to GCS first, then kill VMs. Order matters — deallocated VMs lose their IP and become unreachable for SCP.
+
+### Fleet management lessons (March 15-16, 2026)
+- **Effective fleet**: GCP (4 workers, auto-upload) + Azure (4 workers, manual pull) + Local Mac + Camber (9 batch jobs). These produced all 169,600+ verified runs.
+- **Ineffective fleet**: Codespace (containers recycle, lost all results) + Deepnote (machines crash, zero durable output). These consumed significant debugging time for zero return.
+- The total human time spent debugging Deepnote and Codespace failures exceeded the compute value they could have delivered. For future projects: validate one complete end-to-end cycle on a new platform before scaling to multiple workers.
+- Camber's 96-CPU "small" tier burns CPU-hours at 96x rate. A 2-hour wall-clock job costs 192 CPU-hours of the 200-hour student budget. Plan Camber jobs carefully — they're sprint capacity, not sustained workers.
+- GCP disk images (`coldchain-worker-traffic-aware-v1`) eliminated all bootstrap time for new workers. Every cloud platform should have an equivalent image/snapshot mechanism. Azure image creation worked. Codespace Dockerfile builds failed silently. Deepnote has no image mechanism.
