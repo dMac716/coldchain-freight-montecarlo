@@ -1,9 +1,19 @@
 # GitHub Copilot Instructions
 
+## REQUIRED READING — Do This First
+
+Before making any changes, read these files in order:
+
+1. **`lessonsLearned.md`** — Critical operational bugs and fixes from production. Includes: the pgrep self-match bug that silently killed 80k overnight runs, R system2() header mangling that caused weeks of Google Routes 403 errors, multi-cloud deployment pitfalls (GCP, Azure, Codespace, Camber, Deepnote), and the shell-only API policy. **Failing to read this will cause you to repeat costly mistakes.**
+2. **`AI_CONTRACT.md`** — Core modeling invariants that must never change without human review.
+3. **`CONTRIBUTING.md`** — System boundary, functional unit, aggregation rules, regression policy.
+
+---
+
 This repository implements a distributed Monte Carlo simulation modeling the greenhouse gas
 emissions and cost of refrigerated dog-food freight under alternative spatial and powertrain
 scenarios. Simulation runs are split into independent chunks across multiple compute lanes
-(local, GitHub Codespaces, GCP VMs) and merged via histogram aggregation.
+(local, GitHub Codespaces, GCP VMs, Azure, Camber, Deepnote) and merged via histogram aggregation.
 
 ---
 

@@ -1,0 +1,9 @@
+scenario,product_type,network,powertrain,expected_tarballs,unique_runs,completeness
+dry_centralized_diesel,dry,Centralized,diesel,57,1726,complete
+dry_centralized_bev,dry,Centralized,bev,56,1105,low_sample
+dry_regionalized_diesel,dry,Regionalized,diesel,57,1726,complete
+dry_regionalized_bev,dry,Regionalized,bev,56,1105,low_sample
+refrig_centralized_diesel,refrigerated,Centralized,diesel,53,21634,complete
+refrig_centralized_bev,refrigerated,Centralized,bev,53,21155,complete
+refrig_regionalized_diesel,refrigerated,Regionalized,diesel,53,21634,complete
+refrig_regionalized_bev,refrigerated,Regionalized,bev,53,21155,complete

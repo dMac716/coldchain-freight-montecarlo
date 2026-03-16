@@ -5,135 +5,140 @@ title: "Cold-Chain Freight Monte Carlo"
 ::: {.hero}
 # Cold-Chain Freight Monte Carlo
 
-Static, reproducible analysis site for transport + LCI comparisons across dry vs refrigerated product flows and diesel vs BEV scenarios.
+Distributed Monte Carlo simulation of greenhouse gas emissions for refrigerated dog food freight under alternative spatial and powertrain scenarios.
 
-`Latest validated transport refresh: 2026-03-09 (local_chunked_run)`  
-`Validation gates: PASS`
+`Latest production run: traffic_aware_v1 (2026-03-15) | TRAFFIC_AWARE_OPTIMAL routing`
+`Functional unit: kg CO2e / 1,000 kcal delivered to retail`
 
 ::: {.cta-row}
-[Methodology & Results](methodology_results.qmd){.btn-pill}
+[Methodology](methodology_results.qmd){.btn-pill}
+[Route Map](viz/flow_map.qmd){.btn-pill}
 [Transport Results](viz/transport_results.qmd){.btn-pill}
-[Animation Gallery](route_sim_animation.qmd){.btn-pill}
-[Scenario Explorer](viz/scenario_explorer.qmd){.btn-pill}
+[Contribute Compute](contribute.qmd){.btn-pill}
 :::
 :::
 
 ::: {.kpi-grid}
 ::: {.kpi-card}
-<div class="kpi-label">Latest Run ID</div>
-<div class="kpi-value">local_chunked_run</div>
-Low-memory chunked production
+<div class="kpi-label">Scenario Dimensions</div>
+<div class="kpi-value">2 x 2 x 2</div>
+Spatial x Powertrain x Product
 :::
 
 ::: {.kpi-card}
-<div class="kpi-label">Replicates</div>
-<div class="kpi-value">20</div>
-Validated + checkpointed (`CHUNK_SIZE=2`)
+<div class="kpi-label">Facilities</div>
+<div class="kpi-value">2</div>
+Topeka KS (dry) + Ennis TX (refrigerated)
 :::
 
 ::: {.kpi-card}
-<div class="kpi-label">Scenario Rows</div>
-<div class="kpi-value">80</div>
-4 scenarios x 20 replicates
+<div class="kpi-label">Routing</div>
+<div class="kpi-value">Traffic-Aware</div>
+Google Routes TRAFFIC_AWARE_OPTIMAL
 :::
 
 ::: {.kpi-card}
-<div class="kpi-label">Animation Bundle</div>
-<div class="kpi-value">6 files</div>
-3 MP4 + 3 preview frames
+<div class="kpi-label">Workers</div>
+<div class="kpi-value">9</div>
+GCP + Azure + Codespace + local
 :::
+:::
+
+## Study Design { .section-title }
+
+::: {.panel}
+This simulation compares the lifecycle transport emissions of two distribution strategies for dog food products under diesel and battery-electric (BEV) powertrains:
+
+| Dimension | Levels |
+|-----------|--------|
+| **Spatial** | Centralized (Topeka, KS) vs Regionalized (Ennis, TX) |
+| **Powertrain** | Diesel Cascadia vs BEV eCascadia |
+| **Product** | Dry (kibble) vs Refrigerated (fresh/frozen) |
+| **Traffic** | Stochastic (time-of-day variation, incidents) |
+
+Each paired draw uses **Common Random Numbers** (CRN) --- exogenous uncertainty is sampled once per seed, then both spatial networks are evaluated with the same draw, enabling statistically fair delta estimation.
 :::
 
 ## Explore { .section-title }
 
 ::: {.grid-2}
 ::: {.quick-card}
-### Methodology and Initial Results
-Start here for model pipeline, validation status, and initial figures.
+### Route Map
+Interactive map of actual driving routes from both facilities to Davis, CA with traffic-aware durations.
 
-[Open Methodology & Results](methodology_results.qmd)
-:::
-
-::: {.quick-card}
-### Scenario Explorer
-Interactive, artifact-driven scenario table and filters.
-
-[Open Scenario Explorer](viz/scenario_explorer.qmd)
-:::
-
-::: {.quick-card}
-### Flow Map
-Static map from derived FAF flow artifacts.
-
-[Open Flow Map](viz/flow_map.qmd)
+[Open Route Map](viz/flow_map.qmd)
 :::
 
 ::: {.quick-card}
 ### Transport Results
-Compiled transport outputs and supporting visuals.
+Monte Carlo distributions, paired comparisons, and diagnostic figures.
 
 [Open Transport Results](viz/transport_results.qmd)
 :::
 
 ::: {.quick-card}
+### Scenario Explorer
+Filter and sort individual simulation runs by scenario, powertrain, and origin.
+
+[Open Scenario Explorer](viz/scenario_explorer.qmd)
+:::
+
+::: {.quick-card}
+### Methodology
+Study design, input assumptions, validation gates, and scientific results.
+
+[Open Methodology](methodology_results.qmd)
+:::
+
+::: {.quick-card}
 ### Animation Gallery
-Play route and evolution animations directly in-page with download fallback bundles.
+Route replay animations for diesel vs BEV trips, MC convergence evolution.
 
-[Open Animation Gallery](route_sim_animation.qmd)
-:::
-:::
-
-## Direct Links { .section-title }
-
-If a browser cache or stale tab blocks navigation, open pages directly:
-
-- [Methodology & Results](methodology_results.qmd)
-- [Transport Results](viz/transport_results.qmd)
-- [Animation Gallery](route_sim_animation.qmd)
-
-## Reproducibility { .section-title }
-
-::: {.panel}
-### Runtime Model
-
-- No live services are queried during page rendering.
-- Pages consume committed/generated artifacts from `outputs/distribution/distribution_davis_fu_final/` and generated site assets.
-- Works for local render and GitHub Pages publishing.
-
-<span class="badge-soft">Offline-first</span>
-<span class="badge-soft">Artifact-driven</span>
-<span class="badge-soft">Deterministic snapshot</span>
+[Open Animations](route_sim_animation.qmd)
 :::
 
-## Quick Start { .section-title }
+::: {.quick-card}
+### Contribute Compute
+Help the project by running simulations in your GitHub Codespace or on your Mac.
 
-```bash
-git clone https://github.com/dMac716/coldchain-freight-montecarlo.git
-cd coldchain-freight-montecarlo
-bash tools/smoke_test.sh
-quarto render site/
-```
-
-## Codespaces Path { .section-title }
-
-```bash
-# postCreate installs core deps
-Rscript -e 'testthat::test_dir("tests/testthat")'
-bash tools/build_presentation_artifacts.sh --skip-runs --with-animation
-bash tools/validate_final_artifacts.sh
-quarto render site/
-```
+[How to Help](contribute.qmd)
+:::
+:::
 
 ## Pipeline Overview { .section-title }
 
 ```{mermaid}
 flowchart LR
   A[data/inputs_local/*.csv] --> B[R/01_validate.R]
-  B --> C[R/sim/* route simulation + paired uncertainty]
-  C --> D[tools/run_distribution_fu_pipeline.sh]
-  D --> E[outputs/distribution/distribution_davis_fu_final]
-  E --> F[tools/generate_distribution_fu_site_figures.R]
-  F --> G[site/assets/transport/*]
-  G --> H[site/*]
-  H --> I[docs/* GitHub Pages]
+  B --> C[R/sim/* route simulation]
+  C --> D[tools/run_route_sim_mc.R]
+  D --> E[outputs/run_bundle/]
+  E --> F[GCS upload]
+  F --> G[Aggregate + analyze]
+  G --> H[site/ Quarto pages]
+  H --> I[docs/ GitHub Pages]
+```
+
+## Reproducibility { .section-title }
+
+::: {.panel}
+- All pages consume committed artifacts --- no live services queried during rendering
+- Every simulation run records `model_version`, `inputs_hash`, `RNG seed`, and `timestamp`
+- Route geometry uses Google Routes API with `TRAFFIC_AWARE_OPTIMAL` via direct shell `curl`
+- Derived data files are committed to the repository for offline reproducibility
+
+<span class="badge-soft">Offline-first</span>
+<span class="badge-soft">Artifact-driven</span>
+<span class="badge-soft">Deterministic under fixed seed</span>
+:::
+
+## Quick Start { .section-title }
+
+```bash
+git clone --branch hotfix/derived-bootstrap-fix \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git
+cd coldchain-freight-montecarlo
+make test          # Run testthat suite
+make smoke         # End-to-end smoke test
+quarto render site/  # Build this site locally
 ```

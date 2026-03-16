@@ -1,10 +1,10 @@
 ---
-title: "FAF OD Flow Map"
+title: "Route Map: Factory to Retail"
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 if (!requireNamespace("leaflet", quietly = TRUE)) {
-  cat("<p><em>Leaflet package is not available in this render environment. Map rendering skipped.</em></p>")
+  cat("<p><em>Leaflet package not available. Map rendering skipped.</em></p>")
   knitr::knit_exit()
 }
 suppressPackageStartupMessages({
@@ -13,144 +13,180 @@ suppressPackageStartupMessages({
   library(htmltools)
 })
 
+# Source route geometry decoder
+for (f in list.files("../../R", pattern = "\\.R$", full.names = TRUE)) {
+  tryCatch(source(f, local = TRUE), error = function(e) NULL)
+}
+
 pick_path <- function(paths) {
   for (p in paths) if (file.exists(p)) return(p)
   ""
 }
 
-flows_path <- pick_path(c(
-  "../../data/derived/faf_top_od_flows.csv",
-  "../data/derived/faf_top_od_flows.csv",
-  "data/derived/faf_top_od_flows.csv"
-))
-zones_path <- pick_path(c(
-  "../../data/derived/faf_zone_centroids.csv",
-  "../data/derived/faf_zone_centroids.csv",
-  "data/derived/faf_zone_centroids.csv"
+routes_path <- pick_path(c(
+  "../../data/derived/routes_facility_to_petco.csv",
+  "../data/derived/routes_facility_to_petco.csv",
+  "data/derived/routes_facility_to_petco.csv"
 ))
 
-if (!nzchar(flows_path) || !nzchar(zones_path)) {
-  cat("<p><em>Flow map data not yet generated. Run <code>tools/derive_ui_artifacts.R</code> before rendering.</em></p>")
+facilities_path <- pick_path(c(
+  "../../data/inputs_local/facilities.csv",
+  "../data/inputs_local/facilities.csv"
+))
+
+retail_path <- pick_path(c(
+  "../../data/inputs_local/retail_nodes.csv",
+  "../data/inputs_local/retail_nodes.csv"
+))
+
+if (!nzchar(routes_path)) {
+  cat("<p><em>Route data not found. Run <code>bash tools/route_precompute_google.sh</code> to generate routes.</em></p>")
   knitr::knit_exit()
 }
 
-flows <- if (nzchar(flows_path)) utils::read.csv(flows_path, stringsAsFactors = FALSE) else data.frame()
-zones <- if (nzchar(zones_path)) utils::read.csv(zones_path, stringsAsFactors = FALSE) else data.frame()
+routes <- utils::read.csv(routes_path, stringsAsFactors = FALSE)
 
-if (nrow(flows) == 0 || nrow(zones) == 0) {
-  cat("<p><em>Flow map data not yet generated. Run <code>tools/derive_ui_artifacts.R</code> before rendering.</em></p>")
-  knitr::knit_exit()
+# Facility metadata
+fac <- if (nzchar(facilities_path)) utils::read.csv(facilities_path, stringsAsFactors = FALSE) else data.frame()
+ret <- if (nzchar(retail_path)) utils::read.csv(retail_path, stringsAsFactors = FALSE) else data.frame()
+
+# Decode polylines into lat/lon paths
+decode_route <- function(encoded_polyline) {
+  tryCatch(decode_polyline(encoded_polyline), error = function(e) NULL)
 }
 
-required_flows <- c("origin_id", "dest_id", "tons", "ton_miles", "distance_miles", "commodity_group", "scenario_id")
-required_zones <- c("zone_id", "name", "lat", "lon")
-missing_flows <- setdiff(required_flows, names(flows))
-missing_zones <- setdiff(required_zones, names(zones))
-if (length(missing_flows) > 0) stop("faf_top_od_flows.csv missing required columns: ", paste(missing_flows, collapse = ", "))
-if (length(missing_zones) > 0) stop("faf_zone_centroids.csv missing required columns: ", paste(missing_zones, collapse = ", "))
-
-zones$zone_id <- as.character(zones$zone_id)
-flows$origin_id <- as.character(flows$origin_id)
-flows$dest_id <- as.character(flows$dest_id)
-
-orig <- zones[match(flows$origin_id, zones$zone_id), c("zone_id", "name", "lat", "lon")]
-dest <- zones[match(flows$dest_id, zones$zone_id), c("zone_id", "name", "lat", "lon")]
-names(orig) <- c("origin_id_ref", "origin_name", "lat1", "lon1")
-names(dest) <- c("dest_id_ref", "dest_name", "lat2", "lon2")
-edges <- cbind(flows, orig, dest)
-for (nm in c("lat1", "lon1", "lat2", "lon2")) edges[[nm]] <- suppressWarnings(as.numeric(edges[[nm]]))
-edges <- edges[is.finite(edges$lat1) & is.finite(edges$lon1) & is.finite(edges$lat2) & is.finite(edges$lon2), , drop = FALSE]
-
-if (nrow(edges) == 0) {
-  cat("<p><em>No mappable edges found in UI artifacts.</em></p>")
-  knitr::knit_exit()
-}
-
-rank_desc <- function(x) rank(-x, ties.method = "first")
-edges$rank_tons <- ave(edges$tons, edges$scenario_id, FUN = rank_desc)
-edges$rank_tmiles <- ave(edges$ton_miles, edges$scenario_id, FUN = rank_desc)
-edges$w <- 1 + 6 * (edges$tons / max(edges$tons, na.rm = TRUE))
-edges$class_name <- paste0(
-  "flow-edge ",
-  "scen-", gsub("[^A-Za-z0-9]", "-", toupper(edges$scenario_id)), " ",
-  "rt-", edges$rank_tons, " ",
-  "rm-", edges$rank_tmiles
+# Color scheme: Topeka (dry) = blue, Ennis (refrigerated) = orange
+fac_colors <- c(
+  FACILITY_DRY_TOPEKA = "#0d4f8f",
+  FACILITY_REFRIG_ENNIS = "#e97a28"
 )
-pal <- colorFactor(c("#1b9e77", "#d95f02"), domain = unique(edges$scenario_id))
+fac_labels <- c(
+  FACILITY_DRY_TOPEKA = "Topeka, KS (Dry)",
+  FACILITY_REFRIG_ENNIS = "Ennis, TX (Refrigerated)"
+)
 
-# Approximate great-circle arc between OD centroids for geographic-looking paths.
-great_circle_points <- function(lat1, lon1, lat2, lon2, n = 24L) {
-  to_rad <- function(x) x * pi / 180
-  to_deg <- function(x) x * 180 / pi
-  lat1r <- to_rad(lat1); lon1r <- to_rad(lon1)
-  lat2r <- to_rad(lat2); lon2r <- to_rad(lon2)
-
-  p1 <- c(cos(lat1r) * cos(lon1r), cos(lat1r) * sin(lon1r), sin(lat1r))
-  p2 <- c(cos(lat2r) * cos(lon2r), cos(lat2r) * sin(lon2r), sin(lat2r))
-  omega <- acos(max(-1, min(1, sum(p1 * p2))))
-  if (!is.finite(omega) || abs(omega) < 1e-10) {
-    return(data.frame(lat = c(lat1, lat2), lon = c(lon1, lon2)))
-  }
-
-  t <- seq(0, 1, length.out = max(2L, as.integer(n)))
-  so <- sin(omega)
-  xyz <- vapply(t, function(tt) {
-    a <- sin((1 - tt) * omega) / so
-    b <- sin(tt * omega) / so
-    v <- a * p1 + b * p2
-    v / sqrt(sum(v * v))
-  }, numeric(3))
-  xyz <- t(xyz)
-  lat <- to_deg(asin(xyz[, 3]))
-  lon <- to_deg(atan2(xyz[, 2], xyz[, 1]))
-  data.frame(lat = lat, lon = lon)
-}
-
-map <- leaflet() |>
-  addProviderTiles("OpenStreetMap.Mapnik")
-
-for (i in seq_len(nrow(edges))) {
-  e <- edges[i, , drop = FALSE]
-  popup_txt <- sprintf(
-    "<b>%s → %s</b><br/>Scenario: %s<br/>Tons: %.2f<br/>Ton-miles: %.2f<br/>Distance: %.1f mi",
-    e$origin_name, e$dest_name, e$scenario_id, e$tons, e$ton_miles, e$distance_miles
+# Only show rank-1 routes (primary) with full opacity; alternatives lighter
+map <- leaflet(width = "100%", height = "620px") |>
+  addProviderTiles("CartoDB.Positron", group = "Light") |>
+  addProviderTiles("OpenStreetMap.Mapnik", group = "Street") |>
+  addProviderTiles("Esri.NatGeoWorldMap", group = "Terrain") |>
+  addLayersControl(
+    baseGroups = c("Light", "Street", "Terrain"),
+    options = layersControlOptions(collapsed = FALSE)
   )
-  arc <- great_circle_points(e$lat1, e$lon1, e$lat2, e$lon2, n = 24L)
+
+for (i in seq_len(nrow(routes))) {
+  r <- routes[i, , drop = FALSE]
+  pts <- decode_route(as.character(r$encoded_polyline))
+  if (is.null(pts) || nrow(pts) < 2) next
+
+  fid <- as.character(r$facility_id)
+  col <- fac_colors[fid] %||% "#666666"
+  label <- fac_labels[fid] %||% fid
+  is_primary <- as.integer(r$route_rank) == 1L
+  dist_mi <- round(as.numeric(r$distance_m) / 1609.344)
+  dur_h <- round(as.numeric(r$duration_s) / 3600, 1)
+  dur_static_h <- round(as.numeric(r$duration_s_static) / 3600, 1)
+  pref <- as.character(r$routing_preference)
+
+  popup_txt <- sprintf(
+    paste0(
+      "<b>%s</b><br/>",
+      "<b>Route %d</b> to Petco Davis<br/>",
+      "Distance: %s mi<br/>",
+      "Duration: %s h (traffic) / %s h (static)<br/>",
+      "Routing: %s"
+    ),
+    label, r$route_rank, format(dist_mi, big.mark = ","),
+    dur_h, dur_static_h, pref
+  )
+
   map <- map |>
     addPolylines(
-      lng = arc$lon,
-      lat = arc$lat,
-      color = pal(e$scenario_id),
-      weight = e$w,
-      opacity = 0.55,
-      options = pathOptions(className = e$class_name),
-      popup = popup_txt
+      lng = pts$lon, lat = pts$lat,
+      color = col,
+      weight = if (is_primary) 4 else 2,
+      opacity = if (is_primary) 0.85 else 0.35,
+      dashArray = if (is_primary) NULL else "8,6",
+      popup = popup_txt,
+      group = label
     )
 }
 
-map <- map |>
-  addLegend("bottomright", pal = pal, values = unique(edges$scenario_id), title = "Scenario", opacity = 1)
+# Add facility markers
+if (nrow(fac) > 0) {
+  for (j in seq_len(nrow(fac))) {
+    f <- fac[j, , drop = FALSE]
+    fid <- as.character(f$facility_id)
+    col <- fac_colors[fid] %||% "#333"
+    lab <- fac_labels[fid] %||% fid
+    map <- map |>
+      addCircleMarkers(
+        lng = as.numeric(f$lon), lat = as.numeric(f$lat),
+        radius = 10, color = col, fillColor = col, fillOpacity = 0.9,
+        stroke = TRUE, weight = 2,
+        popup = sprintf("<b>%s</b><br/>%s, %s<br/>%.4f, %.4f",
+                        lab, f$city, f$state, f$lat, f$lon)
+      )
+  }
+}
 
-google_maps_api_key <- trimws(Sys.getenv("GOOGLE_MAPS_API_KEY", unset = ""))
-if (nzchar(google_maps_api_key)) {
+# Add retail marker
+if (nrow(ret) > 0) {
+  r <- ret[1, , drop = FALSE]
   map <- map |>
-    prependContent(
-      tags$script(src = paste0("https://maps.googleapis.com/maps/api/js?key=", google_maps_api_key)),
-      tags$script(src = "https://unpkg.com/leaflet.gridlayer.googlemutant@0.14.1/Leaflet.GoogleMutant.js")
-    ) |>
-    onRender(
-      "function(el, x) {
-         var m = this;
-         if (!(window.google && L && L.gridLayer && L.gridLayer.googleMutant)) return;
-         var osm = [];
-         m.eachLayer(function(layer) {
-           if (layer && layer._url && layer._url.indexOf('openstreetmap') !== -1) osm.push(layer);
-         });
-         osm.forEach(function(layer) { m.removeLayer(layer); });
-         L.gridLayer.googleMutant({ type: 'roadmap' }).addTo(m);
-       }"
+    addCircleMarkers(
+      lng = as.numeric(r$lon), lat = as.numeric(r$lat),
+      radius = 10, color = "#d62728", fillColor = "#d62728", fillOpacity = 0.9,
+      stroke = TRUE, weight = 2,
+      popup = sprintf("<b>%s</b><br/>%s, %s<br/>Retail destination",
+                      r$retail_id, r$city, r$state)
     )
 }
+
+# Add legend
+map <- map |>
+  addLegend(
+    "bottomright",
+    colors = c(fac_colors, "#d62728"),
+    labels = c(fac_labels, "Petco Davis (Retail)"),
+    title = "Locations",
+    opacity = 1
+  )
 
 map
 ```
+
+::: {.panel}
+### Route Details
+
+This map displays the actual Google Routes API driving routes from each distribution facility to the retail destination (Petco, Davis CA). Routes are computed with **TRAFFIC_AWARE_OPTIMAL** routing preference, providing both traffic-adjusted and static (free-flow) durations.
+
+- **Blue routes**: Topeka, KS (dry product facility) --- 1,712 miles
+- **Orange routes**: Ennis, TX (refrigerated product facility) --- 1,774 miles
+- **Solid lines**: Primary (rank 1) route; **dashed**: alternative routes
+- Click any route segment for distance, duration, and routing metadata
+
+These routes are the geometric basis for the BEV charging waypoint plans and the Monte Carlo transport simulation.
+:::
+
+::: {.panel}
+### FAF Freight Flow Context
+
+The simulation also draws from USDA Freight Analysis Framework (FAF5) origin-destination flow data to model realistic distance distributions for the centralized and regionalized spatial scenarios.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+flows_path <- pick_path(c(
+  "../../data/derived/faf_top_od_flows.csv",
+  "../data/derived/faf_top_od_flows.csv"
+))
+if (nzchar(flows_path)) {
+  flows <- utils::read.csv(flows_path, stringsAsFactors = FALSE)
+  cat(sprintf("- **%d** origin-destination pairs from FAF5\n", nrow(flows)))
+  cat(sprintf("- Scenarios: %s\n", paste(unique(flows$scenario_id), collapse = ", ")))
+  cat(sprintf("- Distance range: %.0f -- %.0f miles\n", min(flows$distance_miles, na.rm = TRUE), max(flows$distance_miles, na.rm = TRUE)))
+} else {
+  cat("FAF flow data not available.\n")
+}
+```
+:::

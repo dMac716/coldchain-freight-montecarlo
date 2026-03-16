@@ -1,0 +1,3 @@
+facility_id,lat,lon,city,state,description
+FACILITY_DRY_TOPEKA,39.067150,-95.655820,Topeka,KS,Dry goods distribution facility
+FACILITY_REFRIG_ENNIS,32.344240,-96.614300,Ennis,TX,Refrigerated distribution facility

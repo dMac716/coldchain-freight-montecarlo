@@ -67,6 +67,7 @@ runs/smoke_local_*/
 runs/smoke_codespace_*/
 runs/smoke_gcp_*/
 contrib/chunks/
+# contrib/results/ is NOT ignored — contributor PRs push results there
 data/cache/
 
 # local ad-hoc R library (used for manual installs)
@@ -97,9 +98,16 @@ sources/FAF5.7.1/FAF5.7.1_HiLoForecasts/
 sources/FAF5.7.1/FAF5.7.1_State_2018-2024/
 sources/FAF5.7.1/FAF5.7.1_State_HiLoForecasts/
 
+# GCP service account credential files — NEVER COMMIT
+*-bd1a9a178049.json
+*.credentials.json
+*-service-account*.json
+
 # macOS filesystem metadata
 .DS_Store
 **/.DS_Store
+._*
+**/._*
 
 # local duplicate proposal PDF (tracked canonical copy lives under sources/pdfs/)
 TTP Final Project -Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf

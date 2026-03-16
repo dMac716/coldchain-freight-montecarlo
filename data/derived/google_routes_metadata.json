@@ -1,8 +1,11 @@
 {
-  "generated_at_utc": "2026-02-17T05:26:32Z",
-  "api_provider": "google_routes_v2",
+  "generated_at_utc": "2026-03-15T08:28:42Z",
+  "api_provider": "google_routes_v2_shell_traffic",
+  "auth_mode_requested": "oauth_shell_exact",
+  "auth_mode_used": "oauth_shell_exact",
+  "user_project": "coldchain-freight-ttp211",
   "dry_run": false,
-  "pairs_requested": 244,
-  "pairs_ok": 0,
-  "pairs_error": 244
+  "pairs_requested": 639,
+  "pairs_ok": 123,
+  "pairs_error": 516
 }

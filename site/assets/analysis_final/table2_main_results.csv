@@ -1,0 +1,9 @@
+product_type,network_label,powertrain,n,mean_co2_1000kcal,median_co2_1000kcal,p05_co2_1000kcal,p95_co2_1000kcal,mean_co2_kg_protein,mean_distance_mi,mean_duration_h,mean_driving_h,mean_co2_total_kg,mean_co2_propulsion_kg,mean_co2_tru_kg,mean_refrig_share
+dry,Centralized,bev,1105,0.0041,0.0038,0.002,0.0075,0.0934,132.6,2.73,2.71,131.91,131.91,0,0
+dry,Centralized,diesel,1726,0.0283,0.0259,0.0166,0.0483,0.6423,615.2,12.65,12.53,900.68,900.68,0,0
+dry,Regionalized,bev,1105,0.0041,0.0038,0.002,0.0075,0.0936,132.9,2.74,2.71,132.3,132.3,0,0
+dry,Regionalized,diesel,1726,0.0283,0.0259,0.0165,0.049,0.6434,616.1,12.66,12.55,901.93,901.93,0,0
+refrigerated,Centralized,bev,21155,0.0062,0.0056,0.003,0.0115,0.0563,119.6,2.46,2.44,131.26,118.72,12.54,0.0956
+refrigerated,Centralized,diesel,21634,0.048,0.0442,0.0274,0.0828,0.4346,616.4,12.65,12.54,1014.62,900.46,114.16,0.1129
+refrigerated,Regionalized,bev,21155,0.0063,0.0057,0.003,0.0115,0.0566,120.3,2.48,2.46,132.14,119.52,12.62,0.0956
+refrigerated,Regionalized,diesel,21634,0.0481,0.0442,0.0274,0.0829,0.4351,617.1,12.66,12.55,1015.81,901.51,114.3,0.1129

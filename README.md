@@ -1,15 +1,178 @@
-# Coldchain Freight Monte Carlo
+# Cold-Chain Freight Monte Carlo
 
-Distributed Monte Carlo simulation for refrigerated dog food freight impacts under a locked research scope.
+> **Distributed Monte Carlo simulation comparing diesel vs battery-electric freight emissions for refrigerated dog food distribution**
+>
+> Graduate transportation policy research -- UC Davis, March 2026
 
-## Local-Only Runtime Note
-This branch is configured for local-only execution with pre-installed data (including large map artifacts).
+---
 
-- External contribution/data features are currently disabled:
-  - BigQuery/GCS publish and refresh workflows
-  - External dataset sync/download scripts
-  - Optional FAF BigQuery ingestion pipeline
-- Core simulation remains active for local deterministic runs.
+## We Need Your Help: Click One Button to Contribute
+
+We are running a large-scale Monte Carlo simulation and need compute power. **You can help by opening a GitHub Codespace** -- it automatically starts running simulations. No setup, no commands, no configuration.
+
+> **Students at UC Davis, De Anza, and other California colleges**: You get free Codespace hours through GitHub Education.
+> If you haven't already, [apply for GitHub Education benefits](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student) using your `.edu` email. Approval is usually instant and gives you **90 core-hours/month** of free Codespace compute -- enough to run thousands of simulations for this project.
+
+### Step 1: Click this button
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dMac716/coldchain-freight-montecarlo?ref=hotfix/derived-bootstrap-fix)
+
+### Step 2: Wait (~5 minutes)
+
+The environment builds, installs R, validates data, and starts simulations automatically. You'll see a live progress display:
+
+```
+======================================================
+  Cold-Chain Freight Monte Carlo
+======================================================
+
+  Distributed simulation for refrigerated dog food freight emissions
+  UC Davis Graduate Transportation Research
+
+  CPU cores:  4
+  Lane:       codespace
+
+Setting up environment...
+  [ok] R 4.5.2 found
+  [ok] R packages verified
+
+Validating simulation data...
+  [ok] google_routes_od_cache.csv
+  [ok] routes_facility_to_petco.csv
+  [ok] bev_route_plans.csv
+  [ok] OD cache schema (TRAFFIC_AWARE_OPTIMAL)
+
+Running smoke test...
+  [ok] Smoke test passed
+
+======================================================
+  Batch #1: seed=23456, n=200, 2 worker(s)
+======================================================
+
+  [===============>               ] 50%  |  2/4 scenarios  |  ~800 runs  |  28m12s
+```
+
+### Step 3: Results submit automatically
+
+When the batch finishes, your results are **automatically committed and submitted as a pull request** -- no action needed. You'll see a completion certificate:
+
+```
+  +----------------------------------------------------------+
+  |                                                          |
+  |     Cold-Chain Freight Monte Carlo                       |
+  |     UC Davis Transportation Research                     |
+  |                                                          |
+  |                 ---- * * * ----                           |
+  |                                                          |
+  |              "I DID MY PART"                              |
+  |                                                          |
+  |     contributed 1600 Monte Carlo simulation runs         |
+  |     across 1 batch(es) to advance research on            |
+  |     freight emissions under alternative powertrain        |
+  |     and spatial distribution scenarios.                   |
+  |                                                          |
+  |                 ---- * * * ----                           |
+  |                                                          |
+  +----------------------------------------------------------+
+```
+
+You can then choose to **run more batches** or stop.
+
+---
+
+## What This Simulates
+
+```
+  Topeka, KS                                        Davis, CA
+  (Dry goods)          1,712 miles                   (Petco retail)
+  ============ -------- Diesel vs BEV ---------> ============
+                   |                        |
+  Ennis, TX        |   Stochastic traffic   |
+  (Refrigerated)   |   Charging queues      |
+  ============     |   HOS rest breaks      |
+       1,774 mi    |   Cold-chain physics   |
+       ------------|------------------------|---> ============
+```
+
+| Dimension | Levels |
+|-----------|--------|
+| **Product** | Dry kibble vs Refrigerated fresh/frozen |
+| **Powertrain** | Diesel Cascadia vs BEV eCascadia (Class 8) |
+| **Spatial** | Centralized (Topeka KS) vs Regionalized (Ennis TX) |
+| **Traffic** | Stochastic (peak hours, incidents, speed variation) |
+
+Each simulation run uses **paired Common Random Numbers** -- the same stochastic draw is evaluated under both distribution networks, enabling statistically fair comparisons.
+
+**Functional unit**: kg CO2e per 1,000 kcal delivered to retail.
+
+---
+
+## Current Progress
+
+| Fleet | Workers | Completed Runs | Status |
+|-------|:-------:|---------------:|--------|
+| Google Cloud | 4 | ~68,000 | Running (weekend loop) |
+| Azure | 4 | ~11,000 | Running (marathon loop) |
+| Local Mac | 1 | ~15,000 | Running |
+| Codespace | 2 | ~8,000 | Running |
+| **Total** | **12** | **~94,000** | **Target: 250,000** |
+
+Results upload to Google Cloud Storage after each batch. All workers use traffic-aware Google Routes data (`TRAFFIC_AWARE_OPTIMAL`).
+
+---
+
+## Alternative: Run on Your Own Computer
+
+### macOS
+
+```bash
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+Installs R via Homebrew, validates data, launches production. ~2 minutes to start producing runs.
+
+### Linux (Ubuntu/Debian)
+
+```bash
+sudo apt-get install -y r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev jq gawk
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+### Windows (via WSL)
+
+1. Install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install): open PowerShell as admin and run `wsl --install`
+2. Open the Ubuntu terminal that WSL installs, then:
+
+```bash
+sudo apt-get update && sudo apt-get install -y r-base r-base-dev libcurl4-openssl-dev libssl-dev libxml2-dev jq gawk git
+git clone --branch hotfix/derived-bootstrap-fix --single-branch \
+  https://github.com/dMac716/coldchain-freight-montecarlo.git ~/coldchain-repo
+cd ~/coldchain-repo
+N=200 SEED=$((RANDOM + 20000)) AUTO_RUN=true bash tools/bootstrap_macos_worker.sh
+```
+
+### Submitting results from your computer
+
+After your runs complete, submit them as a pull request (requires [GitHub CLI](https://cli.github.com/)):
+
+```bash
+cd ~/coldchain-repo
+gh auth login                # one-time setup
+bash tools/submit_results.sh # auto-creates branch + PR with your results
+```
+
+Or manually tar and attach to an [issue](https://github.com/dMac716/coldchain-freight-montecarlo/issues):
+```bash
+tar czf my_results.tar.gz outputs/run_bundle/
+```
+
+---
 
 Project scope updated to match proposal PDF (March 2026):
 - `sources/pdfs/Transportation and Cold-Chain Implications of Refrigerated Dog Food Distribution Under Alternative Spatial and Powertrain Scenarios.pdf`

@@ -23,6 +23,9 @@
 #     data/inputs_local/products.csv
 #     data/inputs_local/emissions_factors.csv
 #     data/derived/faf_distance_distributions.csv
+#     data/derived/google_routes_od_cache.csv        (schema: routing_preference required)
+#     data/derived/google_routes_distance_distributions.csv
+#     data/derived/bev_route_plans.csv               (schema: routing_preference required)
 #   Config:
 #     config/canonical_run_matrix.csv
 #     test_kit.yaml
@@ -179,7 +182,7 @@ for csv in "${REQUIRED_INPUTS[@]}"; do
   fi
 done
 
-# data/derived
+# data/derived — baseline FAF distributions
 DERIVED_FILE="data/derived/faf_distance_distributions.csv"
 if [[ -f "$DERIVED_FILE" && -s "$DERIVED_FILE" ]]; then
   pass "$DERIVED_FILE" "inputs" "present ($(wc -l < "$DERIVED_FILE") rows)"
@@ -187,6 +190,56 @@ else
   fail "$DERIVED_FILE" "inputs" \
     "${DERIVED_FILE}: $([ -f "$DERIVED_FILE" ] && echo "empty" || echo "missing")" \
     "Generate via: make distances-petco  (requires network access) or restore from version control."
+fi
+
+# data/derived — Google Routes OD cache (required for FAF_DISTRIBUTION distance mode)
+OD_CACHE="data/derived/google_routes_od_cache.csv"
+if [[ -f "$OD_CACHE" && -s "$OD_CACHE" ]]; then
+  _od_rows=$(wc -l < "$OD_CACHE")
+  # Quick schema check: routing_preference column must be present (added by the
+  # traffic-aware cache builder; its absence means the old TRAFFIC_UNAWARE cache
+  # is installed and will fail the bootstrap QA gate).
+  if head -1 "$OD_CACHE" | grep -q "routing_preference"; then
+    pass "$OD_CACHE" "inputs" "present (${_od_rows} rows, schema OK)"
+  else
+    fail "$OD_CACHE" "inputs" \
+      "routing_preference column missing — old TRAFFIC_UNAWARE cache installed" \
+      "Regenerate: bash tools/run_google_routes_cache_pipeline.sh"
+  fi
+else
+  fail "$OD_CACHE" "inputs" \
+    "${OD_CACHE}: $([ -f "$OD_CACHE" ] && echo "empty" || echo "missing")" \
+    "Regenerate: TOKEN=\"\$(gcloud auth print-access-token)\" GOOGLE_MAPS_API_KEY=\"...\" bash tools/run_google_routes_cache_pipeline.sh"
+fi
+
+# data/derived — Google Routes distance distributions (produced alongside OD cache)
+OD_DIST="data/derived/google_routes_distance_distributions.csv"
+if [[ -f "$OD_DIST" && -s "$OD_DIST" ]]; then
+  pass "$OD_DIST" "inputs" "present ($(wc -l < "$OD_DIST") rows)"
+else
+  fail "$OD_DIST" "inputs" \
+    "${OD_DIST}: $([ -f "$OD_DIST" ] && echo "empty" || echo "missing")" \
+    "Regenerate: bash tools/run_google_routes_cache_pipeline.sh"
+fi
+
+# data/derived — BEV route plans (required for BEV powertrain lanes)
+BEV_PLANS="data/derived/bev_route_plans.csv"
+if [[ -f "$BEV_PLANS" && -s "$BEV_PLANS" ]]; then
+  _plans_rows=$(wc -l < "$BEV_PLANS")
+  # Check for the routing_preference column added in session 2 of the refactor.
+  # Its absence means plans were generated before the route_precompute fix and
+  # validate_bev_plans.R cannot assess routing provenance.
+  if head -1 "$BEV_PLANS" | grep -q "routing_preference"; then
+    pass "$BEV_PLANS" "inputs" "present (${_plans_rows} rows, schema OK)"
+  else
+    fail "$BEV_PLANS" "inputs" \
+      "routing_preference column missing — plans predate the schema update" \
+      "Regenerate: Rscript tools/route_precompute_bev_with_charging_google.R"
+  fi
+else
+  fail "$BEV_PLANS" "inputs" \
+    "${BEV_PLANS}: $([ -f "$BEV_PLANS" ] && echo "empty" || echo "missing")" \
+    "Regenerate: Rscript tools/route_precompute_bev_with_charging_google.R --routes data/derived/routes_facility_to_petco.csv --stations data/derived/ev_charging_stations_corridor.csv"
 fi
 
 # ---------------------------------------------------------------------------
