@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## REQUIRED READING — Do This First
+
+Before making any changes, read these files:
+
+1. **`lessonsLearned.md`** — Critical operational bugs and fixes. Includes the pgrep self-match bug that silently killed 80k overnight runs, Google Routes header mangling that caused weeks of 403 errors, and multi-cloud deployment pitfalls. **Read this even if you think you know what you're doing.**
+2. **`AI_CONTRACT.md`** — Invariants that must never change without human review.
+3. **`CONTRIBUTING.md`** — System boundary, functional unit, and aggregation rules.
+
 ## Project Overview
 
 Distributed Monte Carlo simulation for refrigerated dog food freight emissions under alternative spatial (CENTRALIZED/REGIONALIZED) and powertrain (diesel/BEV) scenarios. Research-grade R codebase supporting a graduate-level transportation and cold-chain implications study.
