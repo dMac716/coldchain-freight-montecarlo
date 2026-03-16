@@ -1,0 +1,9 @@
+id,product,spatial,powertrain,refrigeration,facility,destination
+1,Dry,Centralized,Diesel,None,Topeka KS,Davis CA
+2,Dry,Centralized,BEV,None,Topeka KS,Davis CA
+3,Refrigerated,Centralized,Diesel,Diesel TRU,Ennis TX,Davis CA
+4,Refrigerated,Centralized,BEV,Electric TRU,Ennis TX,Davis CA
+5,Dry,Regionalized,Diesel,None,Topeka KS,Davis CA
+6,Dry,Regionalized,BEV,None,Topeka KS,Davis CA
+7,Refrigerated,Regionalized,Diesel,Diesel TRU,Ennis TX,Davis CA
+8,Refrigerated,Regionalized,BEV,Electric TRU,Ennis TX,Davis CA

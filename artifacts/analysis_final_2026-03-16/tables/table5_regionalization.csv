@@ -1,0 +1,5 @@
+product_type,powertrain,mean_centralized,mean_regionalized,absolute_reduction,pct_reduction
+dry,diesel,0.02826,0.02831,-4.9e-05,-0.17
+dry,bev,0.00413,0.00414,-9e-06,-0.22
+refrigerated,diesel,0.04803,0.04809,-5.6e-05,-0.12
+refrigerated,bev,0.00622,0.00625,-3.6e-05,-0.59
