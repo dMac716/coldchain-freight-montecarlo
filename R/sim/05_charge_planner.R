@@ -1,9 +1,40 @@
 # Offline charger dataset contract and charging stop selection.
 
+normalize_charger_schema <- function(df) {
+  # Map station file columns to charge planner contract.
+  # The station cache (ev_charging_stations_corridor.csv) uses a different schema
+  # than the charge planner expects. This normalizer bridges both.
+  renames <- c(
+    station_id = "charger_id",
+    lon = "lng",
+    max_charge_rate_kw = "power_kw",
+    connector_types = "connector"
+  )
+  for (from in names(renames)) {
+    to <- renames[[from]]
+    if (from %in% names(df) && !to %in% names(df)) {
+      names(df)[names(df) == from] <- to
+    }
+  }
+  # Add missing columns with defaults if not present
+  if (!"reliability" %in% names(df)) df$reliability <- 0.95
+  if (!"access" %in% names(df)) df$access <- "public"
+  if (!"route_id" %in% names(df)) df$route_id <- NA_character_
+  if (!"corridor_id" %in% names(df)) df$corridor_id <- NA_character_
+  if (!"site_name" %in% names(df) && "name" %in% names(df)) {
+    names(df)[names(df) == "name"] <- "site_name"
+  }
+  n_chargers <- nrow(df)
+  if (n_chargers > 0) {
+    message(sprintf("[charge_planner] Loaded %d chargers (schema normalized)", n_chargers))
+  }
+  df
+}
+
 load_chargers <- function(path, format = "csv") {
   fmt <- tolower(format)
   if (!file.exists(path)) stop("Charger dataset missing: ", path)
-  if (fmt == "csv") return(utils::read.csv(path, stringsAsFactors = FALSE))
+  if (fmt == "csv") return(normalize_charger_schema(utils::read.csv(path, stringsAsFactors = FALSE)))
   if (fmt == "parquet") {
     if (!requireNamespace("arrow", quietly = TRUE)) stop("arrow package required for parquet chargers")
     return(as.data.frame(arrow::read_parquet(path), stringsAsFactors = FALSE))

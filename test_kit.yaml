@@ -505,6 +505,8 @@ test_kit:
     min_station_power_kw: 150
     max_detour_miles: 10
     selection_policy: "min_total_time"
+    allow_emergency_charge: true
+    max_emergency_charges: 50
     queue_delay_minutes:
       distribution:
         type: triangular
@@ -608,7 +610,7 @@ test_kit:
   # ---------------------------------
   time_sim:
     start_datetime_local: "2026-03-04T00:00:00"
-    duration_hours: 24
+    duration_hours: 240
     timestep_seconds: 60
 
   traffic:
