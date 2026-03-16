@@ -1,5 +1,17 @@
 # Repository Guidelines
 
+## REQUIRED READING — All AI Agents Must Read Before Any Changes
+
+**Stop. Read these files first:**
+
+1. **`lessonsLearned.md`** — Production bugs that cost real compute hours. The pgrep self-match bug killed 80k runs overnight. R system2() header mangling caused weeks of 403 errors. Multi-cloud pitfalls for GCP, Azure, Codespace, Camber, and Deepnote. **If you skip this, you will repeat these mistakes.**
+2. **`AI_CONTRACT.md`** — Invariants: system boundary, functional unit, histogram merge, emissions equations. Never change without human review.
+3. **`CONTRIBUTING.md`** — Aggregation rules, regression policy, test requirements.
+
+This applies to Claude Code, GitHub Copilot, ChatGPT, Codex, and any other AI assistant.
+
+---
+
 ## Project Structure & Module Organization
 - `R/`: core model and utilities.
   - `01_validate.R` input/mode gates
