@@ -1,0 +1,80 @@
+---
+title: "Scripts Reference"
+---
+
+## Simulation
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `tools/run_route_sim_mc.R` | Run paired MC transport simulation | `Rscript tools/run_route_sim_mc.R --config test_kit.yaml --scenario ANALYSIS_CORE --product_type dry --powertrain bev --n 500 --seed 42` |
+| `tools/run_route_sim.R` | Single route simulation run | `Rscript tools/run_route_sim.R --config test_kit.yaml` |
+| `tools/run_chunk.R` | Run a single Monte Carlo chunk | `Rscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOKE_LOCAL` |
+| `tools/run_local.R` | Convenience wrapper for local smoke runs | `Rscript tools/run_local.R` |
+| `tools/worker_run_and_upload.sh` | Run sim, tar results, upload to GCS, clean | `GCS_BUCKET=coldchain-freight-sources SEED=2001 N=20 bash tools/worker_run_and_upload.sh` |
+
+## Route & Data Pipeline
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `tools/route_precompute_google.sh` | Precompute facility-to-retail routes via Google Routes API | `GOOGLE_MAPS_API_KEY=... bash tools/route_precompute_google.sh` |
+| `tools/build_google_routes_cache_traffic.sh` | Build traffic-aware OD distance cache | `bash tools/build_google_routes_cache_traffic.sh` |
+| `tools/run_google_routes_cache_pipeline.sh` | Full OD cache pipeline (single entry point) | `bash tools/run_google_routes_cache_pipeline.sh` |
+| `tools/charging_stations_cache_google.R` | Cache EV charging station locations along corridors | `Rscript tools/charging_stations_cache_google.R` |
+| `tools/route_precompute_bev_with_charging_google.R` | Generate BEV charging waypoint plans | `Rscript tools/route_precompute_bev_with_charging_google.R` |
+| `tools/faf_extract_distances.R` | Extract FAF5 freight distance distributions | `Rscript tools/faf_extract_distances.R` |
+| `tools/preflight.R` | Validate inputs before simulation | `Rscript tools/preflight.R --mode SMOKE_LOCAL --scenario CENTRALIZED` |
+
+## Result Collection & Aggregation
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `tools/pull_worker_results.sh` | Pull run bundles from all GCP + Azure workers | `bash tools/pull_worker_results.sh --upload-gcs` |
+| `tools/merge_run_bundles.sh` | Merge and deduplicate summaries from all sources | `bash tools/merge_run_bundles.sh --include-local --output-dir artifacts/analysis` |
+| `tools/aggregate.R` | Merge histogram chunks within a run group | `Rscript tools/aggregate.R --run_group BASE --mode REAL_RUN` |
+| `tools/get_codespace_results.sh` | Poll Codespaces for completed run bundles | `bash tools/get_codespace_results.sh` |
+| `tools/submit_results.sh` | Submit results as a GitHub PR | `bash tools/submit_results.sh` |
+
+## Analysis & Validation
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `tools/audit_analysis.R` | Comprehensive R analysis with FU derivation, 10 figures, 5 tables | `Rscript tools/audit_analysis.R <input.csv> <output_dir>` |
+| `tools/validate_cross_platform_audit.R` | Compare analysis across LOCAL/GCS/Azure for proof of computation | `Rscript tools/validate_cross_platform_audit.R --local_csv data.csv --gcs_csv gcs.csv --outdir artifacts/validation` |
+| `tools/gcs_full_audit.sh` | Run full audit on a GCP VM from GCS tarballs | `bash tools/gcs_full_audit.sh` (run on VM) |
+| `tools/validate_artifact.R` | Validate a single artifact bundle | `Rscript tools/validate_artifact.R --artifact_dir outputs/run_bundle/foo` |
+| `tools/validate_bev_plans.R` | Validate BEV route plan coverage | `Rscript tools/validate_bev_plans.R --bev_plans_csv data/derived/bev_route_plans.csv` |
+
+## Graphics & Site
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `tools/regenerate_transport_graphics.sh` | Full graphics pipeline (6 stages) | `BUNDLE_ROOT=outputs/run_bundle/foo bash tools/regenerate_transport_graphics.sh run_id` |
+| `tools/select_representative_runs.R` | Pick median-CO2 runs for animation | `Rscript tools/select_representative_runs.R --runs_csv runs.csv --out_csv rep.csv` |
+| `tools/update_site_from_audit.sh` | Update site assets from audit bundle, render, optionally commit | `bash tools/update_site_from_audit.sh --audit-dir /tmp/audit --commit` |
+| `scripts/render_run_graphs.R` | Render diagnostic graphs for a single run | `Rscript scripts/render_run_graphs.R --run_dir runs/<id>` |
+| `tools/make_presentation_artifacts.R` | Generate presentation-ready paired comparison artifacts | `Rscript tools/make_presentation_artifacts.R` |
+
+## Cloud Infrastructure
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `tools/bootstrap_worker.sh` | Set up GCP or Azure VM (image-first, fallback to full install) | `bash tools/bootstrap_worker.sh --platform gcp --name worker-new` |
+| `tools/create_worker_image.sh` | Create GCP VM disk image from configured worker | `bash tools/create_worker_image.sh gcp-ta-worker-2 us-central1-a` |
+| `tools/manage_worker_image.sh` | Download/upload/deploy VM images | `bash tools/manage_worker_image.sh download` |
+| `tools/preflight_cloud.sh` | Pre-flight check: quota, SSH, GCS, disk, running sims | `bash tools/preflight_cloud.sh` |
+| `tools/publish_run_to_gcp.sh` | Upload run artifacts to GCS | `bash tools/publish_run_to_gcp.sh` |
+
+## Make Targets
+
+```bash
+make test                     # Full testthat suite
+make smoke                    # End-to-end smoke test
+make smoke-local              # Local-lane isolated smoke (n=50, seed=42)
+make lint                     # lintr + shellcheck
+make local                    # Quick SMOKE_LOCAL run (n=5000, seed=123)
+make real SCENARIO=CENTRALIZED N=5000 SEED=123 RUN_GROUP=BASE
+make aggregate RUN_GROUP=BASE MODE=REAL_RUN
+make preflight MODE=SMOKE_LOCAL SCENARIO=CENTRALIZED
+make route-chain              # Full route chain: routes -> stations -> BEV plans
+make render-graphs RUN_DIR=runs/<id>
+```

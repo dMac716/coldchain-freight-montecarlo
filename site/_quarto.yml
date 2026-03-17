@@ -19,6 +19,8 @@ website:
         text: Methodology
       - href: route_sim_animation.qmd
         text: Animations
+      - href: scripts_reference.qmd
+        text: Scripts
       - href: contribute.qmd
         text: Contribute Compute
 

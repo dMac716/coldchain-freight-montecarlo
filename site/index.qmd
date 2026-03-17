@@ -34,7 +34,7 @@ Topeka KS (dry) + Ennis TX (refrigerated)
 ::: {.kpi-card}
 <div class="kpi-label">Routing</div>
 <div class="kpi-value">Traffic-Aware</div>
-Google Routes TRAFFIC_AWARE_OPTIMAL
+Google Routes API
 :::
 
 ::: {.kpi-card}
@@ -130,16 +130,44 @@ Help the project by running simulations in your GitHub Codespace or on your Mac.
 ## Pipeline Overview { .section-title }
 
 ```{mermaid}
-flowchart LR
-  A[data/inputs_local/*.csv] --> B[R/01_validate.R]
-  B --> C[R/sim/* route simulation]
-  C --> D[tools/run_route_sim_mc.R]
-  D --> E[outputs/run_bundle/]
-  E --> F[GCS upload]
-  F --> G[Aggregate + analyze]
-  G --> H[site/ Quarto pages]
-  H --> I[docs/ GitHub Pages]
+flowchart TD
+  subgraph inputs["Data Inputs"]
+    A1[data/inputs_local/*.csv<br/>scenarios, factors, priors]
+    A2[data/derived/*.csv<br/>routes, BEV plans, OD cache]
+  end
+
+  subgraph sim["Simulation"]
+    B[R/01_validate.R<br/>schema + mode gates]
+    C[R/sim/01-10<br/>route segments, traffic,<br/>TRU, powertrain, charging]
+    D[tools/run_route_sim_mc.R<br/>paired MC draws]
+  end
+
+  subgraph compute["Multi-Cloud Fleet"]
+    E1[Local macOS]
+    E2[GCP VMs x4]
+    E3[Azure VMs x4]
+  end
+
+  subgraph collect["Collection & Analysis"]
+    F[tools/pull_worker_results.sh<br/>GCS + Azure + local]
+    G[tools/merge_run_bundles.sh<br/>dedup by run_id]
+    H[tools/audit_analysis.R<br/>stats, figures, validation]
+  end
+
+  subgraph publish["Publishing"]
+    I[artifacts/analysis_final_*/<br/>figures, tables, dataset]
+    J[tools/update_site_from_audit.sh<br/>site assets + render]
+    K[docs/ GitHub Pages]
+  end
+
+  A1 --> B --> C --> D
+  A2 --> C
+  D --> E1 & E2 & E3
+  E1 & E2 & E3 --> F --> G --> H
+  H --> I --> J --> K
 ```
+
+See the [Scripts Reference](scripts_reference.qmd) for detailed usage of each tool.
 
 ## Reproducibility { .section-title }
 

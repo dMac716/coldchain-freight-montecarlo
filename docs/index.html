@@ -154,6 +154,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Animations</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./scripts_reference.html"> 
+<span class="menu-text">Scripts</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./contribute.html"> 
 <span class="menu-text">Contribute Compute</span></a>
   </li>  
@@ -239,7 +243,7 @@ Routing
 <div class="kpi-value">
 Traffic-Aware
 </div>
-<p>Google Routes TRAFFIC_AWARE_OPTIMAL</p>
+<p>Google Routes API</p>
 </div>
 <div class="kpi-card">
 <div class="kpi-label">
@@ -359,21 +363,48 @@ Total Runs
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart LR
-  A[data/inputs_local/*.csv] --&gt; B[R/01_validate.R]
-  B --&gt; C[R/sim/* route simulation]
-  C --&gt; D[tools/run_route_sim_mc.R]
-  D --&gt; E[outputs/run_bundle/]
-  E --&gt; F[GCS upload]
-  F --&gt; G[Aggregate + analyze]
-  G --&gt; H[site/ Quarto pages]
-  H --&gt; I[docs/ GitHub Pages]
+<pre class="mermaid mermaid-js">flowchart TD
+  subgraph inputs["Data Inputs"]
+    A1[data/inputs_local/*.csv&lt;br/&gt;scenarios, factors, priors]
+    A2[data/derived/*.csv&lt;br/&gt;routes, BEV plans, OD cache]
+  end
+
+  subgraph sim["Simulation"]
+    B[R/01_validate.R&lt;br/&gt;schema + mode gates]
+    C[R/sim/01-10&lt;br/&gt;route segments, traffic,&lt;br/&gt;TRU, powertrain, charging]
+    D[tools/run_route_sim_mc.R&lt;br/&gt;paired MC draws]
+  end
+
+  subgraph compute["Multi-Cloud Fleet"]
+    E1[Local macOS]
+    E2[GCP VMs x4]
+    E3[Azure VMs x4]
+  end
+
+  subgraph collect["Collection &amp; Analysis"]
+    F[tools/pull_worker_results.sh&lt;br/&gt;GCS + Azure + local]
+    G[tools/merge_run_bundles.sh&lt;br/&gt;dedup by run_id]
+    H[tools/audit_analysis.R&lt;br/&gt;stats, figures, validation]
+  end
+
+  subgraph publish["Publishing"]
+    I[artifacts/analysis_final_*/&lt;br/&gt;figures, tables, dataset]
+    J[tools/update_site_from_audit.sh&lt;br/&gt;site assets + render]
+    K[docs/ GitHub Pages]
+  end
+
+  A1 --&gt; B --&gt; C --&gt; D
+  A2 --&gt; C
+  D --&gt; E1 &amp; E2 &amp; E3
+  E1 &amp; E2 &amp; E3 --&gt; F --&gt; G --&gt; H
+  H --&gt; I --&gt; J --&gt; K
 </pre>
 </div>
 <p></p></figure><p></p>
 </div>
 </div>
 </div>
+<p>See the <a href="./scripts_reference.html">Scripts Reference</a> for detailed usage of each tool.</p>
 </section>
 <section id="reproducibility" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="reproducibility">Reproducibility</h2>
