@@ -42,6 +42,12 @@ Google Routes TRAFFIC_AWARE_OPTIMAL
 <div class="kpi-value">8</div>
 4 GCP + 4 Azure (2 platforms)
 :::
+
+::: {.kpi-card}
+<div class="kpi-label">Total Runs</div>
+<div class="kpi-value">70,174</div>
+Deduplicated, cross-platform validated
+:::
 :::
 
 ## Study Design { .section-title }

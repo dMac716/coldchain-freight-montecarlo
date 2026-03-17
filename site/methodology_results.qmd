@@ -118,6 +118,12 @@ knitr::kable(out, digits = 4)
 
 ### BEV Charging Fix Context
 
+The BEV charging continuation fix (PR #31) resolved three root causes that prevented en-route DCFC charging events from being modeled. Pre-fix BEV runs showed 0 charging stops; post-fix runs correctly model charging stops proportional to route distance.
+
+### BEV Charging Validation
+
+The table below compares BEV runs before and after the charging fix, demonstrating that the fix produced the expected non-zero charging stops and associated energy/time impacts.
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -125,7 +131,9 @@ knitr::kable(out, digits = 4)
 bev_path <- "assets/transport/audit_2026-03-17/tables/bev_charging_vs_no_charging.csv"
 if (file.exists(bev_path)) {
   bev <- utils::read.csv(bev_path, stringsAsFactors = FALSE)
-  knitr::kable(bev, digits = 4, caption = "BEV runs: charging fix impact")
+  knitr::kable(bev, digits = 4, caption = "BEV runs: charging fix validation — pre-fix vs post-fix comparison")
+} else {
+  cat("*BEV charging validation table not yet available.*")
 }
 ```
 
@@ -164,6 +172,13 @@ if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
 ![Refrigerated split diagnostic](assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png)
 
 ## Scientific Package and Reproducibility
+
+### Production Audit (2026-03-17, 70,174 runs)
+
+- Audit figures: [ZIP](assets/transport/downloads/audit_2026-03-17_figures.zip)
+- Audit data: [ZIP](assets/transport/downloads/audit_2026-03-17_data.zip)
+
+### Baseline (local_chunked_run, 80 runs)
 
 - Scientific graphics package: `docs/assets/transport/scientific/local_chunked_run/`
 - Full report bundle: [ZIP](assets/transport/downloads/local_chunked_run_report_bundle.zip)

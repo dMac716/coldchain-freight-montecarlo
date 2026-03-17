@@ -8,6 +8,47 @@ pick_path <- function(paths) {
   ""
 }
 
+# --- March 2026 Production Audit (70,174 runs) ---
+audit_stats_path <- pick_path(c(
+  "../assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv",
+  "../../site/assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv"
+))
+if (nzchar(audit_stats_path)) {
+  astats <- utils::read.csv(audit_stats_path, stringsAsFactors = FALSE)
+  total_runs <- format(sum(astats$n_runs), big.mark = ",")
+  cat(sprintf("<h3>March 2026 Production Audit (%s runs)</h3>\n", total_runs))
+  cat(sprintf("<p><strong>Data source:</strong> <code>%s</code></p>\n", audit_stats_path))
+
+  # Build summary table
+  astats$scenario <- paste(astats$powertrain, astats$product_type, astats$origin_network, sep = " / ")
+  show_cols <- data.frame(
+    Scenario = astats$scenario,
+    Powertrain = astats$powertrain,
+    `Product Type` = astats$product_type,
+    `Origin Network` = astats$origin_network,
+    Runs = format(astats$n_runs, big.mark = ","),
+    `Mean CO2 (kg)` = round(astats$mean_co2_kg_total, 1),
+    `Mean Distance (mi)` = round(astats$mean_distance_miles, 1),
+    `Mean Trip (h)` = round(astats$mean_trip_duration_total_h, 1),
+    `Mean Charge Stops` = round(astats$mean_charge_stops, 1),
+    `Mean CO2/1000kcal` = formatC(astats$mean_co2_per_1000kcal, format = "f", digits = 4),
+    stringsAsFactors = FALSE, check.names = FALSE
+  )
+
+  cat("<table class='table table-striped' style='margin-top:12px;'>\n")
+  cat("<thead><tr>")
+  for (nm in names(show_cols)) cat(sprintf("<th>%s</th>", nm))
+  cat("</tr></thead>\n<tbody>\n")
+  for (i in seq_len(nrow(show_cols))) {
+    cat("<tr>")
+    for (nm in names(show_cols)) cat(sprintf("<td>%s</td>", show_cols[[nm]][i]))
+    cat("</tr>\n")
+  }
+  cat("</tbody></table>\n")
+  cat("<hr/>\n")
+  cat("<h4>Per-Run Explorer (local chunked run sample)</h4>\n")
+}
+
 fu_rows_path <- pick_path(c(
   "../assets/transport/local_chunked_run/data/transport_sim_rows.csv",
   "assets/transport/local_chunked_run/data/transport_sim_rows.csv",

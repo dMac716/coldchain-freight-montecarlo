@@ -1,6 +1,12 @@
 ---
 title: "Transport Monte Carlo Results"
+date: "2026-03-17"
 ---
+
+::: {.callout-note appearance="simple"}
+## Total Runs: 70,174 validated across 8 scenarios
+Last updated: 2026-03-17
+:::
 
 ::: {.hero}
 ## Transport Results Snapshot
@@ -120,6 +126,10 @@ if (all(keep %in% names(ps))) {
 
 ### Route Comparison (Diesel vs BEV)
 
+::: {.callout-warning}
+**Note:** The route comparison animations below were generated from the earlier 80-run baseline and show stale reefer/diesel and reefer/electric values (both at 0). These animations will be regenerated from the 70,174-run audit dataset.
+:::
+
 <video controls preload="metadata" width="100%">
   <source src="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
 </video>
@@ -135,6 +145,13 @@ if (all(keep %in% names(ps))) {
 If your browser blocks inline playback from GitHub Pages, use the direct download bundle below.
 
 ## Download Bundles
+
+### Production Audit (2026-03-17, 70,174 runs)
+
+- [Audit figures ZIP](../assets/transport/downloads/audit_2026-03-17_figures.zip)
+- [Audit data ZIP](../assets/transport/downloads/audit_2026-03-17_data.zip)
+
+### Baseline (local_chunked_run, 80 runs)
 
 - [Full report bundle ZIP](../assets/transport/downloads/local_chunked_run_report_bundle.zip)
 - [Data ZIP](../assets/transport/downloads/local_chunked_run_data.zip)
