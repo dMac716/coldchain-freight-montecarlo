@@ -7,7 +7,7 @@ title: "Cold-Chain Freight Monte Carlo"
 
 Distributed Monte Carlo simulation of greenhouse gas emissions for refrigerated dog food freight under alternative spatial and powertrain scenarios.
 
-`Latest production run: traffic_aware_v1 (2026-03-15) | TRAFFIC_AWARE_OPTIMAL routing`
+`Latest production audit: audit_2026-03-17 | 70,174 runs | TRAFFIC_AWARE_OPTIMAL routing`
 `Functional unit: kg CO2e / 1,000 kcal delivered to retail`
 
 ::: {.cta-row}
@@ -38,9 +38,9 @@ Google Routes TRAFFIC_AWARE_OPTIMAL
 :::
 
 ::: {.kpi-card}
-<div class="kpi-label">Workers</div>
-<div class="kpi-value">9</div>
-GCP + Azure + Codespace + local
+<div class="kpi-label">Cloud Workers</div>
+<div class="kpi-value">8</div>
+4 GCP + 4 Azure (2 platforms)
 :::
 :::
 
@@ -57,6 +57,22 @@ This simulation compares the lifecycle transport emissions of two distribution s
 | **Traffic** | Stochastic (time-of-day variation, incidents) |
 
 Each paired draw uses **Common Random Numbers** (CRN) --- exogenous uncertainty is sampled once per seed, then both spatial networks are evaluated with the same draw, enabling statistically fair delta estimation.
+:::
+
+## Latest Results (March 2026 Production Audit) { .section-title }
+
+::: {.panel}
+The production audit aggregated **70,174 deduplicated runs** across 8 scenarios (BEV/diesel x dry/refrigerated x centralized/regionalized) from 4 GCP and 4 Azure workers. Key findings:
+
+- **BEV reduces CO2 85.8%** for refrigerated products (cold-chain dominated)
+- **BEV increases CO2 27--32%** for dry products (longer BEV routes, charging overhead, grid carbon)
+- Pre-fix BEV runs had 0 charging stops; post-fix runs correctly model en-route charging
+
+![CO2 by scenario](assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
+
+![Electrification impact](assets/transport/audit_2026-03-17/figures/fig_h_electrification.png)
+
+See the full audit figures on the [Methodology](methodology_results.qmd) and [Transport Results](viz/transport_results.qmd) pages.
 :::
 
 ## Explore { .section-title }

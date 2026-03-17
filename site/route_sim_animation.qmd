@@ -6,7 +6,7 @@ format: html
 ::: {.hero}
 ## Animation Gallery
 
-Latest animation assets for `local_chunked_run`.
+Animation assets from `local_chunked_run` baseline. The production audit (`audit_2026-03-17`, 70,174 runs) validated these route geometries at scale across 4 GCP and 4 Azure workers.
 
 - All videos are linked as direct MP4 files.
 - If inline playback fails in GitHub Pages, download the animation ZIP.
