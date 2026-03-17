@@ -1,0 +1,46 @@
+Cross-Platform Audit Validation Report
+========================================
+Date: 2026-03-17 12:17:26.565164
+Sources: local, gcs
+Tolerance: 1.0%
+Verdict: WARN — differences found (check run count alignment)
+
+Run count comparison:
+Key: <powertrain, product_type, origin_network>
+   powertrain product_type           origin_network   GCS LOCAL
+       <char>       <char>                   <char> <int> <int>
+1:        bev          dry          dry_factory_set  4788 10248
+2:        bev          dry refrigerated_factory_set  4788 10248
+3:        bev refrigerated          dry_factory_set 15080 11120
+4:        bev refrigerated refrigerated_factory_set 15080 11120
+5:     diesel          dry          dry_factory_set  3482  8485
+6:     diesel          dry refrigerated_factory_set  3482  8485
+7:     diesel refrigerated          dry_factory_set 11737  8365
+8:     diesel refrigerated refrigerated_factory_set 11737  8365
+
+Metric deltas:
+                   metric max_abs_diff mean_abs_diff max_pct_diff mean_pct_diff
+                   <char>        <num>         <num>        <num>         <num>
+ 1:                n_runs   5460.00000   4448.750000      58.9629       47.0410
+ 2:           mean_co2_kg    555.27590    328.742138     110.0210       45.7106
+ 3:             sd_co2_kg    413.41590    252.876100      48.8690       29.9919
+ 4:            p50_co2_kg   1101.43380    280.034662     766.9842      191.2588
+ 5: mean_co2_per_1000kcal      0.00906      0.006136     110.1755       45.7617
+ 6:         mean_distance    557.57150    236.812762     109.9381       41.3468
+ 7:           mean_trip_h     31.34990     10.863525     131.7815       47.5706
+ 8:     mean_charge_stops      5.28160      1.841825     149.1009       91.8779
+ 9:       mean_energy_kwh   1287.56880    445.907425     110.1095       69.2157
+10:          mean_co2_tru     21.79760      7.614950      28.8261       17.9686
+      comparison
+          <char>
+ 1: local vs gcs
+ 2: local vs gcs
+ 3: local vs gcs
+ 4: local vs gcs
+ 5: local vs gcs
+ 6: local vs gcs
+ 7: local vs gcs
+ 8: local vs gcs
+ 9: local vs gcs
+10: local vs gcs
+

@@ -1,7 +1,0 @@
-figure_id,filename,title,type,scenarios_shown
-fig_a,fig_a_co2_per_1000kcal_by_scenario.png,Transport Emissions by Scenario (CO2/1000kcal),bar chart with intervals,all 8
-fig_b,fig_b_co2_distribution.png,Emissions Distribution by Scenario,histogram 2x2 panel,all 8
-fig_c,fig_c_cdf_emissions.png,Empirical CDF of Emissions,CDF curves,4 (diesel/BEV × dry/refrig)
-fig_d,fig_d_emission_decomposition.png,Emission Decomposition: Propulsion vs Refrigeration,stacked bar,all 8
-fig_e,fig_e_electrification.png,Electrification Impact,grouped bar,4 (dry/refrig × diesel/BEV)
-fig_f,fig_f_tornado_sensitivity.png,Sensitivity: Key Drivers,tornado/horizontal bar,pooled

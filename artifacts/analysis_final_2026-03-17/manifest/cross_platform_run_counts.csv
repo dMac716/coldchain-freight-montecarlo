@@ -1,0 +1,9 @@
+powertrain,product_type,origin_network,GCS,LOCAL
+bev,dry,dry_factory_set,4788,10248
+bev,dry,refrigerated_factory_set,4788,10248
+bev,refrigerated,dry_factory_set,15080,11120
+bev,refrigerated,refrigerated_factory_set,15080,11120
+diesel,dry,dry_factory_set,3482,8485
+diesel,dry,refrigerated_factory_set,3482,8485
+diesel,refrigerated,dry_factory_set,11737,8365
+diesel,refrigerated,refrigerated_factory_set,11737,8365
