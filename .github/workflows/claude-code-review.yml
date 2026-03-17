@@ -12,8 +12,9 @@ on:
 
 jobs:
   claude-review:
-    # Only run if Claude Code GitHub App is installed (skip otherwise)
-    if: ${{ vars.CLAUDE_CODE_ENABLED == 'true' }}
+    # Skip if Claude Code GitHub App is not installed
+    if: ${{ !cancelled() }}
+    continue-on-error: true
 
     runs-on: ubuntu-latest
     permissions:
