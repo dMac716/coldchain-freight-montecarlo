@@ -155,6 +155,42 @@ else
 fi
 
 # ============================================================
+echo "[site] === Step 4b: Validate site text ==="
+# ============================================================
+# Check that rendered .qmd files reference the correct run count
+if [[ -f "${AUDIT_DIR}/tables/comprehensive_scenario_stats.csv" ]]; then
+  CORRECT_TOTAL=$(awk -F',' 'NR>1{sum+=$4} END{printf "%d", sum}' "${AUDIT_DIR}/tables/comprehensive_scenario_stats.csv")
+  CORRECT_FORMATTED=$(printf "%'d" "$CORRECT_TOTAL")
+  echo "[site] Correct total runs: $CORRECT_FORMATTED"
+
+  # Check for stale run counts in .qmd files
+  STALE=0
+  for qmd in "${SITE_DIR}"/*.qmd "${SITE_DIR}"/viz/*.qmd; do
+    [[ -f "$qmd" ]] || continue
+    # Look for hardcoded run counts that don't match
+    if grep -qE '[0-9]{2,3},[0-9]{3}' "$qmd" 2>/dev/null; then
+      FOUND=$(grep -oE '[0-9]{2,3},[0-9]{3}' "$qmd" | grep -v "$CORRECT_FORMATTED" | sort -u)
+      if [[ -n "$FOUND" ]]; then
+        for old_count in $FOUND; do
+          # Skip numbers that are clearly not run counts (like years, distances)
+          num=$(echo "$old_count" | tr -d ',')
+          if [[ "$num" -gt 10000 && "$num" -lt 500000 && "$num" != "$CORRECT_TOTAL" ]]; then
+            echo "[site] WARN: $(basename "$qmd") has stale count '$old_count' (expected $CORRECT_FORMATTED)"
+            STALE=$((STALE + 1))
+          fi
+        done
+      fi
+    fi
+  done
+
+  if [[ "$STALE" -gt 0 ]]; then
+    echo "[site] WARN: $STALE stale run count references found. Update .qmd files."
+  else
+    echo "[site] OK: all .qmd files consistent with $CORRECT_FORMATTED runs"
+  fi
+fi
+
+# ============================================================
 echo "[site] === Step 5: Summary ==="
 # ============================================================
 echo ""
