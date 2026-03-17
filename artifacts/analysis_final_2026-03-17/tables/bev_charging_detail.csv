@@ -1,0 +1,5 @@
+product_type,origin_network,n_runs,pct_with_charging,mean_charge_stops,median_charge_stops,p05_charge_stops,p95_charge_stops,mean_time_charging_min,median_time_charging_min,mean_energy_kwh_total,mean_energy_kwh_tru,mean_co2_kg,mean_co2_per_1000kcal,mean_charging_attempts,mean_occupied_events,mean_broken_events,mean_wait_time_min,mean_failed_frac
+refrigerated,dry_factory_set,11120,36.2,6.16,0,0,19,1312.9,0,1774.7,169.7,766.71,0.018844,0,0,0,0,0
+dry,dry_factory_set,10248,22.8,3.54,0,0,16,751.4,0,1136.3,0,490.45,0.007991,0,0,0,0,0
+refrigerated,refrigerated_factory_set,11120,36.2,6.18,0,0,20,805.5,0,1832.8,175.3,791.81,0.019461,0,0,0,0,0
+dry,refrigerated_factory_set,10248,22.8,3.47,0,0,15,485.2,0,1169.4,0,504.7,0.008223,0,0,0,0,0

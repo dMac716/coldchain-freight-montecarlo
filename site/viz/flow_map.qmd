@@ -13,14 +13,20 @@ suppressPackageStartupMessages({
   library(htmltools)
 })
 
-# Source route geometry decoder
-for (f in list.files("../../R", pattern = "\\.R$", full.names = TRUE)) {
-  tryCatch(source(f, local = TRUE), error = function(e) NULL)
-}
+# Null-coalesce operator (needed for fac_colors lookup)
+`%||%` <- function(a, b) if (!is.null(a) && !is.na(a) && nzchar(a)) a else b
 
 pick_path <- function(paths) {
   for (p in paths) if (file.exists(p)) return(p)
   ""
+}
+
+# Source only the polyline decoder (sourcing all R/ files errors on missing deps)
+geo_path <- pick_path(c("../../R/route_geometry_utils.R", "../R/route_geometry_utils.R"))
+if (nzchar(geo_path)) {
+  tryCatch(source(geo_path, local = TRUE), error = function(e) {
+    cat(sprintf("<p><em>Failed to load route geometry utils: %s</em></p>", e$message))
+  })
 }
 
 routes_path <- pick_path(c(
@@ -67,11 +73,11 @@ fac_labels <- c(
 
 # Only show rank-1 routes (primary) with full opacity; alternatives lighter
 map <- leaflet(width = "100%", height = "620px") |>
-  addProviderTiles("CartoDB.Positron", group = "Light") |>
   addProviderTiles("OpenStreetMap.Mapnik", group = "Street") |>
+  addProviderTiles("CartoDB.Positron", group = "Light") |>
   addProviderTiles("Esri.NatGeoWorldMap", group = "Terrain") |>
   addLayersControl(
-    baseGroups = c("Light", "Street", "Terrain"),
+    baseGroups = c("Street", "Light", "Terrain"),
     options = layersControlOptions(collapsed = FALSE)
   )
 
@@ -113,25 +119,42 @@ for (i in seq_len(nrow(routes))) {
     )
 }
 
-# Add facility markers
+# Permanent label styling
+perm_label_style <- labelOptions(
+  noHide = TRUE, direction = "top", textOnly = FALSE,
+  style = list("font-weight" = "bold", "font-size" = "11px",
+               "background" = "rgba(255,255,255,0.85)", "padding" = "2px 6px",
+               "border-radius" = "3px")
+)
+
+# Short labels for permanent display
+fac_short_labels <- c(
+  FACILITY_DRY_TOPEKA = "Topeka (Dry)",
+  FACILITY_REFRIG_ENNIS = "Ennis (Refrig)"
+)
+
+# Add facility markers with permanent labels
 if (nrow(fac) > 0) {
   for (j in seq_len(nrow(fac))) {
     f <- fac[j, , drop = FALSE]
     fid <- as.character(f$facility_id)
     col <- fac_colors[fid] %||% "#333"
     lab <- fac_labels[fid] %||% fid
+    short_lab <- fac_short_labels[fid] %||% fid
     map <- map |>
       addCircleMarkers(
         lng = as.numeric(f$lon), lat = as.numeric(f$lat),
         radius = 10, color = col, fillColor = col, fillOpacity = 0.9,
         stroke = TRUE, weight = 2,
+        label = htmltools::HTML(short_lab),
+        labelOptions = perm_label_style,
         popup = sprintf("<b>%s</b><br/>%s, %s<br/>%.4f, %.4f",
                         lab, f$city, f$state, f$lat, f$lon)
       )
   }
 }
 
-# Add retail marker
+# Add retail marker with permanent label
 if (nrow(ret) > 0) {
   r <- ret[1, , drop = FALSE]
   map <- map |>
@@ -139,6 +162,8 @@ if (nrow(ret) > 0) {
       lng = as.numeric(r$lon), lat = as.numeric(r$lat),
       radius = 10, color = "#d62728", fillColor = "#d62728", fillOpacity = 0.9,
       stroke = TRUE, weight = 2,
+      label = htmltools::HTML("Petco Davis"),
+      labelOptions = perm_label_style,
       popup = sprintf("<b>%s</b><br/>%s, %s<br/>Retail destination",
                       r$retail_id, r$city, r$state)
     )
@@ -168,6 +193,41 @@ This map displays the actual Google Routes API driving routes from each distribu
 - Click any route segment for distance, duration, and routing metadata
 
 These routes are the geometric basis for the BEV charging waypoint plans and the Monte Carlo transport simulation.
+:::
+
+::: {.panel}
+### Route Usage in Production Audit (70,174 runs)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+audit_stats_path <- pick_path(c(
+  "../assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv",
+  "../../site/assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv"
+))
+if (nzchar(audit_stats_path)) {
+  astats <- utils::read.csv(audit_stats_path, stringsAsFactors = FALSE)
+  # Aggregate runs by origin_network
+  origin_agg <- aggregate(n_runs ~ origin_network, data = astats, FUN = sum)
+  origin_agg <- origin_agg[order(-origin_agg$n_runs), ]
+
+  cat("| Origin Network | Total Runs | Powertrains | Mean Distance (mi) | Mean CO2 (kg) |\n")
+  cat("|:---|---:|:---|---:|---:|\n")
+  for (k in seq_len(nrow(origin_agg))) {
+    on <- origin_agg$origin_network[k]
+    subset_rows <- astats[astats$origin_network == on, ]
+    pts <- paste(sort(unique(subset_rows$powertrain)), collapse = ", ")
+    avg_dist <- round(weighted.mean(subset_rows$mean_distance_miles, subset_rows$n_runs), 1)
+    avg_co2 <- round(weighted.mean(subset_rows$mean_co2_kg_total, subset_rows$n_runs), 1)
+    cat(sprintf("| %s | %s | %s | %s | %s |\n",
+                on, format(origin_agg$n_runs[k], big.mark = ","), pts,
+                format(avg_dist, big.mark = ","), format(avg_co2, big.mark = ",")))
+  }
+  cat(sprintf("\n**Total runs**: %s across %d scenario combinations.\n",
+              format(sum(astats$n_runs), big.mark = ","),
+              nrow(astats)))
+} else {
+  cat("Audit data not yet available. Place `comprehensive_scenario_stats.csv` in `assets/transport/audit_2026-03-17/tables/`.\n")
+}
+```
 :::
 
 ::: {.panel}

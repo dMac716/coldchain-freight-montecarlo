@@ -1,9 +1,0 @@
-metric,value
-Total raw rows,180512
-Unique runs,91240
-Duplicates removed,89272
-Valid co2_per_1000kcal,91240
-Dry BEV (per network),1105
-Dry Diesel (per network),1726
-Refrig BEV (per network),21155
-Refrig Diesel (per network),21634

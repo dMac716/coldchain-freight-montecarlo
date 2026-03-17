@@ -1,0 +1,16 @@
+{
+  "image_name": "coldchain-worker-20260317",
+  "image_family": "coldchain-worker",
+  "platform": "gcp",
+  "gcs_path": "gs://coldchain-freight-sources/vm-images/coldchain-worker-20260317.tar.gz",
+  "size_gb": 8.12,
+  "disk_size_gb": 100,
+  "source_vm": "gcp-ta-worker-2",
+  "zone": "us-central1-a",
+  "created": "2026-03-17T19:25:00Z",
+  "description": "Clean coldchain analysis worker: R 4.2.2 + ggplot2/data.table/scales, Python 3.11 + numpy/pandas/matplotlib, gsutil, full git repo at /srv/coldchain/repo. No stale run data.",
+  "r_packages": ["data.table", "ggplot2", "scales", "gridExtra", "optparse", "jsonlite", "yaml", "digest"],
+  "python_packages": ["numpy", "pandas", "matplotlib"],
+  "deploy_command": "gcloud compute instances create NEW_NAME --zone=us-central1-a --image-family=coldchain-worker --machine-type=e2-standard-4 --boot-disk-size=100GB",
+  "upload_command": "gsutil cp images/coldchain-worker-20260317.tar.gz gs://coldchain-freight-sources/vm-images/ && gcloud compute images import coldchain-worker-20260317 --source-file=gs://coldchain-freight-sources/vm-images/coldchain-worker-20260317.tar.gz --os=debian-12"
+}

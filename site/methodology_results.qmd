@@ -5,14 +5,16 @@ title: "Methodology and Scientific Results"
 ::: {.hero}
 ## Executive Summary
 
-This release documents the distribution-stage transport LCI run `local_chunked_run` completed on **2026-03-09**.
+This release documents the production audit `audit_2026-03-17` aggregating **70,174 deduplicated runs** across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).
 
 - Scope: transport/distribution stage only
 - Functional unit: `kg CO2e / 1000 kcal delivered to retail`
 - Design: matched-pair uncertainty within powertrain
-- Scenarios: dry/refrigerated x diesel/BEV
-- Replicates: 20
+- Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized
+- Runs: 70,174 (deduplicated)
 - Validation: PASS
+
+Previous baseline: `local_chunked_run` (80 runs, 2026-03-09) retained below for reference.
 :::
 
 ## Study Design
@@ -66,9 +68,78 @@ Validation artifact:
 
 - [Validation report](assets/transport/local_chunked_run/data/transport_sim_validation_report.txt)
 
-## Results
+## March 2026 Production Audit (70,174 runs) { .section-title }
 
-### Scenario-Level Summary
+::: {.panel}
+The production audit (2026-03-17) aggregated 70,174 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.
+:::
+
+### Comprehensive Scenario Statistics
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+cs <- utils::read.csv("assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv", stringsAsFactors = FALSE)
+show_cols <- c("powertrain", "product_type", "origin_network", "n_runs",
+               "mean_co2_per_1000kcal", "p05_co2_per_1000kcal",
+               "p50_co2_per_1000kcal", "p95_co2_per_1000kcal",
+               "mean_charge_stops", "mean_distance_miles")
+show_cols <- show_cols[show_cols %in% names(cs)]
+names_display <- c("Powertrain", "Product", "Origin", "N",
+                    "Mean CO2/1000kcal", "P05", "P50", "P95",
+                    "Charge Stops", "Distance (mi)")
+out <- cs[, show_cols]
+names(out) <- names_display[seq_along(show_cols)]
+knitr::kable(out, digits = 4)
+```
+
+### Audit Figures
+
+![Fig A: CO2 emissions by scenario](assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
+
+![Fig B: CO2 density distributions](assets/transport/audit_2026-03-17/figures/fig_b_co2_density.png)
+
+![Fig C: Cumulative distribution functions](assets/transport/audit_2026-03-17/figures/fig_c_cdf.png)
+
+![Fig D: Emissions decomposition (propulsion vs TRU)](assets/transport/audit_2026-03-17/figures/fig_d_decomposition.png)
+
+![Fig E: Trip duration by scenario](assets/transport/audit_2026-03-17/figures/fig_e_trip_duration.png)
+
+![Fig F: BEV charging stops distribution](assets/transport/audit_2026-03-17/figures/fig_f_charge_stops.png)
+
+![Fig G: Energy breakdown by powertrain](assets/transport/audit_2026-03-17/figures/fig_g_energy_breakdown.png)
+
+![Fig H: Electrification impact (BEV vs diesel delta)](assets/transport/audit_2026-03-17/figures/fig_h_electrification.png)
+
+![Fig I: Driver time components](assets/transport/audit_2026-03-17/figures/fig_i_driver_time.png)
+
+![Fig J: TRU energy by product type](assets/transport/audit_2026-03-17/figures/fig_j_tru_energy.png)
+
+### BEV Charging Fix Context
+
+The BEV charging continuation fix (PR #31) resolved three root causes that prevented en-route DCFC charging events from being modeled. Pre-fix BEV runs showed 0 charging stops; post-fix runs correctly model charging stops proportional to route distance.
+
+### BEV Charging Validation
+
+The table below compares BEV runs before and after the charging fix, demonstrating that the fix produced the expected non-zero charging stops and associated energy/time impacts.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+bev_path <- "assets/transport/audit_2026-03-17/tables/bev_charging_vs_no_charging.csv"
+if (file.exists(bev_path)) {
+  bev <- utils::read.csv(bev_path, stringsAsFactors = FALSE)
+  knitr::kable(bev, digits = 4, caption = "BEV runs: charging fix validation — pre-fix vs post-fix comparison")
+} else {
+  cat("*BEV charging validation table not yet available.*")
+}
+```
+
+## Previous Baseline (local_chunked_run, 80 runs, 2026-03-09) { .section-title }
+
+### Scenario-Level Summary (Baseline)
 
 ```{r}
 #| echo: false
@@ -78,7 +149,7 @@ names(pt) <- c("Scenario", "N", "Mean CO2/1000kcal", "Median", "P05", "P95")
 knitr::kable(pt, digits = 6)
 ```
 
-### Paired Delta Summary
+### Paired Delta Summary (Baseline)
 
 ```{r}
 #| echo: false
@@ -90,7 +161,7 @@ if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
 }
 ```
 
-### Diagnostic Figures
+### Baseline Diagnostic Figures
 
 ![CO2 per 1000 kcal by scenario](assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png)
 
@@ -101,6 +172,13 @@ if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
 ![Refrigerated split diagnostic](assets/transport/local_chunked_run/figures/refrigerated_split_diagnostic.png)
 
 ## Scientific Package and Reproducibility
+
+### Production Audit (2026-03-17, 70,174 runs)
+
+- Audit figures: [ZIP](assets/transport/downloads/audit_2026-03-17_figures.zip)
+- Audit data: [ZIP](assets/transport/downloads/audit_2026-03-17_data.zip)
+
+### Baseline (local_chunked_run, 80 runs)
 
 - Scientific graphics package: `docs/assets/transport/scientific/local_chunked_run/`
 - Full report bundle: [ZIP](assets/transport/downloads/local_chunked_run_report_bundle.zip)

@@ -1,5 +1,0 @@
-product_type,network,mean_diesel,mean_bev,absolute_reduction,pct_reduction
-dry,Centralized,0.02826,0.00413,0.02413,85.4
-dry,Regionalized,0.02831,0.00414,0.02417,85.4
-refrigerated,Centralized,0.04803,0.00622,0.04181,87.1
-refrigerated,Regionalized,0.04809,0.00625,0.04183,87

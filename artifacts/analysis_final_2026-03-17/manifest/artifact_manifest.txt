@@ -1,0 +1,30 @@
+Analysis Final Artifact Bundle — 2026-03-17
+=============================================
+Date:               2026-03-17
+Total runs:         76,436 (local merge) / 70,174 (GCS audit)
+Scenarios:          8 (BEV/diesel x dry/refrigerated x centralized/regionalized)
+Sources:            Local macOS, 4 GCP VMs, 4 Azure VMs, GCS tarballs
+Deduplication:      By run_id (sort -u on column 1)
+FU derivation:      co2_per_1000kcal computed from payload_max_lb_draw * load_fraction * kcal_per_kg_product
+
+Files:
+  analysis_dataset.csv.gz   — Full deduplicated dataset (76k rows, 134 columns, gzipped)
+  figures/fig_a-j.png       — 10 production figures (boxplots, density, CDF, decomposition, etc.)
+  tables/*.csv              — Comprehensive stats, BEV charging detail, charging comparison
+  animations/*.mp4          — Route animations (diesel, BEV, side-by-side) — from 2026-03-16 baseline
+  manifest/*                — Cross-platform validation report and deltas
+
+BEV Charging Note:
+  Pre-2026-03-16 BEV runs have charge_stops=0 (bug fixed in PR #31).
+  Filter to charge_stops > 0 for valid BEV analysis.
+  Post-fix runs: 12,558 valid BEV + 30,438 diesel = ~43k usable paired runs.
+
+Cross-platform validation:
+  LOCAL (76,436 rows) vs GCS (70,174 rows) compared.
+  Differences align with run count differences (LOCAL includes GCP VM runs not yet on GCS).
+  Azure comparison pending (SSH access to worker-12 blocked during session).
+
+GCS locations:
+  Audit bundle:  gs://coldchain-freight-sources/audit_2026-03-17/audit_bundle_v3_2026-03-17.tar.gz
+  VM image:      gs://coldchain-freight-sources/vm-images/coldchain-worker-20260317.tar.gz
+  Local backup:  gs://coldchain-freight-sources/local_backup/local_run_bundles_backup.tar.gz

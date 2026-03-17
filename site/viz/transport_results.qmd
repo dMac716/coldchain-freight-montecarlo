@@ -1,23 +1,77 @@
 ---
 title: "Transport Monte Carlo Results"
+date: "2026-03-17"
 ---
+
+::: {.callout-note appearance="simple"}
+## Total Runs: 70,174 validated across 8 scenarios
+Last updated: 2026-03-17
+:::
 
 ::: {.hero}
 ## Transport Results Snapshot
 
-Validated run: `local_chunked_run` (2026-03-09)  
-Functional unit: `kg CO2e / 1000 kcal delivered to retail`  
-Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates
+Production audit: `audit_2026-03-17` | **70,174 runs** | 8 scenarios
+Functional unit: `kg CO2e / 1000 kcal delivered to retail`
+Design: paired-within-powertrain uncertainty, BEV/diesel x dry/refrigerated x centralized/regionalized
 :::
 
 ## Run Metadata
 
-- Run ID: `local_chunked_run`
-- Scenario rows: `dry_diesel`, `refrigerated_diesel`, `dry_bev`, `refrigerated_bev`
+- Audit ID: `audit_2026-03-17`
+- Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized (8 combinations)
+- Total runs: 70,174 (deduplicated)
+- Workers: 4 GCP + 4 Azure
 - Validation status: PASS
 - Reporting basis: distribution-stage transport only
+- Previous baseline: `local_chunked_run` (80 runs, 2026-03-09) --- see below
 
-## Core Scenario Results
+## Production Audit Results (70,174 runs)
+
+### Comprehensive Scenario Statistics
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+cs <- utils::read.csv("../assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv", stringsAsFactors = FALSE)
+show_cols <- c("powertrain", "product_type", "origin_network", "n_runs",
+               "mean_co2_per_1000kcal", "p05_co2_per_1000kcal",
+               "p50_co2_per_1000kcal", "p95_co2_per_1000kcal",
+               "mean_charge_stops", "mean_distance_miles")
+show_cols <- show_cols[show_cols %in% names(cs)]
+out <- cs[, show_cols]
+names(out) <- c("Powertrain", "Product", "Origin", "N",
+                "Mean CO2/1000kcal", "P05", "P50", "P95",
+                "Charge Stops", "Distance (mi)")
+knitr::kable(out, digits = 4)
+```
+
+### Audit Figures
+
+![Fig A: CO2 emissions by scenario](../assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
+
+![Fig B: CO2 density distributions](../assets/transport/audit_2026-03-17/figures/fig_b_co2_density.png)
+
+![Fig C: Cumulative distribution functions](../assets/transport/audit_2026-03-17/figures/fig_c_cdf.png)
+
+![Fig D: Emissions decomposition (propulsion vs TRU)](../assets/transport/audit_2026-03-17/figures/fig_d_decomposition.png)
+
+![Fig E: Trip duration by scenario](../assets/transport/audit_2026-03-17/figures/fig_e_trip_duration.png)
+
+![Fig F: BEV charging stops](../assets/transport/audit_2026-03-17/figures/fig_f_charge_stops.png)
+
+![Fig G: Energy breakdown by powertrain](../assets/transport/audit_2026-03-17/figures/fig_g_energy_breakdown.png)
+
+![Fig H: Electrification impact](../assets/transport/audit_2026-03-17/figures/fig_h_electrification.png)
+
+![Fig I: Driver time components](../assets/transport/audit_2026-03-17/figures/fig_i_driver_time.png)
+
+![Fig J: TRU energy by product type](../assets/transport/audit_2026-03-17/figures/fig_j_tru_energy.png)
+
+## Previous Baseline (local_chunked_run, 80 runs) { .section-title }
+
+### Core Scenario Results (Baseline)
 
 ```{r}
 #| echo: false
@@ -29,7 +83,7 @@ names(pt) <- c("Scenario", "N", "Mean", "Median", "P05", "P95")
 knitr::kable(pt, digits = 6)
 ```
 
-## Paired Delta Results
+### Paired Delta Results (Baseline)
 
 ```{r}
 #| echo: false
@@ -44,7 +98,7 @@ if (all(keep %in% names(ps))) {
 }
 ```
 
-## Distribution and Sensitivity Diagnostics
+### Baseline Diagnostic Figures
 
 ![CO2 per 1000 kcal by scenario](../assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png)
 
@@ -72,6 +126,10 @@ if (all(keep %in% names(ps))) {
 
 ### Route Comparison (Diesel vs BEV)
 
+::: {.callout-warning}
+**Note:** The route comparison animations below were generated from the earlier 80-run baseline and show stale reefer/diesel and reefer/electric values (both at 0). These animations will be regenerated from the 70,174-run audit dataset.
+:::
+
 <video controls preload="metadata" width="100%">
   <source src="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
 </video>
@@ -87,6 +145,13 @@ if (all(keep %in% names(ps))) {
 If your browser blocks inline playback from GitHub Pages, use the direct download bundle below.
 
 ## Download Bundles
+
+### Production Audit (2026-03-17, 70,174 runs)
+
+- [Audit figures ZIP](../assets/transport/downloads/audit_2026-03-17_figures.zip)
+- [Audit data ZIP](../assets/transport/downloads/audit_2026-03-17_data.zip)
+
+### Baseline (local_chunked_run, 80 runs)
 
 - [Full report bundle ZIP](../assets/transport/downloads/local_chunked_run_report_bundle.zip)
 - [Data ZIP](../assets/transport/downloads/local_chunked_run_data.zip)

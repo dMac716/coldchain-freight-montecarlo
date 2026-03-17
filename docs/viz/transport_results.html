@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2026-03-17">
 
 <title>Transport Monte Carlo Results – Cold-Chain Freight Monte Carlo</title>
 <style>
@@ -41,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -97,15 +98,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../viz/flow_map.html"> 
-<span class="menu-text">Flow Map</span></a>
+<span class="menu-text">Route Map</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../viz/scenario_explorer.html"> 
 <span class="menu-text">Scenario Explorer</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../route_sim_animation.html"> 
-<span class="menu-text">Route Simulator</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="../viz/transport_results.html" aria-current="page"> 
@@ -113,15 +110,19 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../methodology_results.html"> 
-<span class="menu-text">Methodology &amp; Results</span></a>
+<span class="menu-text">Methodology</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../team_runs.html"> 
-<span class="menu-text">Team Runs</span></a>
+    <a class="nav-link" href="../route_sim_animation.html"> 
+<span class="menu-text">Animations</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../repo_system_guide.qmd"> 
-<span class="menu-text">System Guide</span></a>
+    <a class="nav-link" href="../scripts_reference.html"> 
+<span class="menu-text">Scripts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contribute.html"> 
+<span class="menu-text">Contribute Compute</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -141,15 +142,27 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#transport-results-snapshot" id="toc-transport-results-snapshot" class="nav-link active" data-scroll-target="#transport-results-snapshot">Transport Results Snapshot</a></li>
   <li><a href="#run-metadata" id="toc-run-metadata" class="nav-link" data-scroll-target="#run-metadata">Run Metadata</a></li>
-  <li><a href="#core-scenario-results" id="toc-core-scenario-results" class="nav-link" data-scroll-target="#core-scenario-results">Core Scenario Results</a></li>
-  <li><a href="#paired-delta-results" id="toc-paired-delta-results" class="nav-link" data-scroll-target="#paired-delta-results">Paired Delta Results</a></li>
-  <li><a href="#distribution-and-sensitivity-diagnostics" id="toc-distribution-and-sensitivity-diagnostics" class="nav-link" data-scroll-target="#distribution-and-sensitivity-diagnostics">Distribution and Sensitivity Diagnostics</a></li>
+  <li><a href="#production-audit-results-70174-runs" id="toc-production-audit-results-70174-runs" class="nav-link" data-scroll-target="#production-audit-results-70174-runs">Production Audit Results (70,174 runs)</a>
+  <ul class="collapse">
+  <li><a href="#comprehensive-scenario-statistics" id="toc-comprehensive-scenario-statistics" class="nav-link" data-scroll-target="#comprehensive-scenario-statistics">Comprehensive Scenario Statistics</a></li>
+  <li><a href="#audit-figures" id="toc-audit-figures" class="nav-link" data-scroll-target="#audit-figures">Audit Figures</a></li>
+  </ul></li>
+  <li><a href="#previous-baseline-local_chunked_run-80-runs" id="toc-previous-baseline-local_chunked_run-80-runs" class="nav-link" data-scroll-target="#previous-baseline-local_chunked_run-80-runs">Previous Baseline (local_chunked_run, 80 runs)</a>
+  <ul class="collapse">
+  <li><a href="#core-scenario-results-baseline" id="toc-core-scenario-results-baseline" class="nav-link" data-scroll-target="#core-scenario-results-baseline">Core Scenario Results (Baseline)</a></li>
+  <li><a href="#paired-delta-results-baseline" id="toc-paired-delta-results-baseline" class="nav-link" data-scroll-target="#paired-delta-results-baseline">Paired Delta Results (Baseline)</a></li>
+  <li><a href="#baseline-diagnostic-figures" id="toc-baseline-diagnostic-figures" class="nav-link" data-scroll-target="#baseline-diagnostic-figures">Baseline Diagnostic Figures</a></li>
+  </ul></li>
   <li><a href="#animation-outputs" id="toc-animation-outputs" class="nav-link" data-scroll-target="#animation-outputs">Animation Outputs</a>
   <ul class="collapse">
   <li><a href="#monte-carlo-dynamics" id="toc-monte-carlo-dynamics" class="nav-link" data-scroll-target="#monte-carlo-dynamics">Monte Carlo Dynamics</a></li>
   <li><a href="#route-comparison-diesel-vs-bev" id="toc-route-comparison-diesel-vs-bev" class="nav-link" data-scroll-target="#route-comparison-diesel-vs-bev">Route Comparison (Diesel vs BEV)</a></li>
   </ul></li>
-  <li><a href="#download-bundles" id="toc-download-bundles" class="nav-link" data-scroll-target="#download-bundles">Download Bundles</a></li>
+  <li><a href="#download-bundles" id="toc-download-bundles" class="nav-link" data-scroll-target="#download-bundles">Download Bundles</a>
+  <ul class="collapse">
+  <li><a href="#production-audit-2026-03-17-70174-runs" id="toc-production-audit-2026-03-17-70174-runs" class="nav-link" data-scroll-target="#production-audit-2026-03-17-70174-runs">Production Audit (2026-03-17, 70,174 runs)</a></li>
+  <li><a href="#baseline-local_chunked_run-80-runs" id="toc-baseline-local_chunked_run-80-runs" class="nav-link" data-scroll-target="#baseline-local_chunked_run-80-runs">Baseline (local_chunked_run, 80 runs)</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -166,6 +179,12 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 17, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -175,23 +194,238 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Total Runs: 70,174 validated across 8 scenarios
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Last updated: 2026-03-17</p>
+</div>
+</div>
 <section id="transport-results-snapshot" class="level2 hero">
 <h2 class="anchored" data-anchor-id="transport-results-snapshot">Transport Results Snapshot</h2>
-<p>Validated run: <code>local_chunked_run</code> (2026-03-09)<br>
-Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code><br>
-Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
+<p>Production audit: <code>audit_2026-03-17</code> | <strong>70,174 runs</strong> | 8 scenarios Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code> Design: paired-within-powertrain uncertainty, BEV/diesel x dry/refrigerated x centralized/regionalized</p>
 </section>
 <section id="run-metadata" class="level2">
 <h2 class="anchored" data-anchor-id="run-metadata">Run Metadata</h2>
 <ul>
-<li>Run ID: <code>local_chunked_run</code></li>
-<li>Scenario rows: <code>dry_diesel</code>, <code>refrigerated_diesel</code>, <code>dry_bev</code>, <code>refrigerated_bev</code></li>
+<li>Audit ID: <code>audit_2026-03-17</code></li>
+<li>Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized (8 combinations)</li>
+<li>Total runs: 70,174 (deduplicated)</li>
+<li>Workers: 4 GCP + 4 Azure</li>
 <li>Validation status: PASS</li>
 <li>Reporting basis: distribution-stage transport only</li>
+<li>Previous baseline: <code>local_chunked_run</code> (80 runs, 2026-03-09) — see below</li>
 </ul>
 </section>
-<section id="core-scenario-results" class="level2">
-<h2 class="anchored" data-anchor-id="core-scenario-results">Core Scenario Results</h2>
+<section id="production-audit-results-70174-runs" class="level2">
+<h2 class="anchored" data-anchor-id="production-audit-results-70174-runs">Production Audit Results (70,174 runs)</h2>
+<section id="comprehensive-scenario-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="comprehensive-scenario-statistics">Comprehensive Scenario Statistics</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 4%">
+<col style="width: 14%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Powertrain</th>
+<th style="text-align: left;">Product</th>
+<th style="text-align: left;">Origin</th>
+<th style="text-align: right;">N</th>
+<th style="text-align: right;">Mean CO2/1000kcal</th>
+<th style="text-align: right;">P05</th>
+<th style="text-align: right;">P50</th>
+<th style="text-align: right;">P95</th>
+<th style="text-align: right;">Charge Stops</th>
+<th style="text-align: right;">Distance (mi)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">15080</td>
+<td style="text-align: right;">0.0134</td>
+<td style="text-align: right;">0.0020</td>
+<td style="text-align: right;">0.0035</td>
+<td style="text-align: right;">0.0564</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">495.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">4788</td>
+<td style="text-align: right;">0.0167</td>
+<td style="text-align: right;">0.0015</td>
+<td style="text-align: right;">0.0193</td>
+<td style="text-align: right;">0.0381</td>
+<td style="text-align: right;">8.82</td>
+<td style="text-align: right;">1029.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">15080</td>
+<td style="text-align: right;">0.0138</td>
+<td style="text-align: right;">0.0020</td>
+<td style="text-align: right;">0.0035</td>
+<td style="text-align: right;">0.0584</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">510.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">4788</td>
+<td style="text-align: right;">0.0173</td>
+<td style="text-align: right;">0.0015</td>
+<td style="text-align: right;">0.0200</td>
+<td style="text-align: right;">0.0394</td>
+<td style="text-align: right;">8.64</td>
+<td style="text-align: right;">1064.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">11737</td>
+<td style="text-align: right;">0.0261</td>
+<td style="text-align: right;">0.0198</td>
+<td style="text-align: right;">0.0248</td>
+<td style="text-align: right;">0.0311</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">631.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">3482</td>
+<td style="text-align: right;">0.0263</td>
+<td style="text-align: right;">0.0126</td>
+<td style="text-align: right;">0.0152</td>
+<td style="text-align: right;">0.0668</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">878.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">11737</td>
+<td style="text-align: right;">0.0262</td>
+<td style="text-align: right;">0.0199</td>
+<td style="text-align: right;">0.0248</td>
+<td style="text-align: right;">0.0312</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">633.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">3482</td>
+<td style="text-align: right;">0.0267</td>
+<td style="text-align: right;">0.0126</td>
+<td style="text-align: right;">0.0152</td>
+<td style="text-align: right;">0.0684</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">893.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="audit-figures" class="level3">
+<h3 class="anchored" data-anchor-id="audit-figures">Audit Figures</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png" class="img-fluid figure-img"></p>
+<figcaption>Fig A: CO2 emissions by scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_b_co2_density.png" class="img-fluid figure-img"></p>
+<figcaption>Fig B: CO2 density distributions</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_c_cdf.png" class="img-fluid figure-img"></p>
+<figcaption>Fig C: Cumulative distribution functions</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_d_decomposition.png" class="img-fluid figure-img"></p>
+<figcaption>Fig D: Emissions decomposition (propulsion vs TRU)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_e_trip_duration.png" class="img-fluid figure-img"></p>
+<figcaption>Fig E: Trip duration by scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_f_charge_stops.png" class="img-fluid figure-img"></p>
+<figcaption>Fig F: BEV charging stops</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_g_energy_breakdown.png" class="img-fluid figure-img"></p>
+<figcaption>Fig G: Energy breakdown by powertrain</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_h_electrification.png" class="img-fluid figure-img"></p>
+<figcaption>Fig H: Electrification impact</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_i_driver_time.png" class="img-fluid figure-img"></p>
+<figcaption>Fig I: Driver time components</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/transport/audit_2026-03-17/figures/fig_j_tru_energy.png" class="img-fluid figure-img"></p>
+<figcaption>Fig J: TRU energy by product type</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="previous-baseline-local_chunked_run-80-runs" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="previous-baseline-local_chunked_run-80-runs">Previous Baseline (local_chunked_run, 80 runs)</h2>
+<section id="core-scenario-results-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="core-scenario-results-baseline">Core Scenario Results (Baseline)</h3>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -243,11 +477,11 @@ Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
 </div>
 </div>
 </section>
-<section id="paired-delta-results" class="level2">
-<h2 class="anchored" data-anchor-id="paired-delta-results">Paired Delta Results</h2>
+<section id="paired-delta-results-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="paired-delta-results-baseline">Paired Delta Results (Baseline)</h3>
 </section>
-<section id="distribution-and-sensitivity-diagnostics" class="level2">
-<h2 class="anchored" data-anchor-id="distribution-and-sensitivity-diagnostics">Distribution and Sensitivity Diagnostics</h2>
+<section id="baseline-diagnostic-figures" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-diagnostic-figures">Baseline Diagnostic Figures</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
@@ -285,6 +519,7 @@ Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
 </figure>
 </div>
 </section>
+</section>
 <section id="animation-outputs" class="level2">
 <h2 class="anchored" data-anchor-id="animation-outputs">Animation Outputs</h2>
 <section id="monte-carlo-dynamics" class="level3">
@@ -298,6 +533,19 @@ Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
 </section>
 <section id="route-comparison-diesel-vs-bev" class="level3">
 <h3 class="anchored" data-anchor-id="route-comparison-diesel-vs-bev">Route Comparison (Diesel vs BEV)</h3>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note:</strong> The route comparison animations below were generated from the earlier 80-run baseline and show stale reefer/diesel and reefer/electric values (both at 0). These animations will be regenerated from the 70,174-run audit dataset.</p>
+</div>
+</div>
 <video controls="" preload="metadata" width="100%">
 <source src="../assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
 </video>
@@ -312,6 +560,15 @@ Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
 </section>
 <section id="download-bundles" class="level2">
 <h2 class="anchored" data-anchor-id="download-bundles">Download Bundles</h2>
+<section id="production-audit-2026-03-17-70174-runs" class="level3">
+<h3 class="anchored" data-anchor-id="production-audit-2026-03-17-70174-runs">Production Audit (2026-03-17, 70,174 runs)</h3>
+<ul>
+<li><a href="../assets/transport/downloads/audit_2026-03-17_figures.zip">Audit figures ZIP</a></li>
+<li><a href="../assets/transport/downloads/audit_2026-03-17_data.zip">Audit data ZIP</a></li>
+</ul>
+</section>
+<section id="baseline-local_chunked_run-80-runs" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-local_chunked_run-80-runs">Baseline (local_chunked_run, 80 runs)</h3>
 <ul>
 <li><a href="../assets/transport/downloads/local_chunked_run_report_bundle.zip">Full report bundle ZIP</a></li>
 <li><a href="../assets/transport/downloads/local_chunked_run_data.zip">Data ZIP</a></li>
@@ -329,6 +586,7 @@ Design: paired-within-powertrain uncertainty, 4 scenarios x 20 replicates</p>
 </ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

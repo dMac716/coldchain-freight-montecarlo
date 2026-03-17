@@ -119,3 +119,5 @@ data/osrm/map.osrm*
 # local logs/scratch
 *.log
 *.tmp
+images/
+artifacts/analysis_2026-03-16/

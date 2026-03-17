@@ -1,5 +1,0 @@
-network,powertrain,n_pairs,mean_dry,mean_refrig,mean_diff,median_diff,pct_penalty,p_refrig_gt_dry,p05_diff,p95_diff
-Centralized,diesel,1726,0.02826,0.04797,0.01971,0.01737,86.5,0.8969,-0.00712,0.05416
-Centralized,bev,1105,0.00413,0.0062,0.00206,0.00181,73.8,0.7575,-0.00249,0.00731
-Regionalized,diesel,1726,0.02831,0.04805,0.01973,0.01749,86.6,0.8946,-0.00724,0.05395
-Regionalized,bev,1105,0.00414,0.00623,0.00209,0.00186,74.2,0.762,-0.00247,0.0073

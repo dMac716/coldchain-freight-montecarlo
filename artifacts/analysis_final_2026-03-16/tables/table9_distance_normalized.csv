@@ -1,9 +1,0 @@
-product_type,network_label,powertrain,n,mean_co2_per_mile,median_co2_per_mile,p05,p95,mean_distance_mi,bev_reduction_pct
-dry,Centralized,bev,1532,1.0065,0.9856,0.6188,1.4451,132.6,31.2
-dry,Centralized,diesel,1726,1.4639,1.4564,1.3317,1.617,615.2,
-dry,Regionalized,bev,1532,1.0065,0.9856,0.6188,1.4451,133,31.2
-dry,Regionalized,diesel,1726,1.4639,1.4564,1.3317,1.617,616.1,
-refrigerated,Centralized,bev,21155,1.1043,1.0828,0.679,1.5904,119.6,32.9
-refrigerated,Centralized,diesel,21634,1.6464,1.6426,1.5059,1.801,616.4,
-refrigerated,Regionalized,bev,21155,1.1043,1.0831,0.6785,1.5902,120.3,32.9
-refrigerated,Regionalized,diesel,21634,1.6464,1.6427,1.5062,1.8013,617.1,

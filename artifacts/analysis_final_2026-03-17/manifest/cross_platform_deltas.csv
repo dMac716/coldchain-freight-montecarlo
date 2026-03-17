@@ -1,0 +1,11 @@
+metric,max_abs_diff,mean_abs_diff,max_pct_diff,mean_pct_diff,comparison
+n_runs,5460,4448.75,58.9629,47.041,local vs gcs
+mean_co2_kg,555.2759,328.742138,110.021,45.7106,local vs gcs
+sd_co2_kg,413.4159,252.8761,48.869,29.9919,local vs gcs
+p50_co2_kg,1101.4338,280.034662,766.9842,191.2588,local vs gcs
+mean_co2_per_1000kcal,0.00906,0.006136,110.1755,45.7617,local vs gcs
+mean_distance,557.5715,236.812762,109.9381,41.3468,local vs gcs
+mean_trip_h,31.3499,10.863525,131.7815,47.5706,local vs gcs
+mean_charge_stops,5.2816,1.841825,149.1009,91.8779,local vs gcs
+mean_energy_kwh,1287.5688,445.907425,110.1095,69.2157,local vs gcs
+mean_co2_tru,21.7976,7.61495,28.8261,17.9686,local vs gcs
