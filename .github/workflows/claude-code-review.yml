@@ -12,9 +12,7 @@ on:
 
 jobs:
   claude-review:
-    # Skip if Claude Code GitHub App is not installed
-    if: ${{ !cancelled() }}
-    continue-on-error: true
+    # Requires Claude Code GitHub App installed on the repository
 
     runs-on: ubuntu-latest
     permissions:
