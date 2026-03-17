@@ -1,0 +1,68 @@
+name: Update Site from Audit Bundle
+
+on:
+  workflow_dispatch:
+    inputs:
+      gcs_uri:
+        description: 'GCS URI of audit bundle (tar.gz)'
+        required: true
+        type: string
+        default: 'gs://coldchain-freight-sources/audit_2026-03-17/audit_bundle_v3_2026-03-17.tar.gz'
+      run_id:
+        description: 'Run ID label for this update'
+        required: false
+        type: string
+        default: 'audit_latest'
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3'
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c("data.table", "knitr", "rmarkdown"), repos = "https://cloud.r-project.org")'
+
+      - name: Authenticate to GCS
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Download audit bundle from GCS
+        run: |
+          mkdir -p /tmp/audit_bundle
+          gsutil cp "${{ inputs.gcs_uri }}" /tmp/audit_bundle.tar.gz
+          tar xzf /tmp/audit_bundle.tar.gz -C /tmp/audit_bundle
+
+      - name: Update site assets
+        run: |
+          bash tools/update_site_from_audit.sh \
+            --audit-dir /tmp/audit_bundle \
+            --run-id "${{ inputs.run_id }}"
+
+      - name: Render Quarto site
+        run: quarto render site/
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add site/assets/ docs/
+          git commit -m "chore: auto-update site with ${{ inputs.run_id }} results [skip ci]" || echo "No changes"
+          git push
