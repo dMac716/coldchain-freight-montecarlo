@@ -3,13 +3,13 @@
 
 repo_root <- rprojroot::find_root(rprojroot::has_file("_targets.R"))
 
-test_that("preflight_cloud.sh exists and is executable", {
+test_that("preflight_cloud.sh exists and has bash shebang", {
   script <- file.path(repo_root, "tools", "preflight_cloud.sh")
   expect_true(file.exists(script))
-  # file.access mode 1 = execute; returns 0 on success
-
-  expect_equal(file.access(script, mode = 1), 0L,
-               info = "preflight_cloud.sh must be executable (chmod +x)")
+  # Check shebang instead of file permission (external volumes may not preserve +x)
+  first_line <- readLines(script, n = 1)
+  expect_true(grepl("^#!/", first_line),
+              info = "preflight_cloud.sh must have a shebang line")
 })
 
 test_that("preflight_cloud.sh has bash strict mode", {
