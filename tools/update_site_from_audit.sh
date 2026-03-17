@@ -117,6 +117,24 @@ done
 mkdir -p "${ARTIFACT_DIR}/figures" "${ARTIFACT_DIR}/tables" "${ARTIFACT_DIR}/animations" "${ARTIFACT_DIR}/manifest"
 cp "${AUDIT_DIR}/figures/"*.png "${ARTIFACT_DIR}/figures/" 2>/dev/null || true
 cp "${AUDIT_DIR}/tables/"*.csv "${ARTIFACT_DIR}/tables/" 2>/dev/null || true
+
+# Generate animations from validated dataset
+COMBINED_CSV="${ARTIFACT_DIR}/analysis_dataset_combined_validated.csv.gz"
+if [[ ! -f "$COMBINED_CSV" ]]; then
+  COMBINED_CSV=$(find "${ARTIFACT_DIR}" -name 'analysis_dataset*.csv.gz' | head -1)
+fi
+if [[ -n "$COMBINED_CSV" ]] && command -v python3 >/dev/null 2>&1; then
+  CSV_PLAIN="/tmp/anim_input_$$.csv"
+  gunzip -c "$COMBINED_CSV" > "$CSV_PLAIN" 2>/dev/null || true
+  if [[ -s "$CSV_PLAIN" ]]; then
+    echo "[site] Generating animations from $(wc -l < "$CSV_PLAIN") rows..."
+    python3 tools/generate_analysis_animations.py \
+      --csv "$CSV_PLAIN" \
+      --outdir "${ARTIFACT_DIR}/animations" \
+      --max_frames 120 2>&1 | tail -5
+    rm -f "$CSV_PLAIN"
+  fi
+fi
 if [[ -f "${AUDIT_DIR}/analysis_dataset_gcs_audit.csv" ]]; then
   gzip -c "${AUDIT_DIR}/analysis_dataset_gcs_audit.csv" > "${ARTIFACT_DIR}/analysis_dataset.csv.gz"
 elif [[ -f "${AUDIT_DIR}/analysis_dataset.csv" ]]; then
