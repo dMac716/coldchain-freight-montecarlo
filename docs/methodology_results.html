@@ -76,7 +76,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -132,15 +132,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./viz/flow_map.html"> 
-<span class="menu-text">Flow Map</span></a>
+<span class="menu-text">Route Map</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./viz/scenario_explorer.html"> 
 <span class="menu-text">Scenario Explorer</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./route_sim_animation.html"> 
-<span class="menu-text">Route Simulator</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./viz/transport_results.html"> 
@@ -148,15 +144,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./methodology_results.html" aria-current="page"> 
-<span class="menu-text">Methodology &amp; Results</span></a>
+<span class="menu-text">Methodology</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./team_runs.html"> 
-<span class="menu-text">Team Runs</span></a>
+    <a class="nav-link" href="./route_sim_animation.html"> 
+<span class="menu-text">Animations</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./repo_system_guide.qmd"> 
-<span class="menu-text">System Guide</span></a>
+    <a class="nav-link" href="./contribute.html"> 
+<span class="menu-text">Contribute Compute</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -187,13 +183,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#packaging-assumptions-used" id="toc-packaging-assumptions-used" class="nav-link" data-scroll-target="#packaging-assumptions-used">Packaging Assumptions Used</a></li>
   </ul></li>
   <li><a href="#validation-and-qa-gates" id="toc-validation-and-qa-gates" class="nav-link" data-scroll-target="#validation-and-qa-gates">Validation and QA Gates</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <li><a href="#march-2026-production-audit-70174-runs" id="toc-march-2026-production-audit-70174-runs" class="nav-link" data-scroll-target="#march-2026-production-audit-70174-runs">March 2026 Production Audit (70,174 runs)</a>
   <ul class="collapse">
-  <li><a href="#scenario-level-summary" id="toc-scenario-level-summary" class="nav-link" data-scroll-target="#scenario-level-summary">Scenario-Level Summary</a></li>
-  <li><a href="#paired-delta-summary" id="toc-paired-delta-summary" class="nav-link" data-scroll-target="#paired-delta-summary">Paired Delta Summary</a></li>
-  <li><a href="#diagnostic-figures" id="toc-diagnostic-figures" class="nav-link" data-scroll-target="#diagnostic-figures">Diagnostic Figures</a></li>
+  <li><a href="#comprehensive-scenario-statistics" id="toc-comprehensive-scenario-statistics" class="nav-link" data-scroll-target="#comprehensive-scenario-statistics">Comprehensive Scenario Statistics</a></li>
+  <li><a href="#audit-figures" id="toc-audit-figures" class="nav-link" data-scroll-target="#audit-figures">Audit Figures</a></li>
+  <li><a href="#bev-charging-fix-context" id="toc-bev-charging-fix-context" class="nav-link" data-scroll-target="#bev-charging-fix-context">BEV Charging Fix Context</a></li>
+  <li><a href="#bev-charging-validation" id="toc-bev-charging-validation" class="nav-link" data-scroll-target="#bev-charging-validation">BEV Charging Validation</a></li>
   </ul></li>
-  <li><a href="#scientific-package-and-reproducibility" id="toc-scientific-package-and-reproducibility" class="nav-link" data-scroll-target="#scientific-package-and-reproducibility">Scientific Package and Reproducibility</a></li>
+  <li><a href="#previous-baseline-local_chunked_run-80-runs-2026-03-09" id="toc-previous-baseline-local_chunked_run-80-runs-2026-03-09" class="nav-link" data-scroll-target="#previous-baseline-local_chunked_run-80-runs-2026-03-09">Previous Baseline (local_chunked_run, 80 runs, 2026-03-09)</a>
+  <ul class="collapse">
+  <li><a href="#scenario-level-summary-baseline" id="toc-scenario-level-summary-baseline" class="nav-link" data-scroll-target="#scenario-level-summary-baseline">Scenario-Level Summary (Baseline)</a></li>
+  <li><a href="#paired-delta-summary-baseline" id="toc-paired-delta-summary-baseline" class="nav-link" data-scroll-target="#paired-delta-summary-baseline">Paired Delta Summary (Baseline)</a></li>
+  <li><a href="#baseline-diagnostic-figures" id="toc-baseline-diagnostic-figures" class="nav-link" data-scroll-target="#baseline-diagnostic-figures">Baseline Diagnostic Figures</a></li>
+  </ul></li>
+  <li><a href="#scientific-package-and-reproducibility" id="toc-scientific-package-and-reproducibility" class="nav-link" data-scroll-target="#scientific-package-and-reproducibility">Scientific Package and Reproducibility</a>
+  <ul class="collapse">
+  <li><a href="#production-audit-2026-03-17-70174-runs" id="toc-production-audit-2026-03-17-70174-runs" class="nav-link" data-scroll-target="#production-audit-2026-03-17-70174-runs">Production Audit (2026-03-17, 70,174 runs)</a></li>
+  <li><a href="#baseline-local_chunked_run-80-runs" id="toc-baseline-local_chunked_run-80-runs" class="nav-link" data-scroll-target="#baseline-local_chunked_run-80-runs">Baseline (local_chunked_run, 80 runs)</a></li>
+  </ul></li>
   <li><a href="#codespaces-validation-lane-status" id="toc-codespaces-validation-lane-status" class="nav-link" data-scroll-target="#codespaces-validation-lane-status">Codespaces Validation Lane Status</a></li>
   <li><a href="#methods-reproduction" id="toc-methods-reproduction" class="nav-link" data-scroll-target="#methods-reproduction">Methods Reproduction</a></li>
   </ul>
@@ -223,15 +230,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="executive-summary" class="level2 hero">
 <h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
-<p>This release documents the distribution-stage transport LCI run <code>local_chunked_run</code> completed on <strong>2026-03-09</strong>.</p>
+<p>This release documents the production audit <code>audit_2026-03-17</code> aggregating <strong>70,174 deduplicated runs</strong> across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).</p>
 <ul>
 <li>Scope: transport/distribution stage only</li>
 <li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code></li>
 <li>Design: matched-pair uncertainty within powertrain</li>
-<li>Scenarios: dry/refrigerated x diesel/BEV</li>
-<li>Replicates: 20</li>
+<li>Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized</li>
+<li>Runs: 70,174 (deduplicated)</li>
 <li>Validation: PASS</li>
 </ul>
+<p>Previous baseline: <code>local_chunked_run</code> (80 runs, 2026-03-09) retained below for reference.</p>
 </section>
 <section id="study-design" class="level2">
 <h2 class="anchored" data-anchor-id="study-design">Study Design</h2>
@@ -294,10 +302,291 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="assets/transport/local_chunked_run/data/transport_sim_validation_report.txt">Validation report</a></li>
 </ul>
 </section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
-<section id="scenario-level-summary" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-level-summary">Scenario-Level Summary</h3>
+<section id="march-2026-production-audit-70174-runs" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="march-2026-production-audit-70174-runs">March 2026 Production Audit (70,174 runs)</h2>
+<div class="panel">
+<p>The production audit (2026-03-17) aggregated 70,174 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.</p>
+</div>
+<section id="comprehensive-scenario-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="comprehensive-scenario-statistics">Comprehensive Scenario Statistics</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 4%">
+<col style="width: 14%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Powertrain</th>
+<th style="text-align: left;">Product</th>
+<th style="text-align: left;">Origin</th>
+<th style="text-align: right;">N</th>
+<th style="text-align: right;">Mean CO2/1000kcal</th>
+<th style="text-align: right;">P05</th>
+<th style="text-align: right;">P50</th>
+<th style="text-align: right;">P95</th>
+<th style="text-align: right;">Charge Stops</th>
+<th style="text-align: right;">Distance (mi)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">15080</td>
+<td style="text-align: right;">0.0134</td>
+<td style="text-align: right;">0.0020</td>
+<td style="text-align: right;">0.0035</td>
+<td style="text-align: right;">0.0564</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">495.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">4788</td>
+<td style="text-align: right;">0.0167</td>
+<td style="text-align: right;">0.0015</td>
+<td style="text-align: right;">0.0193</td>
+<td style="text-align: right;">0.0381</td>
+<td style="text-align: right;">8.82</td>
+<td style="text-align: right;">1029.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">15080</td>
+<td style="text-align: right;">0.0138</td>
+<td style="text-align: right;">0.0020</td>
+<td style="text-align: right;">0.0035</td>
+<td style="text-align: right;">0.0584</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">510.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bev</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">4788</td>
+<td style="text-align: right;">0.0173</td>
+<td style="text-align: right;">0.0015</td>
+<td style="text-align: right;">0.0200</td>
+<td style="text-align: right;">0.0394</td>
+<td style="text-align: right;">8.64</td>
+<td style="text-align: right;">1064.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">11737</td>
+<td style="text-align: right;">0.0261</td>
+<td style="text-align: right;">0.0198</td>
+<td style="text-align: right;">0.0248</td>
+<td style="text-align: right;">0.0311</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">631.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">3482</td>
+<td style="text-align: right;">0.0263</td>
+<td style="text-align: right;">0.0126</td>
+<td style="text-align: right;">0.0152</td>
+<td style="text-align: right;">0.0668</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">878.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">11737</td>
+<td style="text-align: right;">0.0262</td>
+<td style="text-align: right;">0.0199</td>
+<td style="text-align: right;">0.0248</td>
+<td style="text-align: right;">0.0312</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">633.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">3482</td>
+<td style="text-align: right;">0.0267</td>
+<td style="text-align: right;">0.0126</td>
+<td style="text-align: right;">0.0152</td>
+<td style="text-align: right;">0.0684</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">893.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="audit-figures" class="level3">
+<h3 class="anchored" data-anchor-id="audit-figures">Audit Figures</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png" class="img-fluid figure-img"></p>
+<figcaption>Fig A: CO2 emissions by scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_b_co2_density.png" class="img-fluid figure-img"></p>
+<figcaption>Fig B: CO2 density distributions</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_c_cdf.png" class="img-fluid figure-img"></p>
+<figcaption>Fig C: Cumulative distribution functions</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_d_decomposition.png" class="img-fluid figure-img"></p>
+<figcaption>Fig D: Emissions decomposition (propulsion vs TRU)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_e_trip_duration.png" class="img-fluid figure-img"></p>
+<figcaption>Fig E: Trip duration by scenario</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_f_charge_stops.png" class="img-fluid figure-img"></p>
+<figcaption>Fig F: BEV charging stops distribution</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_g_energy_breakdown.png" class="img-fluid figure-img"></p>
+<figcaption>Fig G: Energy breakdown by powertrain</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_h_electrification.png" class="img-fluid figure-img"></p>
+<figcaption>Fig H: Electrification impact (BEV vs diesel delta)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_i_driver_time.png" class="img-fluid figure-img"></p>
+<figcaption>Fig I: Driver time components</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_j_tru_energy.png" class="img-fluid figure-img"></p>
+<figcaption>Fig J: TRU energy by product type</figcaption>
+</figure>
+</div>
+</section>
+<section id="bev-charging-fix-context" class="level3">
+<h3 class="anchored" data-anchor-id="bev-charging-fix-context">BEV Charging Fix Context</h3>
+<p>The BEV charging continuation fix (PR #31) resolved three root causes that prevented en-route DCFC charging events from being modeled. Pre-fix BEV runs showed 0 charging stops; post-fix runs correctly model charging stops proportional to route distance.</p>
+</section>
+<section id="bev-charging-validation" class="level3">
+<h3 class="anchored" data-anchor-id="bev-charging-validation">BEV Charging Validation</h3>
+<p>The table below compares BEV runs before and after the charging fix, demonstrating that the fix produced the expected non-zero charging stops and associated energy/time impacts.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>BEV runs: charging fix validation — pre-fix vs post-fix comparison</caption>
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 5%">
+<col style="width: 11%">
+<col style="width: 20%">
+<col style="width: 11%">
+<col style="width: 14%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">product_type</th>
+<th style="text-align: left;">has_charging</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">mean_co2_kg</th>
+<th style="text-align: right;">mean_co2_per_1000kcal</th>
+<th style="text-align: right;">mean_trip_h</th>
+<th style="text-align: right;">mean_energy_kwh</th>
+<th style="text-align: right;">mean_distance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">23040</td>
+<td style="text-align: right;">131.89</td>
+<td style="text-align: right;">0.0032</td>
+<td style="text-align: right;">2.47</td>
+<td style="text-align: right;">304.6</td>
+<td style="text-align: right;">119.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">7120</td>
+<td style="text-align: right;">1924.43</td>
+<td style="text-align: right;">0.0473</td>
+<td style="text-align: right;">90.05</td>
+<td style="text-align: right;">4452.0</td>
+<td style="text-align: right;">1743.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4138</td>
+<td style="text-align: right;">132.23</td>
+<td style="text-align: right;">0.0022</td>
+<td style="text-align: right;">2.74</td>
+<td style="text-align: right;">304.8</td>
+<td style="text-align: right;">132.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">5438</td>
+<td style="text-align: right;">1735.17</td>
+<td style="text-align: right;">0.0283</td>
+<td style="text-align: right;">85.89</td>
+<td style="text-align: right;">4023.2</td>
+<td style="text-align: right;">1743.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="previous-baseline-local_chunked_run-80-runs-2026-03-09" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="previous-baseline-local_chunked_run-80-runs-2026-03-09">Previous Baseline (local_chunked_run, 80 runs, 2026-03-09)</h2>
+<section id="scenario-level-summary-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-level-summary-baseline">Scenario-Level Summary (Baseline)</h3>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -357,11 +646,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="paired-delta-summary" class="level3">
-<h3 class="anchored" data-anchor-id="paired-delta-summary">Paired Delta Summary</h3>
+<section id="paired-delta-summary-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="paired-delta-summary-baseline">Paired Delta Summary (Baseline)</h3>
 </section>
-<section id="diagnostic-figures" class="level3">
-<h3 class="anchored" data-anchor-id="diagnostic-figures">Diagnostic Figures</h3>
+<section id="baseline-diagnostic-figures" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-diagnostic-figures">Baseline Diagnostic Figures</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="assets/transport/local_chunked_run/figures/co2_per_1000kcal_by_scenario.png" class="img-fluid figure-img"></p>
@@ -390,6 +679,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="scientific-package-and-reproducibility" class="level2">
 <h2 class="anchored" data-anchor-id="scientific-package-and-reproducibility">Scientific Package and Reproducibility</h2>
+<section id="production-audit-2026-03-17-70174-runs" class="level3">
+<h3 class="anchored" data-anchor-id="production-audit-2026-03-17-70174-runs">Production Audit (2026-03-17, 70,174 runs)</h3>
+<ul>
+<li>Audit figures: <a href="assets/transport/downloads/audit_2026-03-17_figures.zip">ZIP</a></li>
+<li>Audit data: <a href="assets/transport/downloads/audit_2026-03-17_data.zip">ZIP</a></li>
+</ul>
+</section>
+<section id="baseline-local_chunked_run-80-runs" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-local_chunked_run-80-runs">Baseline (local_chunked_run, 80 runs)</h3>
 <ul>
 <li>Scientific graphics package: <code>docs/assets/transport/scientific/local_chunked_run/</code></li>
 <li>Full report bundle: <a href="assets/transport/downloads/local_chunked_run_report_bundle.zip">ZIP</a></li>
@@ -397,6 +695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Figure bundle: <a href="assets/transport/downloads/local_chunked_run_figures.zip">ZIP</a></li>
 <li>Animation bundle: <a href="assets/transport/downloads/local_chunked_run_animations.zip">ZIP</a></li>
 </ul>
+</section>
 </section>
 <section id="codespaces-validation-lane-status" class="level2">
 <h2 class="anchored" data-anchor-id="codespaces-validation-lane-status">Codespaces Validation Lane Status</h2>

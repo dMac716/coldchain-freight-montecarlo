@@ -93,6 +93,38 @@ cp "${ASSET_DIR}/tables/"* "${DOCS_DIR}/assets/transport/${RUN_ID}/tables/" 2>/d
 echo "[site] Assets copied to ${ASSET_DIR}/ and ${DOCS_DIR}/"
 
 # ============================================================
+echo "[site] === Step 2b: Update artifact bundle ==="
+# ============================================================
+ARTIFACT_DIR="artifacts/analysis_final_${RUN_ID##audit_}"
+if [[ "$RUN_ID" == audit_* ]]; then
+  ARTIFACT_DIR="artifacts/analysis_final_${RUN_ID#audit_}"
+else
+  ARTIFACT_DIR="artifacts/analysis_final_$(date -u +%Y-%m-%d)"
+fi
+
+# Remove old analysis_final_* from git (keep on disk as analysis_*)
+for old_final in artifacts/analysis_final_*/; do
+  old_name=$(basename "$old_final")
+  if [[ "$old_final" != "${ARTIFACT_DIR}/" && -d "$old_final" ]]; then
+    new_name="${old_name/analysis_final_/analysis_}"
+    echo "[site] Archiving $old_name → $new_name (local only)"
+    git rm -r --cached "$old_final" 2>/dev/null || true
+    mv "$old_final" "artifacts/${new_name}" 2>/dev/null || true
+    echo "artifacts/${new_name}/" >> .gitignore
+  fi
+done
+
+mkdir -p "${ARTIFACT_DIR}/figures" "${ARTIFACT_DIR}/tables" "${ARTIFACT_DIR}/animations" "${ARTIFACT_DIR}/manifest"
+cp "${AUDIT_DIR}/figures/"*.png "${ARTIFACT_DIR}/figures/" 2>/dev/null || true
+cp "${AUDIT_DIR}/tables/"*.csv "${ARTIFACT_DIR}/tables/" 2>/dev/null || true
+if [[ -f "${AUDIT_DIR}/analysis_dataset_gcs_audit.csv" ]]; then
+  gzip -c "${AUDIT_DIR}/analysis_dataset_gcs_audit.csv" > "${ARTIFACT_DIR}/analysis_dataset.csv.gz"
+elif [[ -f "${AUDIT_DIR}/analysis_dataset.csv" ]]; then
+  gzip -c "${AUDIT_DIR}/analysis_dataset.csv" > "${ARTIFACT_DIR}/analysis_dataset.csv.gz"
+fi
+echo "[site] Artifact bundle: ${ARTIFACT_DIR}/"
+
+# ============================================================
 echo "[site] === Step 3: Generate download bundles ==="
 # ============================================================
 DOWNLOADS_DIR="${SITE_DIR}/assets/transport/downloads"

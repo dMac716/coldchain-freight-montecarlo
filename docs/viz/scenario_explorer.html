@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -97,15 +97,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../viz/flow_map.html"> 
-<span class="menu-text">Flow Map</span></a>
+<span class="menu-text">Route Map</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="../viz/scenario_explorer.html" aria-current="page"> 
 <span class="menu-text">Scenario Explorer</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../route_sim_animation.html"> 
-<span class="menu-text">Route Simulator</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../viz/transport_results.html"> 
@@ -113,15 +109,15 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../methodology_results.html"> 
-<span class="menu-text">Methodology &amp; Results</span></a>
+<span class="menu-text">Methodology</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../team_runs.html"> 
-<span class="menu-text">Team Runs</span></a>
+    <a class="nav-link" href="../route_sim_animation.html"> 
+<span class="menu-text">Animations</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../repo_system_guide.qmd"> 
-<span class="menu-text">System Guide</span></a>
+    <a class="nav-link" href="../contribute.html"> 
+<span class="menu-text">Contribute Compute</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -159,6 +155,310 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<h3 class="anchored">
+March 2026 Production Audit (70,174 runs)
+</h3>
+<p>
+<strong>Data source:</strong> <code>../assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv</code>
+</p>
+<table class="table table-striped" style="margin-top:12px;">
+<thead>
+<tr>
+<th>
+Scenario
+</th>
+<th>
+Powertrain
+</th>
+<th>
+Product Type
+</th>
+<th>
+Origin Network
+</th>
+<th>
+Runs
+</th>
+<th>
+Mean CO2 (kg)
+</th>
+<th>
+Mean Distance (mi)
+</th>
+<th>
+Mean Trip (h)
+</th>
+<th>
+Mean Charge Stops
+</th>
+<th>
+Mean CO2/1000kcal
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+bev / refrigerated / dry_factory_set
+</td>
+<td>
+bev
+</td>
+<td>
+refrigerated
+</td>
+<td>
+dry_factory_set
+</td>
+<td>
+15,080
+</td>
+<td>
+546.7
+</td>
+<td>
+495.5
+</td>
+<td>
+25.7
+</td>
+<td>
+4
+</td>
+<td>
+0.0134
+</td>
+</tr>
+<tr>
+<td>
+bev / dry / dry_factory_set
+</td>
+<td>
+bev
+</td>
+<td>
+dry
+</td>
+<td>
+dry_factory_set
+</td>
+<td>
+4,788
+</td>
+<td>
+1025
+</td>
+<td>
+1029.7
+</td>
+<td>
+55.1
+</td>
+<td>
+8.8
+</td>
+<td>
+0.0167
+</td>
+</tr>
+<tr>
+<td>
+bev / refrigerated / refrigerated_factory_set
+</td>
+<td>
+bev
+</td>
+<td>
+refrigerated
+</td>
+<td>
+refrigerated_factory_set
+</td>
+<td>
+15,080
+</td>
+<td>
+563.4
+</td>
+<td>
+510.7
+</td>
+<td>
+20.6
+</td>
+<td>
+4
+</td>
+<td>
+0.0138
+</td>
+</tr>
+<tr>
+<td>
+bev / dry / refrigerated_factory_set
+</td>
+<td>
+bev
+</td>
+<td>
+dry
+</td>
+<td>
+refrigerated_factory_set
+</td>
+<td>
+4,788
+</td>
+<td>
+1060
+</td>
+<td>
+1064.7
+</td>
+<td>
+44.8
+</td>
+<td>
+8.6
+</td>
+<td>
+0.0173
+</td>
+</tr>
+<tr>
+<td>
+diesel / refrigerated / dry_factory_set
+</td>
+<td>
+diesel
+</td>
+<td>
+refrigerated
+</td>
+<td>
+dry_factory_set
+</td>
+<td>
+11,737
+</td>
+<td>
+1060.9
+</td>
+<td>
+631.8
+</td>
+<td>
+13
+</td>
+<td>
+0
+</td>
+<td>
+0.0261
+</td>
+</tr>
+<tr>
+<td>
+diesel / dry / dry_factory_set
+</td>
+<td>
+diesel
+</td>
+<td>
+dry
+</td>
+<td>
+dry_factory_set
+</td>
+<td>
+3,482
+</td>
+<td>
+1614.4
+</td>
+<td>
+878.4
+</td>
+<td>
+18.3
+</td>
+<td>
+0
+</td>
+<td>
+0.0263
+</td>
+</tr>
+<tr>
+<td>
+diesel / refrigerated / refrigerated_factory_set
+</td>
+<td>
+diesel
+</td>
+<td>
+refrigerated
+</td>
+<td>
+refrigerated_factory_set
+</td>
+<td>
+11,737
+</td>
+<td>
+1066.8
+</td>
+<td>
+633.5
+</td>
+<td>
+13
+</td>
+<td>
+0
+</td>
+<td>
+0.0262
+</td>
+</tr>
+<tr>
+<td>
+diesel / dry / refrigerated_factory_set
+</td>
+<td>
+diesel
+</td>
+<td>
+dry
+</td>
+<td>
+refrigerated_factory_set
+</td>
+<td>
+3,482
+</td>
+<td>
+1636.6
+</td>
+<td>
+893.5
+</td>
+<td>
+18.6
+</td>
+<td>
+0
+</td>
+<td>
+0.0267
+</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h4 class="anchored">
+Per-Run Explorer (local chunked run sample)
+</h4>
 <p>
 <strong>Data source:</strong> <code>../assets/transport/local_chunked_run/data/transport_sim_rows.csv</code>
 </p>
