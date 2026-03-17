@@ -19,9 +19,19 @@ mkdir -p "$AUDIT_DIR/figures" "$AUDIT_DIR/tables" "$STAGING/tarballs" "$STAGING/
 # ============================================================
 echo "[audit] === Step 0: Install dependencies ==="
 # ============================================================
-python3 -m venv /tmp/audit_venv
-/tmp/audit_venv/bin/pip install numpy pandas matplotlib 2>&1 | tail -3
-PYTHON_BIN="/tmp/audit_venv/bin/python3"
+# Python deps are optional (only needed for advanced diagnostics/animations).
+# Try venv first, fall back to --break-system-packages, or skip.
+PYTHON_BIN="python3"
+if python3 -m venv /tmp/audit_venv 2>/dev/null; then
+  /tmp/audit_venv/bin/pip install numpy pandas matplotlib 2>&1 | tail -3
+  PYTHON_BIN="/tmp/audit_venv/bin/python3"
+elif pip3 install --user --break-system-packages numpy pandas matplotlib 2>/dev/null; then
+  echo "[audit] Installed Python deps with --break-system-packages"
+else
+  echo "[audit] WARN: Python deps not installed — skipping Python-based graphics"
+fi
+
+# R deps — ggplot2 is required for the analysis figures
 Rscript -e 'for (p in c("ggplot2", "scales", "gridExtra")) { if (!requireNamespace(p, quietly=TRUE)) install.packages(p, repos="https://cloud.r-project.org") }' 2>&1 | tail -5
 
 # ============================================================
