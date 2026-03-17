@@ -5,13 +5,13 @@ title: "Methodology and Scientific Results"
 ::: {.hero}
 ## Executive Summary
 
-This release documents the production audit `audit_2026-03-17` aggregating **70,174 deduplicated runs** across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).
+This release documents the production audit `audit_2026-03-17` aggregating **59,434 deduplicated runs** across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).
 
 - Scope: transport/distribution stage only
 - Functional unit: `kg CO2e / 1000 kcal delivered to retail`
 - Design: matched-pair uncertainty within powertrain
 - Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized
-- Runs: 70,174 (deduplicated)
+- Runs: 59,434 (deduplicated)
 - Validation: PASS
 
 Previous baseline: `local_chunked_run` (80 runs, 2026-03-09) retained below for reference.
@@ -68,10 +68,10 @@ Validation artifact:
 
 - [Validation report](assets/transport/local_chunked_run/data/transport_sim_validation_report.txt)
 
-## March 2026 Production Audit (70,174 runs) { .section-title }
+## March 2026 Production Audit (59,434 runs) { .section-title }
 
 ::: {.panel}
-The production audit (2026-03-17) aggregated 70,174 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.
+The production audit (2026-03-17) aggregated 59,434 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.
 :::
 
 ### Comprehensive Scenario Statistics
@@ -173,7 +173,7 @@ if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
 
 ## Scientific Package and Reproducibility
 
-### Production Audit (2026-03-17, 70,174 runs)
+### Production Audit (2026-03-17, 59,434 runs)
 
 - Audit figures: [ZIP](assets/transport/downloads/audit_2026-03-17_figures.zip)
 - Audit data: [ZIP](assets/transport/downloads/audit_2026-03-17_data.zip)

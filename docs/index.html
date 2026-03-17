@@ -182,6 +182,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#latest-results-march-2026-production-audit" id="toc-latest-results-march-2026-production-audit" class="nav-link" data-scroll-target="#latest-results-march-2026-production-audit">Latest Results (March 2026 Production Audit)</a></li>
   <li><a href="#explore" id="toc-explore" class="nav-link" data-scroll-target="#explore">Explore</a></li>
   <li><a href="#pipeline-overview" id="toc-pipeline-overview" class="nav-link" data-scroll-target="#pipeline-overview">Pipeline Overview</a></li>
+  <li><a href="#sister-project-full-lca" id="toc-sister-project-full-lca" class="nav-link" data-scroll-target="#sister-project-full-lca">Sister Project: Full LCA</a></li>
   <li><a href="#reproducibility" id="toc-reproducibility" class="nav-link" data-scroll-target="#reproducibility">Reproducibility</a></li>
   <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick Start</a></li>
   </ul>
@@ -212,7 +213,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cold-chain-freight-monte-carlo" class="level1 hero">
 <h1>Cold-Chain Freight Monte Carlo</h1>
 <p>Distributed Monte Carlo simulation of greenhouse gas emissions for refrigerated dog food freight under alternative spatial and powertrain scenarios.</p>
-<p><code>Latest production audit: audit_2026-03-17 | 70,174 runs | TRAFFIC_AWARE_OPTIMAL routing</code> <code>Functional unit: kg CO2e / 1,000 kcal delivered to retail</code></p>
+<p><code>Latest production audit: audit_2026-03-17 | 59,434 runs | TRAFFIC_AWARE_OPTIMAL routing</code> <code>Functional unit: kg CO2e / 1,000 kcal delivered to retail</code></p>
 <div class="cta-row">
 <p><a href="./methodology_results.html" class="btn-pill">Methodology</a> <a href="./viz/flow_map.html" class="btn-pill">Route Map</a> <a href="./viz/transport_results.html" class="btn-pill">Transport Results</a> <a href="./contribute.html" class="btn-pill">Contribute Compute</a></p>
 </div>
@@ -259,7 +260,7 @@ Cloud Workers
 Total Runs
 </div>
 <div class="kpi-value">
-70,174
+59,434
 </div>
 <p>Deduplicated, cross-platform validated</p>
 </div>
@@ -300,12 +301,14 @@ Total Runs
 <section id="latest-results-march-2026-production-audit" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="latest-results-march-2026-production-audit">Latest Results (March 2026 Production Audit)</h2>
 <div class="panel">
-<p>The production audit aggregated <strong>70,174 deduplicated runs</strong> across 8 scenarios (BEV/diesel x dry/refrigerated x centralized/regionalized) from 4 GCP and 4 Azure workers. Key findings:</p>
+<p>The production audit aggregated <strong>59,434 validated runs</strong> (46,720 diesel + 12,714 post-fix BEV) across 8 scenarios from 4 GCP and 4 Azure workers. Key findings:</p>
 <ul>
-<li><strong>BEV reduces CO2 85.8%</strong> for refrigerated products (cold-chain dominated)</li>
-<li><strong>BEV increases CO2 27–32%</strong> for dry products (longer BEV routes, charging overhead, grid carbon)</li>
-<li>Pre-fix BEV runs had 0 charging stops; post-fix runs correctly model en-route charging</li>
+<li><strong>Refrigerated</strong>: BEV CO2/1000kcal (0.047) is comparable to diesel (0.048) despite 2.8x longer route (1,743 vs 616 mi) — electrification offsets the distance penalty</li>
+<li><strong>Dry</strong>: BEV and diesel CO2/1000kcal are equivalent (0.028) — BEV grid charging overhead is balanced by zero tailpipe emissions</li>
+<li><strong>BEV trip energy</strong>: 4,000–4,500 kWh total, 15–17 charging stops per 1,743-mi corridor</li>
+<li>Post-fix BEV runs correctly model en-route charging; all BEV runs have charge_stops &gt; 0</li>
 </ul>
+<p>This is a <a href="https://dmac716.github.io/MortyMonteCarlo/">companion transport analysis</a> to the full lifecycle assessment.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png" class="img-fluid figure-img"></p>
@@ -406,6 +409,14 @@ Total Runs
 </div>
 <p>See the <a href="./scripts_reference.html">Scripts Reference</a> for detailed usage of each tool.</p>
 </section>
+<section id="sister-project-full-lca" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="sister-project-full-lca">Sister Project: Full LCA</h2>
+<div class="panel">
+<p>This repository handles the <strong>transport stage</strong> of the lifecycle. The full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) is computed in a companion project:</p>
+<p><a href="https://dmac716.github.io/MortyMonteCarlo/" class="btn-pill" style="background: var(--primary); border-color: var(--primary);">MortyMonteCarlo — Full LCA</a></p>
+<p>That site mirrors and updates automatically when this repository publishes new artifacts to <code>artifacts/analysis_final_*/</code>. Both projects share the same functional unit (kg CO2e / 1,000 kcal delivered to retail) and product definitions.</p>
+</div>
+</section>
 <section id="reproducibility" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="reproducibility">Reproducibility</h2>
 <div class="panel">
@@ -420,12 +431,11 @@ Total Runs
 </section>
 <section id="quick-start" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="quick-start">Quick Start</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--branch</span> hotfix/derived-bootstrap-fix <span class="dt">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  https://github.com/dMac716/coldchain-freight-montecarlo.git</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> coldchain-freight-montecarlo</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> test          <span class="co"># Run testthat suite</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> smoke         <span class="co"># End-to-end smoke test</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/  <span class="co"># Build this site locally</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/dMac716/coldchain-freight-montecarlo.git</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> coldchain-freight-montecarlo</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> test          <span class="co"># Run testthat suite</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> smoke         <span class="co"># End-to-end smoke test</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render site/  <span class="co"># Build this site locally</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>
