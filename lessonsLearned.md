@@ -192,3 +192,47 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - The total human time spent debugging Deepnote and Codespace failures exceeded the compute value they could have delivered. For future projects: validate one complete end-to-end cycle on a new platform before scaling to multiple workers.
 - Camber's 96-CPU "small" tier burns CPU-hours at 96x rate. A 2-hour wall-clock job costs 192 CPU-hours of the 200-hour student budget. Plan Camber jobs carefully — they're sprint capacity, not sustained workers.
 - GCP disk images (`coldchain-worker-traffic-aware-v1`) eliminated all bootstrap time for new workers. Every cloud platform should have an equivalent image/snapshot mechanism. Azure image creation worked. Codespace Dockerfile builds failed silently. Deepnote has no image mechanism.
+
+### March 17, 2026 — Multi-cloud result aggregation and VM imaging
+
+#### BEV charging continuation bug
+- BEV runs pre-2026-03-16 have `charge_stops=0`, distance ~120mi, trip ~2.5h — the truck stopped when battery died instead of stopping to charge. Fixed in PR #31.
+- **Filter**: For valid BEV analysis, always filter to `charge_stops > 0`. This removes ~68% of BEV runs (the pre-fix ones).
+- Post-fix BEV runs show 13-21 charging stops per trip across the ~1700mi route.
+- The `bev_charging_vs_no_charging.csv` table makes the bug obvious: pre-fix BEV CO2 is ~132kg at 120mi, post-fix is ~1924kg at 1743mi.
+
+#### Multi-cloud result collection
+- Results live in 4 places: local macOS (`outputs/run_bundle/`), GCP VMs (`/srv/coldchain/repo/outputs/run_bundle/`), Azure VMs (same path), and GCS (`gs://coldchain-freight-sources/reruns_bev_fix/`).
+- Azure uses **two subscriptions** (both "Azure for Students"). `az vm list` only shows VMs in the default subscription. Must use `az vm list --subscription <id>` to see VMs in the second subscription.
+- `gcloud compute ssh` works without specifying a key, but `ssh azureuser@<ip>` requires the default SSH key to be authorized on the VM.
+- `find ... -exec tail -n +2 {} +` on Linux prints `==> filename <==` headers between files, contaminating CSV merges. Use `find ... -print0 | xargs -0 -I{} sh -c 'tail -n +2 "$1"' _ {}` or a `while read` loop instead.
+
+#### GCP VM imaging and restoration
+- `gcloud compute images create` requires the VM to be **stopped**. Stop → image → restart.
+- `gcloud compute images export` to GCS takes 10-15 minutes and produces a VMDK tarball (~2.5GB for a 100GB disk with ~5GB used).
+- Clean completed run bundles **before imaging** to minimize image size.
+- Image family (`--family=coldchain-worker`) lets `gcloud compute instances create --image-family=coldchain-worker` always use the latest image. Delete old images before creating new ones with the same name.
+- After restoring from image, `git pull origin main` to get latest code changes.
+- `/srv/coldchain/repo` is the canonical repo path on all GCP workers. Parent dir `/srv/coldchain/` is root-owned; need `sudo chown` or `sudo mkdir` to write there.
+
+#### Azure VM imaging
+- Azure imaging is **destructive**: `az vm generalize` makes the source VM unusable (it must be recreated from the image). Don't generalize a running worker.
+- Alternative: use `az snapshot create` on the OS disk for non-destructive snapshots, then `az image create --source <snapshot>`.
+- Azure managed images are region-locked. Cross-region deployment requires exporting to a storage blob first.
+
+#### R package installation on VMs
+- GCP Debian VMs have R 4.2.2 but no ggplot2/scales. Installation compiles from source (~5-10 min).
+- Azure Ubuntu VMs (smaller) take longer for R compilation. Use `sudo Rscript` to install to system library.
+- Python: Debian 12+ enforces PEP 668 (externally managed environment). `python3 -m venv` fails if `python3-venv` package isn't installed. Fallback: `pip3 install --break-system-packages`.
+
+#### FU metric derivation
+- Newer run bundles have `kcal_delivered` and `co2_per_1000kcal` as empty columns — the functional unit normalization wasn't computed during the sim.
+- Can be derived post-hoc: `payload_kg = payload_max_lb_draw * load_fraction * 0.453592`, then `kcal_delivered = payload_kg * kcal_per_kg_product`, then `co2_per_1000kcal = co2_kg_total / kcal_delivered * 1000`.
+- `kcal_per_kg_product` is populated for all runs. `payload_max_lb_draw` and `load_fraction` are also always present.
+
+#### Aggregation pipeline
+- Deduplication by `run_id` (sort -u on column 1) is essential — the same runs appear in multiple tarballs (GCS has earlier snapshots of Azure worker data).
+- 275k raw rows → 70k deduplicated in this session.
+- `tools/audit_analysis.R` is the canonical comprehensive analysis script. It derives FU metrics, validates BEV charging, and produces 10 figures + 5 tables.
+- `tools/manage_worker_image.sh` handles download/upload/deploy of VM images across GCP and local storage.
+- `tools/bootstrap_worker.sh` supports both GCP and Azure with image-first fast path and full-bootstrap fallback.
