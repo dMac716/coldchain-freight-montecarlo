@@ -214,6 +214,7 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - Image family (`--family=coldchain-worker`) lets `gcloud compute instances create --image-family=coldchain-worker` always use the latest image. Delete old images before creating new ones with the same name.
 - After restoring from image, `git pull origin main` to get latest code changes.
 - `/srv/coldchain/repo` is the canonical repo path on all GCP workers. Parent dir `/srv/coldchain/` is root-owned; need `sudo chown` or `sudo mkdir` to write there.
+- `gcloud compute images export` spawns a temporary VM to do the export. If `CPUS_ALL_REGIONS` quota (default 32 for student accounts) is exhausted by running workers, the export fails with `QUOTA_EXCEEDED`. **Stop idle workers first** before exporting images. The error initially appears as `ZONE_RESOURCE_POOL_EXHAUSTED` which is misleading — the real cause is the global CPU quota.
 
 #### Azure VM imaging
 - Azure imaging is **destructive**: `az vm generalize` makes the source VM unusable (it must be recreated from the image). Don't generalize a running worker.
