@@ -12,7 +12,9 @@ on:
 
 jobs:
   claude-review:
-    # Requires Claude Code GitHub App installed on the repository
+    # Requires Claude Code GitHub App + API key configured
+    # Non-blocking: won't prevent merge if review fails
+    continue-on-error: true
 
     runs-on: ubuntu-latest
     permissions:
