@@ -201,6 +201,13 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - Post-fix BEV runs show 13-21 charging stops per trip across the ~1700mi route.
 - The `bev_charging_vs_no_charging.csv` table makes the bug obvious: pre-fix BEV CO2 is ~132kg at 120mi, post-fix is ~1924kg at 1743mi.
 
+#### Data integrity — never blindly merge all run bundles (March 17 incident)
+- **Deduplication by run_id is necessary but NOT sufficient.** Different seed batches from different production runs can have different distance distributions, traffic draws, and random number streams. Merging them corrupts the baseline.
+- The March 17 indiscriminate merge changed diesel CO2/FU by -29% to -38% vs the validated March 16 baseline — because different GCP/Azure marathon runs used different seeds that produced different distance samples.
+- **Rule**: Always filter to known-validated run groups when building the analysis dataset. The correct approach for the BEV fix was: keep March 16 diesel unchanged + add only March 17 BEV runs with charge_stops > 0.
+- Store the validated baseline dataset alongside any new merge so it can be recovered. Label files clearly: `analysis_dataset_march16_validated.csv.gz` vs `analysis_dataset_combined_validated.csv.gz`.
+- **Validation checks that would have caught this**: compare diesel mean CO2/FU and distance against known baseline before accepting a new merge; verify run count per scenario matches expectations; flag if any diesel metrics change by > 5%.
+
 #### Multi-cloud result collection
 - Results live in 4 places: local macOS (`outputs/run_bundle/`), GCP VMs (`/srv/coldchain/repo/outputs/run_bundle/`), Azure VMs (same path), and GCS (`gs://coldchain-freight-sources/reruns_bev_fix/`).
 - Azure uses **two subscriptions** (both "Azure for Students"). `az vm list` only shows VMs in the default subscription. Must use `az vm list --subscription <id>` to see VMs in the second subscription.
