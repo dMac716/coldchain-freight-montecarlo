@@ -460,12 +460,15 @@ refrigerated_factory_set
 Per-Run Explorer (local chunked run sample)
 </h4>
 <p>
-<strong>Data source:</strong> <code>../assets/transport/local_chunked_run/data/transport_sim_rows.csv</code>
+<strong>Data source:</strong> <code>../assets/transport/local_chunked_run/data/transport_sim_rows.csv</code> &nbsp;|&nbsp; <strong>Total rows:</strong> 80 &nbsp;|&nbsp; <strong>Date:</strong> 2026-03-17
 </p>
-<div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">
-<label for="scenario-filter"><b>Scenario:</b></label> <select id="scenario-filter"><option value="ALL">ALL</option><option value="dry_bev">dry_bev</option><option value="dry_diesel">dry_diesel</option><option value="refrigerated_bev">refrigerated_bev</option><option value="refrigerated_diesel">refrigerated_diesel</option></select><label for="power-filter"><b>Powertrain:</b></label> <select id="power-filter"><option value="ALL">ALL</option><option value="bev">bev</option><option value="diesel">diesel</option></select><label for="origin-filter"><b>Origin:</b></label> <select id="origin-filter"><option value="ALL">ALL</option><option value="Kansas Plant">Kansas Plant</option><option value="Texas Plant">Texas Plant</option></select>
+<div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+<label for="scenario-filter"><b>Scenario:</b></label> <select id="scenario-filter"><option value="ALL">ALL</option><option value="dry_bev">dry_bev</option><option value="dry_diesel">dry_diesel</option><option value="refrigerated_bev">refrigerated_bev</option><option value="refrigerated_diesel">refrigerated_diesel</option></select><label for="power-filter"><b>Powertrain:</b></label> <select id="power-filter"><option value="ALL">ALL</option><option value="bev">bev</option><option value="diesel">diesel</option></select><label for="origin-filter"><b>Origin:</b></label> <select id="origin-filter"><option value="ALL">ALL</option><option value="Kansas Plant">Kansas Plant</option><option value="Texas Plant">Texas Plant</option></select><button id="csv-download-btn" style="margin-left:auto; padding:6px 16px; background:#0d4f8f; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold">Download CSV</button>
 </div>
-<table id="scenario-table" class="table table-striped" style="margin-top:12px;">
+<div id="filter-summary" style="background:#edf4fb; padding:10px 16px; border-radius:6px; margin-bottom:10px; font-size:0.95em">
+
+</div>
+<table id="scenario-table" class="table table-striped" style="margin-top:4px;">
 <thead>
 <tr>
 <th>
@@ -3792,7 +3795,7 @@ Davis, CA Petco
 </tr>
 </tbody>
 </table>
-<script>const sSel=document.getElementById('scenario-filter');const pSel=document.getElementById('power-filter');const oSel=document.getElementById('origin-filter');const rows=[...document.querySelectorAll('#scenario-table tbody tr')];function applyFilters(){ const s=sSel.value.toUpperCase(), p=pSel.value.toUpperCase(), o=oSel.value.toUpperCase(); rows.forEach(r=>{   const keepS=(s==='ALL'||r.dataset.scenario===s);   const keepP=(p==='ALL'||r.dataset.power===p);   const keepO=(o==='ALL'||r.dataset.origin===o);   r.style.display=(keepS&&keepP&&keepO)?'':'none'; });}sSel.addEventListener('change', applyFilters);pSel.addEventListener('change', applyFilters);oSel.addEventListener('change', applyFilters);applyFilters();</script>
+<script>const sSel=document.getElementById('scenario-filter');const pSel=document.getElementById('power-filter');const oSel=document.getElementById('origin-filter');const summaryDiv=document.getElementById('filter-summary');const rows=[...document.querySelectorAll('#scenario-table tbody tr')];const hdr=['Rep','Scenario','Powertrain','Origin','Destination','Distance (mi)','Duration (h)','Congestion (h)','Diesel gal','BEV kWh','Charge stops','Total CO2 kg','CO2 / 1000 kcal'];function applyFilters(){ const s=sSel.value.toUpperCase(), p=pSel.value.toUpperCase(), o=oSel.value.toUpperCase(); let n=0, sumDist=0, sumDur=0, sumCO2=0, sumKWh=0, sumChg=0; rows.forEach(r=>{   const keepS=(s==='ALL'||r.dataset.scenario===s);   const keepP=(p==='ALL'||r.dataset.power===p);   const keepO=(o==='ALL'||r.dataset.origin===o);   const vis=keepS&&keepP&&keepO;   r.style.display=vis?'':'none';   if(vis){n++;const c=r.cells;sumDist+=parseFloat(c[5].textContent)||0;sumDur+=parseFloat(c[6].textContent)||0;sumCO2+=parseFloat(c[11].textContent)||0;sumKWh+=parseFloat(c[9].textContent)||0;sumChg+=parseFloat(c[10].textContent)||0;} }); if(n>0){  summaryDiv.innerHTML='<b>Showing '+n+' runs</b> &mdash; Avg Distance: '+(sumDist/n).toFixed(1)+' mi | Avg Duration: '+(sumDur/n).toFixed(2)+' h | Avg CO2: '+(sumCO2/n).toFixed(1)+' kg | Avg BEV kWh: '+(sumKWh/n).toFixed(1)+' | Avg Charge Stops: '+(sumChg/n).toFixed(1); } else { summaryDiv.innerHTML='<b>No matching runs</b>'; }}sSel.addEventListener('change', applyFilters);pSel.addEventListener('change', applyFilters);oSel.addEventListener('change', applyFilters);applyFilters();document.getElementById('csv-download-btn').addEventListener('click',function(){ const vis=rows.filter(r=>r.style.display!=='none'); let csv=hdr.join(',')+String.fromCharCode(10); vis.forEach(r=>{csv+=[...r.cells].map(c=>c.textContent).join(',')+String.fromCharCode(10);}); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob); a.download='scenario_explorer_filtered.csv';a.click();});</script>
 
 
 
