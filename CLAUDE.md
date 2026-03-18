@@ -148,6 +148,45 @@ These must not change without explicit human review and updated tests:
 - `R/05_histogram.R` / `R/06_analysis.R` — merge algebra, aggregation invariants
 - `data/inputs_local/histogram_config.csv` — bin edge definitions
 
+## Data Integrity Rules
+
+**Never blindly merge all run bundles.** Different seed batches from different production runs have different distance distributions and random number streams. Merging them corrupts baselines.
+
+- The validated diesel baseline is in `artifacts/analysis_final_*/analysis_dataset_march16_validated.csv.gz`. Diesel CO2/FU must stay at dry=0.0283, refrig=0.0480.
+- For BEV, only include runs with `charge_stops > 0`. Pre-fix BEV runs (March 16 and earlier) stop at ~107 miles with 0 charges — they're broken.
+- The correct combined dataset is `analysis_dataset_combined_validated.csv.gz`: March 16 diesel + post-fix BEV only.
+- `co2_per_1000kcal` is empty in newer run bundles. Derive it: `payload_kg = payload_max_lb_draw * load_fraction * 0.453592; kcal_delivered = payload_kg * kcal_per_kg_product; co2_per_1000kcal = co2_kg_total / kcal_delivered * 1000`. But prefer the pre-computed values from the old dataset when available.
+- `test-dataset-integrity.R` validates diesel baseline drift, BEV charging, and run counts. Run it before accepting any new merge.
+- Dry product runs have `tru_kwh=0, tru_gal=0` (no refrigeration). Don't confuse this with missing data.
+
+## Multi-Cloud Fleet
+
+| Platform | Entry | Workers | Auto-upload |
+|----------|-------|---------|-------------|
+| GCP | `tools/worker_run_and_upload.sh` | 4 VMs (`e2-standard-4`) | Yes (GCS) |
+| Azure | SSH + `run_route_sim_mc.R` | 4 VMs (2 subscriptions) | No (manual pull) |
+| Local macOS | `tools/run_route_sim_mc.R` | 1 | N/A |
+
+- VM image: `coldchain-worker-20260317` (GCP image family `coldchain-worker`). Deploy with `bash tools/bootstrap_worker.sh --platform gcp --name worker-new`.
+- `tools/preflight_cloud.sh` checks quota, SSH, GCS access before operations.
+- Assign non-overlapping seed blocks (1000+ gaps) to each worker.
+- Always `tar → gsutil cp → clean` after each batch. Don't rely on VMs staying up.
+- Azure uses 2 subscriptions. `az vm list` only shows default sub — use `--subscription <id>` for the second.
+- `gcloud compute images export` needs CPU quota headroom. Stop idle VMs first.
+
+## Site (GitHub Pages)
+
+Pages deploy from `docs/` on main (legacy mode, not workflow). After updating:
+
+```bash
+quarto render site/                           # Render all pages
+gh api repos/OWNER/REPO/pages/builds -X POST  # Trigger deploy
+```
+
+`tools/update_site_from_audit.sh` automates: copy figures/tables → generate animations → create ZIPs → validate run counts in .qmd files → render → optionally commit.
+
+Key pages: `site/index.qmd`, `site/methodology_results.qmd`, `site/viz/transport_results.qmd`, `site/viz/flow_map.qmd`, `site/viz/scenario_explorer.qmd`, `site/route_sim_animation.qmd`, `site/scripts_reference.qmd`.
+
 ## Commit Style
 
 Conventional-style: `feat:`, `fix:`, `chore:`, `docs:`. Keep commits scoped (sources/provenance vs model logic vs docs). PRs should note AI involvement if applicable.
