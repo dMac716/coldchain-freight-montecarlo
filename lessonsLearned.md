@@ -162,11 +162,16 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - The `sources/data/osm` directory is expected but optional. Create it as an empty placeholder (`mkdir -p sources/data/osm`) to suppress warnings.
 - For contributor-facing scripts, detect the OS and install R appropriately (Alpine: `apk`, Ubuntu: `apt`, macOS: `brew`). Never assume a specific package manager.
 
-### Queue chaining / pgrep self-match bug (March 16, 2026)
-- `while pgrep -f run_route_sim_mc > /dev/null` inside a `nohup bash -c '...'` block matches **its own process command string**, causing the wait loop to exit immediately instead of waiting for the actual R process. This silently killed every queued follow-up batch on GCP and Azure overnight — an estimated 80,000 lost runs.
-- **Fix**: never use `pgrep -f <pattern>` to wait for a process when the wait script itself contains that pattern in its command string. Use a PID file, a flag file, or `wait $PID` instead. Or chain batches sequentially in one script rather than queuing a second script that waits for the first.
+### Queue chaining / pgrep self-match bug (March 16, 2026) — ~80,000 runs lost
+
+**A pgrep bug accidentally killed itself and wiped out ~80,000 Monte Carlo simulation runs overnight.** While orchestrating 180k+ Monte Carlo simulations across GCP, Azure, Codespaces, and Deepnote, a `pgrep` command matched its own process, causing a self-match bug that silently torpedoed a massive overnight batch run. The user and Claude were managing a full distributed fleet when this silent saboteur struck.
+
+**What happened**: `while pgrep -f run_route_sim_mc > /dev/null` inside a `nohup bash -c '...'` block matches **its own process command string** (because the entire `bash -c '...'` command line contains `run_route_sim_mc`). This caused the wait loop to exit immediately — every queued follow-up batch on GCP and Azure started and immediately exited, producing zero results. The fleet appeared to be running (processes were alive) but no actual simulation work was being done after the first batch.
+
+- **Fix**: Never use `pgrep -f <pattern>` to wait for a process when the wait script itself contains that pattern in its command string. Use a PID file, a flag file, or `wait $PID` instead. Or chain batches sequentially in one script rather than queuing a second script that waits for the first.
 - The safest pattern for multi-batch loops is a single `for SEED in ... ; do ... done` in one nohup, not separate nohup processes that try to detect when the previous one finished.
 - This bug affected every "queue more batches after current finishes" command issued via SSH. The direct marathon loops (single `for` in one nohup) worked correctly. Always prefer direct loops over layered wait-and-launch patterns.
+- **Scale of impact**: 8 cloud workers x ~10,000 runs per worker overnight = ~80,000 runs that should have completed but didn't. Only the first batch on each worker (launched directly, not via the wait-and-chain pattern) produced results.
 
 ### Deepnote operational lessons (March 16, 2026)
 - "Unlimited projects" share underlying infrastructure. Launching 20 concurrent projects saturated network and caused git clone + R package install failures across all of them.
