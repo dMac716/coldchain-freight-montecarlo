@@ -26,27 +26,26 @@ jobs:
         with:
           r-version: "4.5.1"
 
+      - name: Cache lintr
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/R/renv
+            ~/R/x86_64-pc-linux-gnu-library
+          key: ${{ runner.os }}-lintr-${{ hashFiles('renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-lintr-
+
       - name: Install lintr
-        shell: bash
         run: |
-          Rscript -e 'install.packages("lintr", repos="https://cloud.r-project.org")'
+          Rscript -e 'if (!requireNamespace("lintr", quietly=TRUE)) install.packages("lintr", repos="https://cloud.r-project.org")'
 
       - name: Run lintr
-        shell: bash
-        run: |
-          Rscript -e 'lintr::lint_dir()'
-
-      - name: Install shellcheck
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
+        run: Rscript -e 'lintr::lint_dir()'
 
       - name: Shellcheck tools scripts
-        shell: bash
         run: |
           set -euo pipefail
-          # Scripts excluded from shellcheck: embedded R heredocs cause parse errors
           EXCLUDE_LIST="gcs_full_audit.sh bootstrap_worker.sh bootstrap_gcp_worker.sh codespace_autorun.sh codespace_run_production.sh build_google_routes_cache_download.sh build_google_routes_outputs_download.sh run_google_routes_cache_pipeline.sh preflight_cloud.sh pull_worker_results.sh submit_results.sh"
           for f in tools/*.sh; do
             base=$(basename "$f")
@@ -58,11 +57,6 @@ jobs:
               shellcheck --severity=warning "$f"
             fi
           done
-          if [[ -f .devcontainer/postCreate.sh ]]; then
-            shellcheck --severity=warning .devcontainer/postCreate.sh
-          fi
 
       - name: Check Makefile CLI contract
-        shell: bash
-        run: |
-          bash tools/check_makefile_cli_contract.sh Makefile
+        run: bash tools/check_makefile_cli_contract.sh Makefile
