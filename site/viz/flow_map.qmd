@@ -196,7 +196,7 @@ These routes are the geometric basis for the BEV charging waypoint plans and the
 :::
 
 ::: {.panel}
-### Route Usage in Production Audit (70,174 runs)
+### Route Usage in Production Audit (59,434 runs)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 audit_stats_path <- pick_path(c(

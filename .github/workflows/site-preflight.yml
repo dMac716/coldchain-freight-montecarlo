@@ -67,21 +67,16 @@ jobs:
             libproj-dev \
             libpng-dev
 
-      - name: Cache renv packages
+      - name: Cache R packages
         uses: actions/cache@v4
         with:
-          path: renv/library
-          key: ${{ runner.os }}-site-preflight-renv-${{ hashFiles('renv.lock') }}
+          path: |
+            ~/.cache/R/renv
+            renv/library
+          key: ${{ runner.os }}-site-renv-${{ hashFiles('renv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-site-preflight-renv-
-
-      - name: Cache renv downloads
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/R/renv
-          key: ${{ runner.os }}-site-preflight-renv-downloads-${{ hashFiles('renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-site-preflight-renv-downloads-
+            ${{ runner.os }}-site-renv-
+            ${{ runner.os }}-r-ci-
 
       - name: Restore renv + install UI deps
         shell: bash

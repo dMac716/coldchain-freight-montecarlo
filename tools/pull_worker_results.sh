@@ -1,5 +1,13 @@
 #!/bin/bash
 set -euo pipefail
+
+# Sentry error reporting (requires SENTRY_DSN env var)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "${SCRIPT_DIR}/lib/sentry_report.sh" ]; then
+  source "${SCRIPT_DIR}/lib/sentry_report.sh"
+elif [ -f "tools/lib/sentry_report.sh" ]; then
+  source "tools/lib/sentry_report.sh"
+fi
 # pull_worker_results.sh — Pull run bundles from all compute workers (GCP + Azure)
 # Downloads results, uploads backups to GCS, and stages for local aggregation.
 #

@@ -6,32 +6,54 @@ format: html
 ::: {.hero}
 ## Animation Gallery
 
-Animation assets from `local_chunked_run` baseline. The production audit (`audit_2026-03-17`, 70,174 runs) validated these route geometries at scale across 4 GCP and 4 Azure workers.
-
-- All videos are linked as direct MP4 files.
-- If inline playback fails in GitHub Pages, download the animation ZIP.
+Animation assets from the validated production audit (59,434 runs: 46,720 diesel + 12,714 post-fix BEV). MC convergence and density animations generated from the correct combined dataset with diesel baseline verified.
 :::
 
-## Download Options
+## Production Audit Animations (March 2026)
 
-- [Animations ZIP](assets/transport/downloads/local_chunked_run_animations.zip)
-- [Full report bundle ZIP](assets/transport/downloads/local_chunked_run_report_bundle.zip)
+### MC Convergence: CO2/1000kcal by Sample Size
 
-## Transport MC Animations
-
-### Distribution Animation
+Shows running mean convergence as sample count grows --- demonstrates statistical stability of the Monte Carlo estimates.
 
 <video controls preload="metadata" width="100%">
-  <source src="assets/transport/local_chunked_run/figures/transport_mc_animation.mp4" type="video/mp4">
+  <source src="assets/transport/downloads/transport_mc_evolution.mp4" type="video/mp4">
 </video>
 
-### Evolution Animation
+![Last frame](assets/transport/audit_2026-03-17/figures/transport_mc_evolution_last_frame.png)
+
+### Emissions Density: Diesel vs BEV
+
+Animated kernel density overlay showing the distribution of CO2/1000kcal for diesel (coral) vs BEV (blue).
 
 <video controls preload="metadata" width="100%">
-  <source src="assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4" type="video/mp4">
+  <source src="assets/transport/downloads/transport_mc_animation.mp4" type="video/mp4">
 </video>
 
-## Route Animations
+![Last frame](assets/transport/audit_2026-03-17/figures/transport_mc_animation_last_frame.png)
+
+### Diesel vs BEV: Side-by-Side Comparison
+
+Bar chart animation comparing mean CO2/1000kcal between diesel and BEV for refrigerated and dry products.
+
+<video controls preload="metadata" width="100%">
+  <source src="assets/transport/downloads/transport_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+
+![Last frame](assets/transport/audit_2026-03-17/figures/transport_diesel_vs_bev_last_frame.png)
+
+### Route Comparison: Diesel vs BEV (Multi-Panel)
+
+Side-by-side comparison showing cumulative elapsed time, distance, CO2, traffic delay, traction energy, reefer energy, and charge/refuel stops plotted against route progress (latitude/longitude). Note: BEV track is currently truncated at ~107 mi due to missing charger station cache data in this checkout ([issue #35](https://github.com/dMac716/coldchain-freight-montecarlo/issues/35)).
+
+<video controls preload="metadata" width="100%">
+  <source src="assets/transport/downloads/route_comparison_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+
+![Route comparison last frame](assets/transport/audit_2026-03-17/figures/route_comparison_diesel_vs_bev_last_frame.png)
+
+## Route Replay Animations (Baseline)
+
+These route animations show the physical truck route from facility to retail, using representative runs from the baseline `local_chunked_run`.
 
 ### Diesel Route
 
@@ -51,20 +73,32 @@ Animation assets from `local_chunked_run` baseline. The production audit (`audit
   <source src="assets/transport/downloads/route_animation_diesel_vs_bev.mp4" type="video/mp4">
 </video>
 
-## Representative Scenario Metrics
+## Static Figures from Production Audit
 
-```{r}
-#| echo: false
-rows_path <- "assets/transport/local_chunked_run/data/transport_sim_rows.csv"
-if (file.exists(rows_path)) {
-  df <- utils::read.csv(rows_path, stringsAsFactors = FALSE)
-  keep <- c(
-    "replicate_id", "scenario_name", "powertrain", "origin_name", "destination_name",
-    "route_id", "trip_distance_miles", "trip_duration_hours", "congestion_delay_hours",
-    "charging_events", "co2_per_1000kcal"
-  )
-  keep <- keep[keep %in% names(df)]
-  show <- df[df$replicate_id == min(df$replicate_id, na.rm = TRUE), keep, drop = FALSE]
-  knitr::kable(show)
-}
-```
+All 10 analysis figures from the validated 59,434-run dataset:
+
+![CO2 by Scenario](assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
+
+![CO2 Density](assets/transport/audit_2026-03-17/figures/fig_b_co2_density.png)
+
+![Empirical CDF](assets/transport/audit_2026-03-17/figures/fig_c_cdf.png)
+
+![Emission Decomposition](assets/transport/audit_2026-03-17/figures/fig_d_decomposition.png)
+
+![Trip Duration](assets/transport/audit_2026-03-17/figures/fig_e_trip_duration.png)
+
+![BEV Charge Stops](assets/transport/audit_2026-03-17/figures/fig_f_charge_stops.png)
+
+![Energy Breakdown](assets/transport/audit_2026-03-17/figures/fig_g_energy_breakdown.png)
+
+![Electrification Impact](assets/transport/audit_2026-03-17/figures/fig_h_electrification.png)
+
+![Driver Time Breakdown](assets/transport/audit_2026-03-17/figures/fig_i_driver_time.png)
+
+![TRU Energy per Trip](assets/transport/audit_2026-03-17/figures/fig_j_tru_energy.png)
+
+## Downloads
+
+- [Audit Figures ZIP](assets/transport/downloads/audit_2026-03-17_figures.zip) (10 figures, March 2026)
+- [Audit Data ZIP](assets/transport/downloads/audit_2026-03-17_data.zip) (5 tables, March 2026)
+- [Baseline Animations ZIP](assets/transport/downloads/local_chunked_run_animations.zip) (route replays)

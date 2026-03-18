@@ -7,7 +7,7 @@ title: "Cold-Chain Freight Monte Carlo"
 
 Distributed Monte Carlo simulation of greenhouse gas emissions for refrigerated dog food freight under alternative spatial and powertrain scenarios.
 
-`Latest production audit: audit_2026-03-17 | 70,174 runs | TRAFFIC_AWARE_OPTIMAL routing`
+`Latest production audit: audit_2026-03-17 | 59,434 runs | TRAFFIC_AWARE_OPTIMAL routing`
 `Functional unit: kg CO2e / 1,000 kcal delivered to retail`
 
 ::: {.cta-row}
@@ -45,7 +45,7 @@ Google Routes API
 
 ::: {.kpi-card}
 <div class="kpi-label">Total Runs</div>
-<div class="kpi-value">70,174</div>
+<div class="kpi-value">59,434</div>
 Deduplicated, cross-platform validated
 :::
 :::
@@ -68,11 +68,14 @@ Each paired draw uses **Common Random Numbers** (CRN) --- exogenous uncertainty 
 ## Latest Results (March 2026 Production Audit) { .section-title }
 
 ::: {.panel}
-The production audit aggregated **70,174 deduplicated runs** across 8 scenarios (BEV/diesel x dry/refrigerated x centralized/regionalized) from 4 GCP and 4 Azure workers. Key findings:
+The production audit aggregated **59,434 validated runs** (46,720 diesel + 12,714 post-fix BEV) across 8 scenarios from 4 GCP and 4 Azure workers. Key findings:
 
-- **BEV reduces CO2 85.8%** for refrigerated products (cold-chain dominated)
-- **BEV increases CO2 27--32%** for dry products (longer BEV routes, charging overhead, grid carbon)
-- Pre-fix BEV runs had 0 charging stops; post-fix runs correctly model en-route charging
+- **Refrigerated**: BEV CO2/1000kcal (0.047) is comparable to diesel (0.048) despite 2.8x longer route (1,743 vs 616 mi) --- electrification offsets the distance penalty
+- **Dry**: BEV and diesel CO2/1000kcal are equivalent (0.028) --- BEV grid charging overhead is balanced by zero tailpipe emissions
+- **BEV trip energy**: 4,000--4,500 kWh total, 15--17 charging stops per 1,743-mi corridor
+- Post-fix BEV runs correctly model en-route charging; all BEV runs have charge_stops > 0
+
+This is a [companion transport analysis](https://dmac716.github.io/MortyMonteCarlo/) to the full lifecycle assessment.
 
 ![CO2 by scenario](assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
 
@@ -169,6 +172,16 @@ flowchart TD
 
 See the [Scripts Reference](scripts_reference.qmd) for detailed usage of each tool.
 
+## Sister Project: Full LCA { .section-title }
+
+::: {.panel}
+This repository handles the **transport stage** of the lifecycle. The full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) is computed in a companion project:
+
+[MortyMonteCarlo --- Full LCA](https://dmac716.github.io/MortyMonteCarlo/){.btn-pill style="background: var(--primary); border-color: var(--primary);"}
+
+That site mirrors and updates automatically when this repository publishes new artifacts to `artifacts/analysis_final_*/`. Both projects share the same functional unit (kg CO2e / 1,000 kcal delivered to retail) and product definitions.
+:::
+
 ## Reproducibility { .section-title }
 
 ::: {.panel}
@@ -185,8 +198,7 @@ See the [Scripts Reference](scripts_reference.qmd) for detailed usage of each to
 ## Quick Start { .section-title }
 
 ```bash
-git clone --branch hotfix/derived-bootstrap-fix \
-  https://github.com/dMac716/coldchain-freight-montecarlo.git
+git clone https://github.com/dMac716/coldchain-freight-montecarlo.git
 cd coldchain-freight-montecarlo
 make test          # Run testthat suite
 make smoke         # End-to-end smoke test

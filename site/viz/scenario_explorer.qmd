@@ -8,7 +8,7 @@ pick_path <- function(paths) {
   ""
 }
 
-# --- March 2026 Production Audit (70,174 runs) ---
+# --- March 2026 Production Audit (59,434 runs) ---
 audit_stats_path <- pick_path(c(
   "../assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv",
   "../../site/assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv"

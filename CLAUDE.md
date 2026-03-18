@@ -14,6 +14,8 @@ Before making any changes, read these files:
 
 Distributed Monte Carlo simulation for refrigerated dog food freight emissions under alternative spatial (CENTRALIZED/REGIONALIZED) and powertrain (diesel/BEV) scenarios. Research-grade R codebase supporting a graduate-level transportation and cold-chain implications study.
 
+**Sister project**: [MortyMonteCarlo](https://github.com/dMac716/MortyMonteCarlo) computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail). It mirrors and updates when this repository publishes new artifacts to `artifacts/analysis_final_*/`. Both projects share the same functional unit (`FU_1000_KCAL`).
+
 **System boundary**: Manufacturing → Retail freight only.
 **Functional unit**: 1,000 kcal delivered to retail (`FU_1000_KCAL`).
 
@@ -156,6 +158,15 @@ Conventional-style: `feat:`, `fix:`, `chore:`, `docs:`. Keep commits scoped (sou
 - `feat/*` — optional polish branches
 - `release/*` — presentation snapshots with stabilized validated outputs only
 - `main` — reviewed and validated merges only
+
+## Integrations
+
+- **Sentry**: Error reporting for pipeline scripts. Set `SENTRY_DSN` env var. Source `tools/lib/sentry_report.sh` to use `report_error`/`report_warning`. Catches worker fleet crashes without SSH.
+- **GitHub Actions**: Primary CI (lint, R tests, site render). R packages cached across workflows.
+- **MCP**: `.github/mcp.json` provides filesystem + GitHub + memory servers for AI tools (Copilot, ChatGPT, Claude).
+- **Sister project**: [MortyMonteCarlo](https://dmac716.github.io/MortyMonteCarlo/) mirrors artifacts from `artifacts/analysis_final_*/` for the full LCA.
+
+Available but unused: Travis CI, Azure Pipelines (redundant with GitHub Actions), Doppler (secrets — use GitHub Secrets instead).
 
 ## Provenance
 

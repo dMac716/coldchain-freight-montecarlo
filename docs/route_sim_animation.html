@@ -140,19 +140,21 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#animation-gallery" id="toc-animation-gallery" class="nav-link active" data-scroll-target="#animation-gallery">Animation Gallery</a></li>
-  <li><a href="#download-options" id="toc-download-options" class="nav-link" data-scroll-target="#download-options">Download Options</a></li>
-  <li><a href="#transport-mc-animations" id="toc-transport-mc-animations" class="nav-link" data-scroll-target="#transport-mc-animations">Transport MC Animations</a>
+  <li><a href="#production-audit-animations-march-2026" id="toc-production-audit-animations-march-2026" class="nav-link" data-scroll-target="#production-audit-animations-march-2026">Production Audit Animations (March 2026)</a>
   <ul class="collapse">
-  <li><a href="#distribution-animation" id="toc-distribution-animation" class="nav-link" data-scroll-target="#distribution-animation">Distribution Animation</a></li>
-  <li><a href="#evolution-animation" id="toc-evolution-animation" class="nav-link" data-scroll-target="#evolution-animation">Evolution Animation</a></li>
+  <li><a href="#mc-convergence-co21000kcal-by-sample-size" id="toc-mc-convergence-co21000kcal-by-sample-size" class="nav-link" data-scroll-target="#mc-convergence-co21000kcal-by-sample-size">MC Convergence: CO2/1000kcal by Sample Size</a></li>
+  <li><a href="#emissions-density-diesel-vs-bev" id="toc-emissions-density-diesel-vs-bev" class="nav-link" data-scroll-target="#emissions-density-diesel-vs-bev">Emissions Density: Diesel vs BEV</a></li>
+  <li><a href="#diesel-vs-bev-side-by-side-comparison" id="toc-diesel-vs-bev-side-by-side-comparison" class="nav-link" data-scroll-target="#diesel-vs-bev-side-by-side-comparison">Diesel vs BEV: Side-by-Side Comparison</a></li>
+  <li><a href="#route-comparison-diesel-vs-bev-multi-panel" id="toc-route-comparison-diesel-vs-bev-multi-panel" class="nav-link" data-scroll-target="#route-comparison-diesel-vs-bev-multi-panel">Route Comparison: Diesel vs BEV (Multi-Panel)</a></li>
   </ul></li>
-  <li><a href="#route-animations" id="toc-route-animations" class="nav-link" data-scroll-target="#route-animations">Route Animations</a>
+  <li><a href="#route-replay-animations-baseline" id="toc-route-replay-animations-baseline" class="nav-link" data-scroll-target="#route-replay-animations-baseline">Route Replay Animations (Baseline)</a>
   <ul class="collapse">
   <li><a href="#diesel-route" id="toc-diesel-route" class="nav-link" data-scroll-target="#diesel-route">Diesel Route</a></li>
   <li><a href="#bev-route" id="toc-bev-route" class="nav-link" data-scroll-target="#bev-route">BEV Route</a></li>
   <li><a href="#diesel-vs-bev-route-comparison" id="toc-diesel-vs-bev-route-comparison" class="nav-link" data-scroll-target="#diesel-vs-bev-route-comparison">Diesel vs BEV Route Comparison</a></li>
   </ul></li>
-  <li><a href="#representative-scenario-metrics" id="toc-representative-scenario-metrics" class="nav-link" data-scroll-target="#representative-scenario-metrics">Representative Scenario Metrics</a></li>
+  <li><a href="#static-figures-from-production-audit" id="toc-static-figures-from-production-audit" class="nav-link" data-scroll-target="#static-figures-from-production-audit">Static Figures from Production Audit</a></li>
+  <li><a href="#downloads" id="toc-downloads" class="nav-link" data-scroll-target="#downloads">Downloads</a></li>
   </ul>
 </nav>
     </div>
@@ -180,36 +182,66 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="animation-gallery" class="level2 hero">
 <h2 class="anchored" data-anchor-id="animation-gallery">Animation Gallery</h2>
-<p>Animation assets from <code>local_chunked_run</code> baseline. The production audit (<code>audit_2026-03-17</code>, 70,174 runs) validated these route geometries at scale across 4 GCP and 4 Azure workers.</p>
-<ul>
-<li>All videos are linked as direct MP4 files.</li>
-<li>If inline playback fails in GitHub Pages, download the animation ZIP.</li>
-</ul>
+<p>Animation assets from the validated production audit (59,434 runs: 46,720 diesel + 12,714 post-fix BEV). MC convergence and density animations generated from the correct combined dataset with diesel baseline verified.</p>
 </section>
-<section id="download-options" class="level2">
-<h2 class="anchored" data-anchor-id="download-options">Download Options</h2>
-<ul>
-<li><a href="assets/transport/downloads/local_chunked_run_animations.zip">Animations ZIP</a></li>
-<li><a href="assets/transport/downloads/local_chunked_run_report_bundle.zip">Full report bundle ZIP</a></li>
-</ul>
-</section>
-<section id="transport-mc-animations" class="level2">
-<h2 class="anchored" data-anchor-id="transport-mc-animations">Transport MC Animations</h2>
-<section id="distribution-animation" class="level3">
-<h3 class="anchored" data-anchor-id="distribution-animation">Distribution Animation</h3>
+<section id="production-audit-animations-march-2026" class="level2">
+<h2 class="anchored" data-anchor-id="production-audit-animations-march-2026">Production Audit Animations (March 2026)</h2>
+<section id="mc-convergence-co21000kcal-by-sample-size" class="level3">
+<h3 class="anchored" data-anchor-id="mc-convergence-co21000kcal-by-sample-size">MC Convergence: CO2/1000kcal by Sample Size</h3>
+<p>Shows running mean convergence as sample count grows — demonstrates statistical stability of the Monte Carlo estimates.</p>
 <video controls="" preload="metadata" width="100%">
-<source src="assets/transport/local_chunked_run/figures/transport_mc_animation.mp4" type="video/mp4">
+<source src="assets/transport/downloads/transport_mc_evolution.mp4" type="video/mp4">
 </video>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/transport_mc_evolution_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>Last frame</figcaption>
+</figure>
+</div>
 </section>
-<section id="evolution-animation" class="level3">
-<h3 class="anchored" data-anchor-id="evolution-animation">Evolution Animation</h3>
+<section id="emissions-density-diesel-vs-bev" class="level3">
+<h3 class="anchored" data-anchor-id="emissions-density-diesel-vs-bev">Emissions Density: Diesel vs BEV</h3>
+<p>Animated kernel density overlay showing the distribution of CO2/1000kcal for diesel (coral) vs BEV (blue).</p>
 <video controls="" preload="metadata" width="100%">
-<source src="assets/transport/local_chunked_run/figures/transport_mc_evolution.mp4" type="video/mp4">
+<source src="assets/transport/downloads/transport_mc_animation.mp4" type="video/mp4">
 </video>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/transport_mc_animation_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>Last frame</figcaption>
+</figure>
+</div>
+</section>
+<section id="diesel-vs-bev-side-by-side-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="diesel-vs-bev-side-by-side-comparison">Diesel vs BEV: Side-by-Side Comparison</h3>
+<p>Bar chart animation comparing mean CO2/1000kcal between diesel and BEV for refrigerated and dry products.</p>
+<video controls="" preload="metadata" width="100%">
+<source src="assets/transport/downloads/transport_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/transport_diesel_vs_bev_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>Last frame</figcaption>
+</figure>
+</div>
+</section>
+<section id="route-comparison-diesel-vs-bev-multi-panel" class="level3">
+<h3 class="anchored" data-anchor-id="route-comparison-diesel-vs-bev-multi-panel">Route Comparison: Diesel vs BEV (Multi-Panel)</h3>
+<p>Side-by-side comparison showing cumulative elapsed time, distance, CO2, traffic delay, traction energy, reefer energy, and charge/refuel stops plotted against route progress (latitude/longitude). Note: BEV track is currently truncated at ~107 mi due to missing charger station cache data in this checkout (<a href="https://github.com/dMac716/coldchain-freight-montecarlo/issues/35">issue #35</a>).</p>
+<video controls="" preload="metadata" width="100%">
+<source src="assets/transport/downloads/route_comparison_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/route_comparison_diesel_vs_bev_last_frame.png" class="img-fluid figure-img"></p>
+<figcaption>Route comparison last frame</figcaption>
+</figure>
+</div>
 </section>
 </section>
-<section id="route-animations" class="level2">
-<h2 class="anchored" data-anchor-id="route-animations">Route Animations</h2>
+<section id="route-replay-animations-baseline" class="level2">
+<h2 class="anchored" data-anchor-id="route-replay-animations-baseline">Route Replay Animations (Baseline)</h2>
+<p>These route animations show the physical truck route from facility to retail, using representative runs from the baseline <code>local_chunked_run</code>.</p>
 <section id="diesel-route" class="level3">
 <h3 class="anchored" data-anchor-id="diesel-route">Diesel Route</h3>
 <video controls="" preload="metadata" width="100%">
@@ -229,96 +261,77 @@ ul.task-list li input[type="checkbox"] {
 </video>
 </section>
 </section>
-<section id="representative-scenario-metrics" class="level2">
-<h2 class="anchored" data-anchor-id="representative-scenario-metrics">Representative Scenario Metrics</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 5%">
-<col style="width: 8%">
-<col style="width: 4%">
-<col style="width: 5%">
-<col style="width: 7%">
-<col style="width: 27%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 9%">
-<col style="width: 6%">
-<col style="width: 7%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">replicate_id</th>
-<th style="text-align: left;">scenario_name</th>
-<th style="text-align: left;">powertrain</th>
-<th style="text-align: left;">origin_name</th>
-<th style="text-align: left;">destination_name</th>
-<th style="text-align: left;">route_id</th>
-<th style="text-align: right;">trip_distance_miles</th>
-<th style="text-align: right;">trip_duration_hours</th>
-<th style="text-align: right;">congestion_delay_hours</th>
-<th style="text-align: right;">charging_events</th>
-<th style="text-align: right;">co2_per_1000kcal</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">dry_bev</td>
-<td style="text-align: left;">bev</td>
-<td style="text-align: left;">Kansas Plant</td>
-<td style="text-align: left;">Davis, CA Petco</td>
-<td style="text-align: left;">6b88a97d8f305b6b031d969855c6487a8bff10cadafd6ed6940f2fa0c11c1138</td>
-<td style="text-align: right;">1712.225</td>
-<td style="text-align: right;">71.55308</td>
-<td style="text-align: right;">0.1763508</td>
-<td style="text-align: right;">18</td>
-<td style="text-align: right;">0.0348433</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">dry_diesel</td>
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">Kansas Plant</td>
-<td style="text-align: left;">Davis, CA Petco</td>
-<td style="text-align: left;">6b88a97d8f305b6b031d969855c6487a8bff10cadafd6ed6940f2fa0c11c1138</td>
-<td style="text-align: right;">1712.225</td>
-<td style="text-align: right;">35.75271</td>
-<td style="text-align: right;">0.5749149</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.0698641</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">refrigerated_bev</td>
-<td style="text-align: left;">bev</td>
-<td style="text-align: left;">Texas Plant</td>
-<td style="text-align: left;">Davis, CA Petco</td>
-<td style="text-align: left;">77d76aed2cedb894eabb52e1f4bb2f347c5c2d411a5b10d914f2b3b710d3b42f</td>
-<td style="text-align: right;">1787.166</td>
-<td style="text-align: right;">96.28637</td>
-<td style="text-align: right;">1.0625698</td>
-<td style="text-align: right;">23</td>
-<td style="text-align: right;">0.2923891</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">refrigerated_diesel</td>
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">Texas Plant</td>
-<td style="text-align: left;">Davis, CA Petco</td>
-<td style="text-align: left;">77d76aed2cedb894eabb52e1f4bb2f347c5c2d411a5b10d914f2b3b710d3b42f</td>
-<td style="text-align: right;">1787.166</td>
-<td style="text-align: right;">37.35164</td>
-<td style="text-align: right;">0.5466670</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.5682723</td>
-</tr>
-</tbody>
-</table>
+<section id="static-figures-from-production-audit" class="level2">
+<h2 class="anchored" data-anchor-id="static-figures-from-production-audit">Static Figures from Production Audit</h2>
+<p>All 10 analysis figures from the validated 59,434-run dataset:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png" class="img-fluid figure-img"></p>
+<figcaption>CO2 by Scenario</figcaption>
+</figure>
 </div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_b_co2_density.png" class="img-fluid figure-img"></p>
+<figcaption>CO2 Density</figcaption>
+</figure>
 </div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_c_cdf.png" class="img-fluid figure-img"></p>
+<figcaption>Empirical CDF</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_d_decomposition.png" class="img-fluid figure-img"></p>
+<figcaption>Emission Decomposition</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_e_trip_duration.png" class="img-fluid figure-img"></p>
+<figcaption>Trip Duration</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_f_charge_stops.png" class="img-fluid figure-img"></p>
+<figcaption>BEV Charge Stops</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_g_energy_breakdown.png" class="img-fluid figure-img"></p>
+<figcaption>Energy Breakdown</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_h_electrification.png" class="img-fluid figure-img"></p>
+<figcaption>Electrification Impact</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_i_driver_time.png" class="img-fluid figure-img"></p>
+<figcaption>Driver Time Breakdown</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_j_tru_energy.png" class="img-fluid figure-img"></p>
+<figcaption>TRU Energy per Trip</figcaption>
+</figure>
+</div>
+</section>
+<section id="downloads" class="level2">
+<h2 class="anchored" data-anchor-id="downloads">Downloads</h2>
+<ul>
+<li><a href="assets/transport/downloads/audit_2026-03-17_figures.zip">Audit Figures ZIP</a> (10 figures, March 2026)</li>
+<li><a href="assets/transport/downloads/audit_2026-03-17_data.zip">Audit Data ZIP</a> (5 tables, March 2026)</li>
+<li><a href="assets/transport/downloads/local_chunked_run_animations.zip">Baseline Animations ZIP</a> (route replays)</li>
+</ul>
 
 
 </section>
