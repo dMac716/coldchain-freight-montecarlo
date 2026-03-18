@@ -159,6 +159,15 @@ Conventional-style: `feat:`, `fix:`, `chore:`, `docs:`. Keep commits scoped (sou
 - `release/*` — presentation snapshots with stabilized validated outputs only
 - `main` — reviewed and validated merges only
 
+## Integrations
+
+- **Sentry**: Error reporting for pipeline scripts. Set `SENTRY_DSN` env var. Source `tools/lib/sentry_report.sh` to use `report_error`/`report_warning`. Catches worker fleet crashes without SSH.
+- **GitHub Actions**: Primary CI (lint, R tests, site render). R packages cached across workflows.
+- **MCP**: `.github/mcp.json` provides filesystem + GitHub + memory servers for AI tools (Copilot, ChatGPT, Claude).
+- **Sister project**: [MortyMonteCarlo](https://dmac716.github.io/MortyMonteCarlo/) mirrors artifacts from `artifacts/analysis_final_*/` for the full LCA.
+
+Available but unused: Travis CI, Azure Pipelines (redundant with GitHub Actions), Doppler (secrets — use GitHub Secrets instead).
+
 ## Provenance
 
 All numeric inputs must trace to `source_id` in `sources/sources_manifest.csv`. Emission factors must cite federal datasets or peer-reviewed literature. Never fabricate parameter values.
