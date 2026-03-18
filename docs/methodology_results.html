@@ -187,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#packaging-assumptions-used" id="toc-packaging-assumptions-used" class="nav-link" data-scroll-target="#packaging-assumptions-used">Packaging Assumptions Used</a></li>
   </ul></li>
   <li><a href="#validation-and-qa-gates" id="toc-validation-and-qa-gates" class="nav-link" data-scroll-target="#validation-and-qa-gates">Validation and QA Gates</a></li>
-  <li><a href="#march-2026-production-audit-59434-runs" id="toc-march-2026-production-audit-59434-runs" class="nav-link" data-scroll-target="#march-2026-production-audit-59434-runs">March 2026 Production Audit (59,434 runs)</a>
+  <li><a href="#march-2026-production-audit-54278-runs" id="toc-march-2026-production-audit-54278-runs" class="nav-link" data-scroll-target="#march-2026-production-audit-54278-runs">March 2026 Production Audit (54,278 runs)</a>
   <ul class="collapse">
   <li><a href="#comprehensive-scenario-statistics" id="toc-comprehensive-scenario-statistics" class="nav-link" data-scroll-target="#comprehensive-scenario-statistics">Comprehensive Scenario Statistics</a></li>
   <li><a href="#audit-figures" id="toc-audit-figures" class="nav-link" data-scroll-target="#audit-figures">Audit Figures</a></li>
@@ -202,7 +202,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#scientific-package-and-reproducibility" id="toc-scientific-package-and-reproducibility" class="nav-link" data-scroll-target="#scientific-package-and-reproducibility">Scientific Package and Reproducibility</a>
   <ul class="collapse">
-  <li><a href="#production-audit-2026-03-17-59434-runs" id="toc-production-audit-2026-03-17-59434-runs" class="nav-link" data-scroll-target="#production-audit-2026-03-17-59434-runs">Production Audit (2026-03-17, 59,434 runs)</a></li>
+  <li><a href="#production-audit-2026-03-17-54278-runs" id="toc-production-audit-2026-03-17-54278-runs" class="nav-link" data-scroll-target="#production-audit-2026-03-17-54278-runs">Production Audit (2026-03-17, 54,278 runs)</a></li>
   <li><a href="#baseline-local_chunked_run-80-runs" id="toc-baseline-local_chunked_run-80-runs" class="nav-link" data-scroll-target="#baseline-local_chunked_run-80-runs">Baseline (local_chunked_run, 80 runs)</a></li>
   </ul></li>
   <li><a href="#codespaces-validation-lane-status" id="toc-codespaces-validation-lane-status" class="nav-link" data-scroll-target="#codespaces-validation-lane-status">Codespaces Validation Lane Status</a></li>
@@ -234,13 +234,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="executive-summary" class="level2 hero">
 <h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
-<p>This release documents the production audit <code>audit_2026-03-17</code> aggregating <strong>59,434 deduplicated runs</strong> across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).</p>
+<p>This release documents the production audit <code>audit_2026-03-17</code> aggregating <strong>54,278 deduplicated runs</strong> across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).</p>
 <ul>
 <li>Scope: transport/distribution stage only</li>
 <li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code></li>
 <li>Design: matched-pair uncertainty within powertrain</li>
 <li>Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized</li>
-<li>Runs: 59,434 (deduplicated)</li>
+<li>Runs: 54,278 (deduplicated)</li>
 <li>Validation: PASS</li>
 </ul>
 <p>Previous baseline: <code>local_chunked_run</code> (80 runs, 2026-03-09) retained below for reference.</p>
@@ -306,10 +306,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="assets/transport/local_chunked_run/data/transport_sim_validation_report.txt">Validation report</a></li>
 </ul>
 </section>
-<section id="march-2026-production-audit-59434-runs" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="march-2026-production-audit-59434-runs">March 2026 Production Audit (59,434 runs)</h2>
+<section id="march-2026-production-audit-54278-runs" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="march-2026-production-audit-54278-runs">March 2026 Production Audit (54,278 runs)</h2>
 <div class="panel">
-<p>The production audit (2026-03-17) aggregated 59,434 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.</p>
+<p>The production audit (2026-03-17) aggregated 54,278 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.</p>
 </div>
 <section id="comprehensive-scenario-statistics" class="level3">
 <h3 class="anchored" data-anchor-id="comprehensive-scenario-statistics">Comprehensive Scenario Statistics</h3>
@@ -393,50 +393,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;">bev</td>
-<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry</td>
 <td style="text-align: left;">dry_factory_set</td>
-<td style="text-align: right;">4020</td>
-<td style="text-align: right;">0.0464</td>
-<td style="text-align: right;">0.0274</td>
-<td style="text-align: right;">0.0451</td>
-<td style="text-align: right;">0.0702</td>
-<td style="text-align: right;">17.05</td>
+<td style="text-align: right;">3730</td>
+<td style="text-align: right;">0.0279</td>
+<td style="text-align: right;">0.0169</td>
+<td style="text-align: right;">0.0273</td>
+<td style="text-align: right;">0.0413</td>
+<td style="text-align: right;">15.53</td>
 <td style="text-align: right;">1712.2</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">bev</td>
 <td style="text-align: left;">dry</td>
-<td style="text-align: left;">dry_factory_set</td>
-<td style="text-align: right;">2337</td>
-<td style="text-align: right;">0.0278</td>
-<td style="text-align: right;">0.0170</td>
-<td style="text-align: right;">0.0270</td>
-<td style="text-align: right;">0.0406</td>
-<td style="text-align: right;">15.53</td>
-<td style="text-align: right;">1712.2</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">3730</td>
+<td style="text-align: right;">0.0289</td>
+<td style="text-align: right;">0.0175</td>
+<td style="text-align: right;">0.0283</td>
+<td style="text-align: right;">0.0428</td>
+<td style="text-align: right;">15.22</td>
+<td style="text-align: right;">1773.7</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">bev</td>
 <td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">refrigerated_factory_set</td>
-<td style="text-align: right;">4020</td>
-<td style="text-align: right;">0.0481</td>
-<td style="text-align: right;">0.0284</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">49</td>
 <td style="text-align: right;">0.0468</td>
-<td style="text-align: right;">0.0727</td>
+<td style="text-align: right;">0.0272</td>
+<td style="text-align: right;">0.0456</td>
+<td style="text-align: right;">0.0732</td>
 <td style="text-align: right;">17.08</td>
-<td style="text-align: right;">1773.7</td>
+<td style="text-align: right;">1712.2</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">bev</td>
-<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated</td>
 <td style="text-align: left;">refrigerated_factory_set</td>
-<td style="text-align: right;">2337</td>
-<td style="text-align: right;">0.0288</td>
-<td style="text-align: right;">0.0176</td>
-<td style="text-align: right;">0.0280</td>
-<td style="text-align: right;">0.0421</td>
-<td style="text-align: right;">15.22</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">0.0485</td>
+<td style="text-align: right;">0.0282</td>
+<td style="text-align: right;">0.0472</td>
+<td style="text-align: right;">0.0757</td>
+<td style="text-align: right;">17.10</td>
 <td style="text-align: right;">1773.7</td>
 </tr>
 </tbody>
@@ -542,23 +542,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry</td>
 <td style="text-align: left;">TRUE</td>
-<td style="text-align: right;">8040</td>
-<td style="text-align: right;">1922.91</td>
-<td style="text-align: right;">0.0473</td>
-<td style="text-align: right;">90.07</td>
-<td style="text-align: right;">4451.5</td>
+<td style="text-align: right;">7460</td>
+<td style="text-align: right;">1739.53</td>
+<td style="text-align: right;">0.0284</td>
+<td style="text-align: right;">85.85</td>
+<td style="text-align: right;">4024.1</td>
 <td style="text-align: right;">1743</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated</td>
 <td style="text-align: left;">TRUE</td>
-<td style="text-align: right;">4674</td>
-<td style="text-align: right;">1734.04</td>
-<td style="text-align: right;">0.0283</td>
-<td style="text-align: right;">85.93</td>
-<td style="text-align: right;">4023.3</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">1937.25</td>
+<td style="text-align: right;">0.0476</td>
+<td style="text-align: right;">90.87</td>
+<td style="text-align: right;">4470.3</td>
 <td style="text-align: right;">1743</td>
 </tr>
 </tbody>
@@ -663,8 +663,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="scientific-package-and-reproducibility" class="level2">
 <h2 class="anchored" data-anchor-id="scientific-package-and-reproducibility">Scientific Package and Reproducibility</h2>
-<section id="production-audit-2026-03-17-59434-runs" class="level3">
-<h3 class="anchored" data-anchor-id="production-audit-2026-03-17-59434-runs">Production Audit (2026-03-17, 59,434 runs)</h3>
+<section id="production-audit-2026-03-17-54278-runs" class="level3">
+<h3 class="anchored" data-anchor-id="production-audit-2026-03-17-54278-runs">Production Audit (2026-03-17, 54,278 runs)</h3>
 <ul>
 <li>Audit figures: <a href="assets/transport/downloads/audit_2026-03-17_figures.zip">ZIP</a></li>
 <li>Audit data: <a href="assets/transport/downloads/audit_2026-03-17_data.zip">ZIP</a></li>

@@ -6,7 +6,7 @@ format: html
 ::: {.hero}
 ## Animation Gallery
 
-Animation assets from the validated production audit (59,434 runs: 46,720 diesel + 12,714 post-fix BEV). MC convergence and density animations generated from the correct combined dataset with diesel baseline verified.
+Animation assets from the validated production audit (54,278 runs: 46,720 diesel + 12,714 post-fix BEV). MC convergence and density animations generated from the correct combined dataset with diesel baseline verified.
 :::
 
 ## Production Audit Animations (March 2026)
@@ -75,7 +75,7 @@ These route animations show the physical truck route from facility to retail, us
 
 ## Static Figures from Production Audit
 
-All 10 analysis figures from the validated 59,434-run dataset:
+All 10 analysis figures from the validated 54,278-run dataset:
 
 ![CO2 by Scenario](assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
 
