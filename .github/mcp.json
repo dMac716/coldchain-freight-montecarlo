@@ -1,14 +1,34 @@
 {
   "mcpServers": {
+    "repo_files": {
+      "type": "local",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "--root",
+        "."
+      ],
+      "tools": [
+        "list_allowed_directories",
+        "list_directory",
+        "read_file",
+        "write_file",
+        "search_files",
+        "get_file_info",
+        "read_multiple_files"
+      ]
+    },
     "github": {
       "type": "stdio",
-      "command": "docker",
+      "command": "npx",
       "args": [
-        "run",
-        "-i",
-        "--rm",
-        "ghcr.io/github/github-mcp-server:latest"
+        "-y",
+        "@modelcontextprotocol/server-github"
       ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      },
       "tools": [
         "search_repositories",
         "search_code",
@@ -19,7 +39,26 @@
         "list_pull_requests",
         "get_pull_request",
         "create_pull_request",
-        "create_comment"
+        "create_or_update_file",
+        "push_files",
+        "create_branch",
+        "list_commits"
+      ]
+    },
+    "memory": {
+      "type": "local",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "tools": [
+        "create_entities",
+        "search_nodes",
+        "read_graph",
+        "open_nodes",
+        "add_observations",
+        "delete_entities"
       ]
     }
   }
