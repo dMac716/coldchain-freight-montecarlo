@@ -3,12 +3,7 @@
     "repo_files": {
       "type": "local",
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "--root",
-        "."
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "--root", "."],
       "tools": [
         "list_allowed_directories",
         "list_directory",
@@ -22,10 +17,7 @@
     "github": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": ""
       },
@@ -48,10 +40,7 @@
     "memory": {
       "type": "local",
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
       "tools": [
         "create_entities",
         "search_nodes",
@@ -59,6 +48,22 @@
         "open_nodes",
         "add_observations",
         "delete_entities"
+      ]
+    },
+    "sentry": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sentry"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "",
+        "SENTRY_ORG": ""
+      },
+      "tools": [
+        "list_projects",
+        "list_issues",
+        "get_issue",
+        "search_issues",
+        "get_event"
       ]
     }
   }

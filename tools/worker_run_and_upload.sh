@@ -12,6 +12,14 @@
 
 set -euo pipefail
 
+# Sentry error reporting (requires SENTRY_DSN env var)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "${SCRIPT_DIR}/lib/sentry_report.sh" ]; then
+  source "${SCRIPT_DIR}/lib/sentry_report.sh"
+elif [ -f "tools/lib/sentry_report.sh" ]; then
+  source "tools/lib/sentry_report.sh"
+fi
+
 # ── Config ──────────────────────────────────────────────────────────────────
 GCS_BUCKET="${GCS_BUCKET:-coldchain-freight-sources}"
 STAMP="${STAMP:-traffic_aware_v1_$(hostname)_$(date -u +%Y%m%dT%H%M%SZ)}"
@@ -54,7 +62,7 @@ for pt in $PRODUCT_TYPES; do
       --bundle_root "$out_dir" \
       --summary_out "${out_dir}/summary.csv" \
       --runs_out "${out_dir}/runs.csv" 2>&1; then
-      echo "[worker] FAILED: $run_tag"
+      report_error "Worker sim failed: $run_tag on $(hostname)" 2>&1 || true; echo "[worker] FAILED: $run_tag"
       failed=$((failed + 1))
       continue
     fi
@@ -94,7 +102,7 @@ if [[ -d "$BUNDLE_ROOT" ]]; then
 
   echo "[worker] uploaded to $GCS_PREFIX"
 else
-  echo "[worker] ERROR: no output directory at $BUNDLE_ROOT"
+  report_error "No output directory: $BUNDLE_ROOT on $(hostname)" 2>&1 || true; echo "[worker] ERROR: no output directory at $BUNDLE_ROOT"
   failed=$((failed + 1))
 fi
 
