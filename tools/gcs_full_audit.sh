@@ -17,6 +17,8 @@ export OPENBLAS_NUM_THREADS=1
 
 GCS_RERUNS="gs://coldchain-freight-sources/reruns_bev_fix"
 GCS_LOCAL="gs://coldchain-freight-sources/local_backup"
+GCS_RUNS="gs://coldchain-freight-sources/runs"
+GCS_TRANSPORT="gs://coldchain-freight-sources/transport_runs"
 GCS_OUTPUT="gs://coldchain-freight-sources/audit_2026-03-17"
 AUDIT_DIR="/tmp/audit_bundle"
 STAGING="/tmp/audit_staging"
@@ -47,6 +49,8 @@ echo "[audit] === Step 1: Download all tarballs from GCS ==="
 # ============================================================
 gsutil -m cp "${GCS_RERUNS}/*.tar.gz" "$STAGING/tarballs/" 2>&1 | tail -3
 gsutil -m cp "${GCS_LOCAL}/*.tar.gz" "$STAGING/tarballs/" 2>&1 | tail -3
+gsutil -m cp "${GCS_RUNS}/*.tar.gz" "$STAGING/tarballs/" 2>&1 | tail -3
+gsutil -m cp -r "${GCS_TRANSPORT}/" "$STAGING/transport_runs/" 2>&1 | tail -3
 TARBALL_COUNT=$(ls "$STAGING/tarballs/"*.tar.gz | wc -l)
 echo "[audit] Downloaded $TARBALL_COUNT tarballs"
 
@@ -64,6 +68,12 @@ done
 if [ -d /srv/coldchain/repo/outputs/run_bundle ]; then
   echo "[audit] Including local VM run_bundle..."
   ln -sf /srv/coldchain/repo/outputs/run_bundle "$STAGING/extracted/local_vm_bundle"
+fi
+
+# Include transport_runs summaries (directory structure, not tarballs)
+if [ -d "$STAGING/transport_runs" ]; then
+  echo "[audit] Including transport_runs directory..."
+  ln -sf "$STAGING/transport_runs" "$STAGING/extracted/transport_runs_link"
 fi
 
 echo "[audit] Extraction done"
@@ -84,10 +94,20 @@ echo "[audit] Raw rows: $RAW_COUNT"
 # ============================================================
 echo "[audit] === Step 4: Deduplicate ==="
 # ============================================================
-head -1 "$STAGING/all_raw.csv" > "$AUDIT_DIR/analysis_dataset_gcs_audit.csv"
-tail -n +2 "$STAGING/all_raw.csv" | sort -t',' -k1,1 -u >> "$AUDIT_DIR/analysis_dataset_gcs_audit.csv"
-DEDUP_COUNT=$(tail -n +2 "$AUDIT_DIR/analysis_dataset_gcs_audit.csv" | wc -l)
+head -1 "$STAGING/all_raw.csv" > "$STAGING/all_deduped.csv"
+tail -n +2 "$STAGING/all_raw.csv" | sort -t',' -k1,1 -u >> "$STAGING/all_deduped.csv"
+DEDUP_COUNT=$(tail -n +2 "$STAGING/all_deduped.csv" | wc -l)
 echo "[audit] Deduplicated rows: $DEDUP_COUNT"
+
+# Filter out pre-fix BEV runs (charge_stops=0)
+# Column positions: powertrain=5, charge_stops=67
+CHARGE_COL=$(head -1 "$STAGING/all_deduped.csv" | tr ',' '\n' | grep -n "^charge_stops$" | cut -d: -f1)
+PT_COL=$(head -1 "$STAGING/all_deduped.csv" | tr ',' '\n' | grep -n "^powertrain$" | cut -d: -f1)
+head -1 "$STAGING/all_deduped.csv" > "$AUDIT_DIR/analysis_dataset_gcs_audit.csv"
+tail -n +2 "$STAGING/all_deduped.csv" | awk -F',' -v pt="$PT_COL" -v ch="$CHARGE_COL" \
+  '$(pt) != "bev" || $(ch)+0 > 0' >> "$AUDIT_DIR/analysis_dataset_gcs_audit.csv"
+FILTERED_COUNT=$(tail -n +2 "$AUDIT_DIR/analysis_dataset_gcs_audit.csv" | wc -l)
+echo "[audit] After BEV charge_stops>0 filter: $FILTERED_COUNT rows"
 
 # ============================================================
 echo "[audit] === Step 5: R analysis + graphics ==="
@@ -297,7 +317,7 @@ Host:              $(hostname)
 Tarballs:          $TARBALL_COUNT
 Raw rows:          $RAW_COUNT
 Deduplicated rows: $DEDUP_COUNT
-Sources:           ${GCS_RERUNS}, ${GCS_LOCAL}
+Sources:           ${GCS_RERUNS}, ${GCS_LOCAL}, ${GCS_RUNS}, ${GCS_TRANSPORT}
 
 Powertrain breakdown:
 $(tail -n +2 "$AUDIT_DIR/analysis_dataset_gcs_audit.csv" | cut -d',' -f5 | sort | uniq -c | sort -rn)

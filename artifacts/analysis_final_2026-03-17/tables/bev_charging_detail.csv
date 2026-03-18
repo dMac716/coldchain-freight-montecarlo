@@ -1,5 +1,9 @@
 product_type,origin_network,n_runs,pct_with_charging,mean_charge_stops,median_charge_stops,p05_charge_stops,p95_charge_stops,mean_time_charging_min,median_time_charging_min,mean_energy_kwh_total,mean_energy_kwh_tru,mean_co2_kg,mean_co2_per_1000kcal,mean_charging_attempts,mean_occupied_events,mean_broken_events,mean_wait_time_min,mean_failed_frac
-dry,dry_factory_set,3730,100,15.53,15,15,18,3286.1,3232.3,3953.1,0,1708.85,0.027862,0,0,0,0,0
-dry,refrigerated_factory_set,3730,100,15.22,15,14,18,2125.8,2134.5,4095.1,0,1770.22,0.028862,0,0,0,0,0
-refrigerated,dry_factory_set,49,100,17.08,16,15,19.6,3743.7,3889.7,4391.5,429,1903.13,0.046811,0,0,0,0,0
-refrigerated,refrigerated_factory_set,49,100,17.1,17,15,20.6,2241.3,2229.3,4549,444.2,1971.37,0.048489,0,0,0,0,0
+dry,dry_factory_set,6227,100,15.53,15,15,18,3292.5,3234.2,3953.5,0,1707.35,0.027845,0,0,0,0,0
+dry,refrigerated_factory_set,6227,100,15.22,15,14,18,2126.4,2137,4095.5,0,1768.66,0.028844,0,0,0,0,0
+refrigerated,dry_factory_set,52,100,17.13,16.5,15,19.45,3724.6,3883.5,4404.7,431.1,1912.58,0.046814,0,0,0,0,0
+refrigerated,refrigerated_factory_set,52,100,17.19,17,15,20.45,2239.2,2227.9,4562.7,446.5,1981.18,0.048493,0,0,0,0,0
+dry,factory_kansas_hills,80,100,15.85,15,14.95,19,3312.4,3235,4049.1,201.1,1833.37,0.045717,0,0,0,0,0
+refrigerated,factory_kansas_hills,80,100,15.85,15,14.95,19,3303.1,3219.3,4049,201,1833.33,0.220122,0,0,0,0,0
+dry,factory_texas_freshpet,80,100,16.27,16,14,20.05,3679,2437,4209.9,208.5,1906.7,0.047506,0,0,0,0,0
+refrigerated,factory_texas_freshpet,80,100,16.27,16,14,20.05,3681.6,2410.4,4210,208.6,1906.73,0.229136,0,0,0,0,0

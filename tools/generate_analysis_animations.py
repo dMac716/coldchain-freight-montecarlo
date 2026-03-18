@@ -34,12 +34,13 @@ def make_evolution(df, outdir, max_frames=120):
     fig.suptitle("Monte Carlo Convergence: CO2 per 1000 kcal", fontsize=14, fontweight="bold")
 
     scenarios = [
-        ("diesel", "refrigerated", "Diesel Refrigerated", "coral"),
-        ("bev", "refrigerated", "BEV Refrigerated", "steelblue"),
+        ("diesel", "dry", "Diesel Dry", "coral"),
+        ("bev", "dry", "BEV Dry", "steelblue"),
     ]
 
     lines = []
     data_arrays = []
+    n_texts = []
     for ax, (pw, pt, label, color) in zip(axes, scenarios):
         sub = df[(df["powertrain"] == pw) & (df["product_type"] == pt)]["co2_per_1000kcal"].dropna().values
         sub = sub.copy()
@@ -53,6 +54,10 @@ def make_evolution(df, outdir, max_frames=120):
         ax.set_title(label, color=color, fontweight="bold")
         line, = ax.plot([], [], color=color, linewidth=2)
         lines.append(line)
+        n_text = ax.text(0.98, 0.95, "", transform=ax.transAxes, fontsize=11,
+                         fontweight="bold", ha="right", va="top",
+                         bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.85))
+        n_texts.append(n_text)
 
     step = max(1, max(len(a) for a in data_arrays) // max_frames)
 
@@ -67,7 +72,8 @@ def make_evolution(df, outdir, max_frames=120):
                 axes[i].set_xlim(1, max(k, 2))
                 if len(means) > 10:
                     axes[i].set_ylim(means[-1] * 0.5, means[-1] * 1.5)
-        return lines
+                n_texts[i].set_text(f"N = {k:,}\nmean = {means[-1]:.4f}")
+        return lines + n_texts
 
     n_frames = min(max_frames, max(len(a) for a in data_arrays) // step)
     anim = animation.FuncAnimation(fig, update, frames=n_frames, interval=50, blit=False)
@@ -185,6 +191,7 @@ def make_diesel_vs_bev(df, outdir, max_frames=100):
     fig2.suptitle("Diesel vs BEV: Transport CO2 Comparison", fontsize=14, fontweight="bold")
     bars = []
     data_pairs = []
+    val_texts = []
     for ax, pt in zip(axes2, ["refrigerated", "dry"]):
         sub = df[df["product_type"] == pt]
         d = sub[sub["powertrain"] == "diesel"]["co2_per_1000kcal"].dropna().values
@@ -198,6 +205,9 @@ def make_diesel_vs_bev(df, outdir, max_frames=100):
         ax.set_title(f"{pt.capitalize()} Product")
         ymax = max(np.mean(d) if len(d) > 0 else 0.01, np.mean(b) if len(b) > 0 else 0.01) * 1.3
         ax.set_ylim(0, ymax)
+        t_d = ax.text(0, 0, "", ha="center", fontweight="bold", fontsize=9)
+        t_b = ax.text(1, 0, "", ha="center", fontweight="bold", fontsize=9)
+        val_texts.append((t_d, t_b))
 
     step = max(1, max(len(d) for d, b in data_pairs) // max_frames)
 
@@ -209,6 +219,10 @@ def make_diesel_vs_bev(df, outdir, max_frames=100):
             bv = np.mean(b[:nb]) if nb > 0 else 0
             bar[0].set_height(dv)
             bar[1].set_height(bv)
+            val_texts[i][0].set_position((0, dv + 0.001))
+            val_texts[i][0].set_text(f"{dv:.4f}\nn={nd:,}")
+            val_texts[i][1].set_position((1, bv + 0.001))
+            val_texts[i][1].set_text(f"{bv:.4f}\nn={nb:,}")
         return [b for bar in bars for b in bar]
 
     n_frames = min(max_frames, max(len(d) for d, b in data_pairs) // step)
@@ -230,6 +244,11 @@ def main():
     print(f"Loading {args.csv}...")
     df = load_data(args.csv)
     print(f"Loaded {len(df)} rows")
+
+    # Filter to standard networks for fair comparison
+    std_nets = ["dry_factory_set", "refrigerated_factory_set"]
+    df = df[df["origin_network"].isin(std_nets)].copy()
+    print(f"Filtered to standard networks: {len(df)} rows")
 
     print("Generating MC evolution animation...")
     make_evolution(df, args.outdir, args.max_frames)

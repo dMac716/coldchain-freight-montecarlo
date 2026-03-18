@@ -1,0 +1,3 @@
+product_type,has_charging,n,mean_co2_kg,mean_co2_per_1000kcal,mean_trip_h,mean_energy_kwh,mean_distance
+dry,TRUE,12614,1739.68,0.028576,86.08,4025.9,1743
+refrigerated,TRUE,264,1900.31,0.154911,96.17,4269,1745

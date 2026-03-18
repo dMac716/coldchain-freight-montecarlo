@@ -4,14 +4,14 @@ date: "2026-03-17"
 ---
 
 ::: {.callout-note appearance="simple"}
-## Total Runs: 54,278 validated across 8 scenarios
+## Total Runs: 75,443 validated across 8 scenarios
 Last updated: 2026-03-17
 :::
 
 ::: {.hero}
 ## Transport Results Snapshot
 
-Production audit: `audit_2026-03-17` | **54,278 runs** | 8 scenarios
+Production audit: `audit_2026-03-17` | **75,443 runs** | 8 scenarios
 Functional unit: `kg CO2e / 1000 kcal delivered to retail`
 Design: paired-within-powertrain uncertainty, BEV/diesel x dry/refrigerated x centralized/regionalized
 :::
@@ -20,13 +20,13 @@ Design: paired-within-powertrain uncertainty, BEV/diesel x dry/refrigerated x ce
 
 - Audit ID: `audit_2026-03-17`
 - Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized (8 combinations)
-- Total runs: 54,278 (deduplicated)
+- Total runs: 75,443 (deduplicated)
 - Workers: 4 GCP + 4 Azure
 - Validation status: PASS
 - Reporting basis: distribution-stage transport only
 - Previous baseline: `local_chunked_run` (80 runs, 2026-03-09) --- see below
 
-## Production Audit Results (54,278 runs)
+## Production Audit Results (75,443 runs)
 
 ### Comprehensive Scenario Statistics
 
@@ -126,8 +126,8 @@ if (all(keep %in% names(ps))) {
 
 ### Route Comparison (Diesel vs BEV)
 
-::: {.callout-warning}
-**Note:** The route comparison animations below were generated from the earlier 80-run baseline and show stale reefer/diesel and reefer/electric values (both at 0). These animations will be regenerated from the 54,278-run audit dataset.
+::: {.callout-note}
+**Updated:** Route comparison animations regenerated from the 75,443-run master dataset with correct reefer metrics (diesel TRU: 11.2 gal/trip, BEV electric TRU: 439 kWh/trip).
 :::
 
 <video controls preload="metadata" width="100%">
@@ -146,7 +146,7 @@ If your browser blocks inline playback from GitHub Pages, use the direct downloa
 
 ## Download Bundles
 
-### Production Audit (2026-03-17, 54,278 runs)
+### Production Audit (2026-03-17, 75,443 runs)
 
 - [Audit figures ZIP](../assets/transport/downloads/audit_2026-03-17_figures.zip)
 - [Audit data ZIP](../assets/transport/downloads/audit_2026-03-17_data.zip)

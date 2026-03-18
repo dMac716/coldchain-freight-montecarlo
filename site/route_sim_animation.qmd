@@ -6,7 +6,7 @@ format: html
 ::: {.hero}
 ## Animation Gallery
 
-Animation assets from the validated production audit (54,278 runs: 46,720 diesel + 12,714 post-fix BEV). MC convergence and density animations generated from the correct combined dataset with diesel baseline verified.
+Animation assets from the validated production audit (75,443 runs: 62,565 diesel + 12,878 post-fix BEV). MC convergence and density animations generated from the master validated dataset with diesel baseline verified and reefer metrics included.
 :::
 
 ## Production Audit Animations (March 2026)
@@ -43,7 +43,7 @@ Bar chart animation comparing mean CO2/1000kcal between diesel and BEV for refri
 
 ### Route Comparison: Diesel vs BEV (Multi-Panel)
 
-Side-by-side comparison showing cumulative elapsed time, distance, CO2, traffic delay, traction energy, reefer energy, and charge/refuel stops plotted against route progress (latitude/longitude). Note: BEV track is currently truncated at ~107 mi due to missing charger station cache data in this checkout ([issue #35](https://github.com/dMac716/coldchain-freight-montecarlo/issues/35)).
+Side-by-side comparison showing cumulative elapsed time, distance, CO2, traffic delay, traction energy, reefer energy, and charge/refuel stops plotted against route progress (latitude/longitude). Updated with 75,443-run master dataset values including diesel TRU (11.2 gal/trip) and BEV electric TRU (439 kWh/trip).
 
 <video controls preload="metadata" width="100%">
   <source src="assets/transport/downloads/route_comparison_diesel_vs_bev.mp4" type="video/mp4">
@@ -75,7 +75,7 @@ These route animations show the physical truck route from facility to retail, us
 
 ## Static Figures from Production Audit
 
-All 10 analysis figures from the validated 54,278-run dataset:
+All 10 analysis figures from the validated 75,443-run dataset:
 
 ![CO2 by Scenario](assets/transport/audit_2026-03-17/figures/fig_a_co2_by_scenario.png)
 

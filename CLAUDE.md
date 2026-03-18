@@ -207,6 +207,18 @@ Conventional-style: `feat:`, `fix:`, `chore:`, `docs:`. Keep commits scoped (sou
 
 Available but unused: Travis CI, Azure Pipelines (redundant with GitHub Actions), Doppler (secrets — use GitHub Secrets instead).
 
+## Environment & Config
+
+For shell/environment configs: never use shell expansion (like `$HOME` or `~`) in JSON config values. Use absolute paths or shell wrapper scripts instead.
+
+## Infrastructure / Distributed Computing
+
+When orchestrating long-running distributed jobs (GCP/Azure/Codespaces), always:
+
+1. Verify disk/quota headroom before launching
+2. Use proper process filtering (avoid pgrep self-match)
+3. Save full run data not just summaries
+
 ## Provenance
 
 All numeric inputs must trace to `source_id` in `sources/sources_manifest.csv`. Emission factors must cite federal datasets or peer-reviewed literature. Never fabricate parameter values.

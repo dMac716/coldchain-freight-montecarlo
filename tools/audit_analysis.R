@@ -212,19 +212,27 @@ p7 <- ggplot(energy_long[!is.na(kwh)],
   labs(title = "Energy Usage: Propulsion vs TRU", x = NULL, y = "Mean kWh") + theme_audit
 ggsave(file.path(fig_dir, "fig_g_energy_breakdown.png"), p7, width = 12, height = 7, dpi = 150)
 
-# Fig H: Electrification benefit
+# Fig H: Electrification benefit (standard networks only)
+std_nets <- c("dry_factory_set", "refrigerated_factory_set")
 delta <- merge(
-  dt[powertrain == "diesel", .(diesel_co2 = median(co2_per_1000kcal, na.rm = TRUE)),
+  dt[powertrain == "diesel" & origin_network %in% std_nets,
+     .(diesel_co2 = median(co2_per_1000kcal, na.rm = TRUE)),
      by = .(product_type, origin_network)],
-  dt[powertrain == "bev", .(bev_co2 = median(co2_per_1000kcal, na.rm = TRUE)),
+  dt[powertrain == "bev" & origin_network %in% std_nets,
+     .(bev_co2 = median(co2_per_1000kcal, na.rm = TRUE)),
      by = .(product_type, origin_network)],
   by = c("product_type", "origin_network"))
 delta[, pct_reduction := round(100 * (diesel_co2 - bev_co2) / diesel_co2, 1)]
 delta[, label := paste0(ifelse(product_type == "dry", "Dry", "Refrig"), " / ",
                         ifelse(origin_network == "dry_factory_set", "Central", "Regional"))]
 p8 <- ggplot(delta, aes(x = label, y = pct_reduction, fill = pct_reduction > 0)) +
-  geom_col() + geom_text(aes(label = paste0(pct_reduction, "%")), vjust = -0.5) +
-  scale_fill_manual(values = c(`TRUE` = "steelblue", `FALSE` = "coral"), guide = "none") +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(pct_reduction, "%"),
+                vjust = ifelse(pct_reduction >= 0, -0.5, 1.5)),
+            fontface = "bold", size = 4.5) +
+  scale_fill_manual(values = c(`TRUE` = "steelblue", `FALSE` = "coral"),
+                    labels = c(`TRUE` = "BEV advantage", `FALSE` = "Diesel advantage"),
+                    name = NULL) +
   labs(title = "Electrification: % CO2 Reduction vs Diesel (median)",
        x = NULL, y = "% Reduction") + theme_audit
 ggsave(file.path(fig_dir, "fig_h_electrification.png"), p8, width = 8, height = 6, dpi = 150)

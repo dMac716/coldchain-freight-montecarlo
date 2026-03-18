@@ -102,10 +102,12 @@ def make_animation(diesel_df, bev_df, outdir, label, max_frames=240, fps=24):
     dot_b, = ax_b.plot([], [], "o", color="#d4880f", markersize=6, zorder=3)
 
     box_props = dict(boxstyle="round,pad=0.4", facecolor="white", alpha=0.85, edgecolor="#888")
-    text_d = ax_d.text(0.02, 0.98, "", transform=ax_d.transAxes, fontsize=7.5,
-                       verticalalignment="top", fontfamily="monospace", bbox=box_props, zorder=5)
-    text_b = ax_b.text(0.02, 0.98, "", transform=ax_b.transAxes, fontsize=7.5,
-                       verticalalignment="top", fontfamily="monospace", bbox=box_props, zorder=5)
+    text_d = ax_d.text(0.98, 0.98, "", transform=ax_d.transAxes, fontsize=7.5,
+                       verticalalignment="top", horizontalalignment="right",
+                       fontfamily="monospace", bbox=box_props, zorder=5)
+    text_b = ax_b.text(0.98, 0.98, "", transform=ax_b.transAxes, fontsize=7.5,
+                       verticalalignment="top", horizontalalignment="right",
+                       fontfamily="monospace", bbox=box_props, zorder=5)
 
     prev_d_stops = [0]
     prev_b_stops = [0]
@@ -190,21 +192,29 @@ def main():
             return
 
         # REFRIGERATED (Ennis, TRU on)
-        # Values from validated summaries: diesel refrig mean + BEV refrig overnight run
+        # Values from master_validated (75,443 runs): diesel refrig mean + BEV refrig mean
         print("=== Refrigerated: Diesel vs BEV ===")
         d_r = synthesize_track(ennis,
-            "dist=1774,co2=1015,diesel_gal=90,tru_gal=11.5,refuels=0,trip_h=13,delay_min=6", False)
+            "dist=617,co2=1015,diesel_gal=88,tru_gal=11.2,refuels=0,trip_h=12.7,delay_min=6", False)
         b_r = synthesize_track(ennis,
-            "dist=1712,co2=1316,kwh=3835,tru_kwh=551,charges=17,trip_h=113,delay_min=15", True)
+            "dist=1743,co2=1947,kwh=4045,tru_kwh=439,charges=17,trip_h=91,delay_min=15", True)
         make_animation(d_r, b_r, args.outdir, "Refrigerated", args.max_frames, args.fps)
 
         # DRY (Topeka, TRU off)
         print("=== Dry: Diesel vs BEV ===")
         d_d = synthesize_track(topeka,
-            "dist=1712,co2=901,diesel_gal=126,tru_gal=0,refuels=0,trip_h=18.3,delay_min=10", False)
+            "dist=736,co2=1221,diesel_gal=106,tru_gal=0,refuels=0,trip_h=15.2,delay_min=14", False)
         b_d = synthesize_track(topeka,
-            "dist=1712,co2=1460,kwh=3400,tru_kwh=0,charges=16,trip_h=86,delay_min=11", True)
+            "dist=1743,co2=1738,kwh=4025,tru_kwh=0,charges=15,trip_h=86,delay_min=11", True)
         make_animation(d_d, b_d, args.outdir, "Dry", args.max_frames, args.fps)
+
+        # COMBINED diesel vs BEV (Ennis route, refrigerated representative)
+        print("=== Diesel vs BEV ===")
+        d_c = synthesize_track(ennis,
+            "dist=617,co2=1015,diesel_gal=88,tru_gal=11.2,refuels=1,trip_h=12.7,delay_min=6", False)
+        b_c = synthesize_track(ennis,
+            "dist=1743,co2=1947,kwh=4045,tru_kwh=439,charges=17,trip_h=91,delay_min=15", True)
+        make_animation(d_c, b_c, args.outdir, "diesel_vs_bev", args.max_frames, args.fps)
     else:
         diesel_df = load_track(args.diesel)
         bev_df = load_track(args.bev)
