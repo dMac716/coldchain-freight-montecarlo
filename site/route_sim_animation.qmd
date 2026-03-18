@@ -41,6 +41,16 @@ Bar chart animation comparing mean CO2/1000kcal between diesel and BEV for refri
 
 ![Last frame](assets/transport/audit_2026-03-17/figures/transport_diesel_vs_bev_last_frame.png)
 
+### Route Comparison: Diesel vs BEV (Multi-Panel)
+
+Side-by-side comparison showing cumulative elapsed time, distance, CO2, traffic delay, traction energy, reefer energy, and charge/refuel stops plotted against route progress (latitude/longitude). Note: BEV track is currently truncated at ~107 mi due to missing charger station cache data in this checkout ([issue #35](https://github.com/dMac716/coldchain-freight-montecarlo/issues/35)).
+
+<video controls preload="metadata" width="100%">
+  <source src="assets/transport/downloads/route_comparison_diesel_vs_bev.mp4" type="video/mp4">
+</video>
+
+![Route comparison last frame](assets/transport/audit_2026-03-17/figures/route_comparison_diesel_vs_bev_last_frame.png)
+
 ## Route Replay Animations (Baseline)
 
 These route animations show the physical truck route from facility to retail, using representative runs from the baseline `local_chunked_run`.
