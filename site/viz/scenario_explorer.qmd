@@ -29,7 +29,7 @@ if (nzchar(audit_stats_path)) {
     Runs = format(astats$n_runs, big.mark = ","),
     `Mean CO2 (kg)` = round(astats$mean_co2_kg_total, 1),
     `Mean Distance (mi)` = round(astats$mean_distance_miles, 1),
-    `Mean Trip (h)` = round(astats$mean_trip_duration_total_h, 1),
+    `Mean Trip (h)` = round(if ("mean_trip_duration_total_h" %in% names(astats)) astats$mean_trip_duration_total_h else astats$mean_trip_h, 1),
     `Mean Charge Stops` = round(astats$mean_charge_stops, 1),
     `Mean CO2/1000kcal` = formatC(astats$mean_co2_per_1000kcal, format = "f", digits = 4),
     stringsAsFactors = FALSE, check.names = FALSE
