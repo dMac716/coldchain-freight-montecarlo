@@ -104,9 +104,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="assets/styles.css">
@@ -213,7 +210,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cold-chain-freight-monte-carlo" class="level1 hero">
 <h1>Cold-Chain Freight Monte Carlo</h1>
 <p>Distributed Monte Carlo simulation of greenhouse gas emissions for refrigerated dog food freight under alternative spatial and powertrain scenarios.</p>
-<p><code>Latest production audit: audit_2026-03-17 | 75,443 runs | TRAFFIC_AWARE_OPTIMAL routing</code> <code>Functional unit: kg CO2e / 1,000 kcal delivered to retail</code></p>
+<p><code>Latest production audit: audit_2026-03-17 | 72,872 runs | TRAFFIC_AWARE_OPTIMAL routing</code> <code>Functional unit: kg CO2e / 1,000 kcal delivered to retail (audit-uniform method)</code></p>
 <div class="cta-row">
 <p><a href="./methodology_results.html" class="btn-pill">Methodology</a> <a href="./viz/flow_map.html" class="btn-pill">Route Map</a> <a href="./viz/transport_results.html" class="btn-pill">Transport Results</a> <a href="./contribute.html" class="btn-pill">Contribute Compute</a></p>
 </div>
@@ -260,9 +257,9 @@ Cloud Workers
 Total Runs
 </div>
 <div class="kpi-value">
-75,443
+72,872
 </div>
-<p>Deduplicated, cross-platform validated</p>
+<p>Audit-uniform FU, cross-platform validated</p>
 </div>
 </div>
 <section id="study-design" class="level2 section-title">
@@ -301,12 +298,13 @@ Total Runs
 <section id="latest-results-march-2026-production-audit" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="latest-results-march-2026-production-audit">Latest Results (March 2026 Production Audit)</h2>
 <div class="panel">
-<p>The production audit aggregated <strong>75,443 validated runs</strong> (62,565 diesel + 12,878 post-fix BEV) across 8 scenarios from 4 GCP and 4 Azure workers. Key findings:</p>
+<p>The production audit aggregated <strong>72,872 validated runs</strong> (61,118 diesel + 11,754 post-fix BEV) across 8 scenarios from 4 GCP and 4 Azure workers, with 100% functional-unit coverage using the audit-uniform method.</p>
+<p><strong>Headline finding:</strong> When route distance is controlled, the inferred climate advantage of BEV versus diesel depends strongly on the functional unit denominator. Under cube-limited physical loading (phase2 load model), BEV outperforms diesel by ~57%; under trailer-max normalization (audit-uniform), diesel appears to outperform BEV.</p>
 <ul>
-<li><strong>Refrigerated</strong>: BEV CO2/1000kcal (0.047) is comparable to diesel (0.048) despite 2.8x longer route (1,743 vs 617 mi) — electrification offsets the distance penalty</li>
-<li><strong>Dry</strong>: BEV CO2/1000kcal (0.028) comparable to diesel (0.022) — BEV grid charging overhead nearly balanced by zero tailpipe emissions</li>
-<li><strong>BEV trip energy</strong>: 4,000–4,050 kWh propulsion, 15–17 charging stops per 1,743-mi corridor</li>
-<li><strong>Reefer metrics</strong>: diesel TRU uses 11.2 gal/trip; BEV electric TRU uses 439 kWh/trip</li>
+<li><strong>Denominator-free metrics</strong>: BEV emits 0.033 kg CO2/tonne-km vs diesel 0.051 (BEV wins by ~36%)</li>
+<li><strong>Per-mile</strong>: BEV 1.00 kg CO2/mi vs diesel 1.55 kg/mi (BEV wins by ~36%)</li>
+<li><strong>Audit-uniform FU</strong>: Dry BEV 0.028 vs diesel 0.020; Refrigerated BEV 0.046 vs diesel 0.015</li>
+<li><strong>BEV trip energy</strong>: 3,955–4,097 kWh propulsion, 15–17 charging stops per 1,743-mi corridor</li>
 <li>Post-fix BEV runs correctly model en-route charging; all BEV runs have charge_stops &gt; 0</li>
 </ul>
 <p>This is a <a href="https://dmac716.github.io/MortyMonteCarlo/">companion transport analysis</a> to the full lifecycle assessment.</p>
@@ -318,11 +316,11 @@ Total Runs
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="assets/transport/audit_2026-03-17/figures/fig_h_electrification.png" class="img-fluid figure-img"></p>
-<figcaption>Electrification impact</figcaption>
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_fu_sensitivity_two_panel.png" class="img-fluid figure-img"></p>
+<figcaption>FU Sensitivity: BEV vs diesel ranking depends on denominator method</figcaption>
 </figure>
 </div>
-<p>See the full audit figures on the <a href="./methodology_results.html">Methodology</a> and <a href="./viz/transport_results.html">Transport Results</a> pages.</p>
+<p>See the full audit figures and FU sensitivity analysis on the <a href="./methodology_results.html">Methodology</a> and <a href="./viz/transport_results.html">Transport Results</a> pages.</p>
 </div>
 </section>
 <section id="explore" class="level2 section-title">
@@ -362,51 +360,11 @@ Total Runs
 </section>
 <section id="pipeline-overview" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="pipeline-overview">Pipeline Overview</h2>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart TD
-  subgraph inputs["Data Inputs"]
-    A1[data/inputs_local/*.csv&lt;br/&gt;scenarios, factors, priors]
-    A2[data/derived/*.csv&lt;br/&gt;routes, BEV plans, OD cache]
-  end
-
-  subgraph sim["Simulation"]
-    B[R/01_validate.R&lt;br/&gt;schema + mode gates]
-    C[R/sim/01-10&lt;br/&gt;route segments, traffic,&lt;br/&gt;TRU, powertrain, charging]
-    D[tools/run_route_sim_mc.R&lt;br/&gt;paired MC draws]
-  end
-
-  subgraph compute["Multi-Cloud Fleet"]
-    E1[Local macOS]
-    E2[GCP VMs x4]
-    E3[Azure VMs x4]
-  end
-
-  subgraph collect["Collection &amp; Analysis"]
-    F[tools/pull_worker_results.sh&lt;br/&gt;GCS + Azure + local]
-    G[tools/merge_run_bundles.sh&lt;br/&gt;dedup by run_id]
-    H[tools/audit_analysis.R&lt;br/&gt;stats, figures, validation]
-  end
-
-  subgraph publish["Publishing"]
-    I[artifacts/analysis_final_*/&lt;br/&gt;figures, tables, dataset]
-    J[tools/update_site_from_audit.sh&lt;br/&gt;site assets + render]
-    K[docs/ GitHub Pages]
-  end
-
-  A1 --&gt; B --&gt; C --&gt; D
-  A2 --&gt; C
-  D --&gt; E1 &amp; E2 &amp; E3
-  E1 &amp; E2 &amp; E3 --&gt; F --&gt; G --&gt; H
-  H --&gt; I --&gt; J --&gt; K
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_s1_pipeline.png" class="img-fluid figure-img"></p>
+<figcaption>Simulation pipeline: 5 stages from data inputs through distributed compute to publication</figcaption>
+</figure>
 </div>
 <p>See the <a href="./scripts_reference.html">Scripts Reference</a> for detailed usage of each tool.</p>
 </section>

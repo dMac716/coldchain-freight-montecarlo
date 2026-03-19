@@ -43,6 +43,11 @@ title: "Scripts Reference"
 | `tools/gcs_full_audit.sh` | Run full audit on a GCP VM from GCS tarballs | `bash tools/gcs_full_audit.sh` (run on VM) |
 | `tools/validate_artifact.R` | Validate a single artifact bundle | `Rscript tools/validate_artifact.R --artifact_dir outputs/run_bundle/foo` |
 | `tools/validate_bev_plans.R` | Validate BEV route plan coverage | `Rscript tools/validate_bev_plans.R --bev_plans_csv data/derived/bev_route_plans.csv` |
+| `tools/compute_fu.R` | Single entry point for FU computation with method enforcement | `Rscript tools/compute_fu.R --input data.csv.gz --output out.csv.gz --method audit_uniform` |
+| `tools/fu_final_package.R` | Publication FU sensitivity package (figures, frozen dataset, memo) | `Rscript tools/fu_final_package.R` |
+| `tools/fu_comparison_analysis.R` | Generate 11 figures + 6 tables comparing all four FU methods | `Rscript tools/fu_comparison_analysis.R` |
+| `tools/recover_fu_backfill.R` | Deterministic FU recovery for missing rows (sensitivity artifact) | `Rscript tools/recover_fu_backfill.R` |
+| `tools/build_audit_uniform_dataset.R` | Build uniform audit-formula dataset (100% FU coverage) | `Rscript tools/build_audit_uniform_dataset.R` |
 
 ## Graphics & Site
 

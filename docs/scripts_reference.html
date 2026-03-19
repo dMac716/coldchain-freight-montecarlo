@@ -389,6 +389,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Validate BEV route plan coverage</td>
 <td><code>Rscript tools/validate_bev_plans.R --bev_plans_csv data/derived/bev_route_plans.csv</code></td>
 </tr>
+<tr class="even">
+<td><code>tools/compute_fu.R</code></td>
+<td>Single entry point for FU computation with method enforcement</td>
+<td><code>Rscript tools/compute_fu.R --input data.csv.gz --output out.csv.gz --method audit_uniform</code></td>
+</tr>
+<tr class="odd">
+<td><code>tools/fu_final_package.R</code></td>
+<td>Publication FU sensitivity package (figures, frozen dataset, memo)</td>
+<td><code>Rscript tools/fu_final_package.R</code></td>
+</tr>
+<tr class="even">
+<td><code>tools/fu_comparison_analysis.R</code></td>
+<td>Generate 11 figures + 6 tables comparing all four FU methods</td>
+<td><code>Rscript tools/fu_comparison_analysis.R</code></td>
+</tr>
+<tr class="odd">
+<td><code>tools/recover_fu_backfill.R</code></td>
+<td>Deterministic FU recovery for missing rows (sensitivity artifact)</td>
+<td><code>Rscript tools/recover_fu_backfill.R</code></td>
+</tr>
+<tr class="even">
+<td><code>tools/build_audit_uniform_dataset.R</code></td>
+<td>Build uniform audit-formula dataset (100% FU coverage)</td>
+<td><code>Rscript tools/build_audit_uniform_dataset.R</code></td>
+</tr>
 </tbody>
 </table>
 </section>

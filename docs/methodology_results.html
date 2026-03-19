@@ -187,13 +187,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#packaging-assumptions-used" id="toc-packaging-assumptions-used" class="nav-link" data-scroll-target="#packaging-assumptions-used">Packaging Assumptions Used</a></li>
   </ul></li>
   <li><a href="#validation-and-qa-gates" id="toc-validation-and-qa-gates" class="nav-link" data-scroll-target="#validation-and-qa-gates">Validation and QA Gates</a></li>
-  <li><a href="#march-2026-production-audit-75443-runs" id="toc-march-2026-production-audit-75443-runs" class="nav-link" data-scroll-target="#march-2026-production-audit-75443-runs">March 2026 Production Audit (75,443 runs)</a>
+  <li><a href="#march-2026-production-audit-72872-runs" id="toc-march-2026-production-audit-72872-runs" class="nav-link" data-scroll-target="#march-2026-production-audit-72872-runs">March 2026 Production Audit (72,872 runs)</a>
   <ul class="collapse">
   <li><a href="#comprehensive-scenario-statistics" id="toc-comprehensive-scenario-statistics" class="nav-link" data-scroll-target="#comprehensive-scenario-statistics">Comprehensive Scenario Statistics</a></li>
   <li><a href="#audit-figures" id="toc-audit-figures" class="nav-link" data-scroll-target="#audit-figures">Audit Figures</a></li>
   <li><a href="#bev-charging-fix-context" id="toc-bev-charging-fix-context" class="nav-link" data-scroll-target="#bev-charging-fix-context">BEV Charging Fix Context</a></li>
   <li><a href="#bev-charging-validation" id="toc-bev-charging-validation" class="nav-link" data-scroll-target="#bev-charging-validation">BEV Charging Validation</a></li>
   </ul></li>
+  <li><a href="#functional-unit-sensitivity-analysis" id="toc-functional-unit-sensitivity-analysis" class="nav-link" data-scroll-target="#functional-unit-sensitivity-analysis">Functional Unit Sensitivity Analysis</a></li>
   <li><a href="#previous-baseline-local_chunked_run-80-runs-2026-03-09" id="toc-previous-baseline-local_chunked_run-80-runs-2026-03-09" class="nav-link" data-scroll-target="#previous-baseline-local_chunked_run-80-runs-2026-03-09">Previous Baseline (local_chunked_run, 80 runs, 2026-03-09)</a>
   <ul class="collapse">
   <li><a href="#scenario-level-summary-baseline" id="toc-scenario-level-summary-baseline" class="nav-link" data-scroll-target="#scenario-level-summary-baseline">Scenario-Level Summary (Baseline)</a></li>
@@ -202,7 +203,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#scientific-package-and-reproducibility" id="toc-scientific-package-and-reproducibility" class="nav-link" data-scroll-target="#scientific-package-and-reproducibility">Scientific Package and Reproducibility</a>
   <ul class="collapse">
-  <li><a href="#production-audit-2026-03-17-75443-runs" id="toc-production-audit-2026-03-17-75443-runs" class="nav-link" data-scroll-target="#production-audit-2026-03-17-75443-runs">Production Audit (2026-03-17, 75,443 runs)</a></li>
+  <li><a href="#production-audit-2026-03-17-72872-runs-audit-uniform-fu" id="toc-production-audit-2026-03-17-72872-runs-audit-uniform-fu" class="nav-link" data-scroll-target="#production-audit-2026-03-17-72872-runs-audit-uniform-fu">Production Audit (2026-03-17, 72,872 runs, audit-uniform FU)</a></li>
   <li><a href="#baseline-local_chunked_run-80-runs" id="toc-baseline-local_chunked_run-80-runs" class="nav-link" data-scroll-target="#baseline-local_chunked_run-80-runs">Baseline (local_chunked_run, 80 runs)</a></li>
   </ul></li>
   <li><a href="#codespaces-validation-lane-status" id="toc-codespaces-validation-lane-status" class="nav-link" data-scroll-target="#codespaces-validation-lane-status">Codespaces Validation Lane Status</a></li>
@@ -234,15 +235,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="executive-summary" class="level2 hero">
 <h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
-<p>This release documents the production audit <code>audit_2026-03-17</code> aggregating <strong>75,443 deduplicated runs</strong> across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).</p>
+<p>This release documents the production audit <code>audit_2026-03-17</code> aggregating <strong>72,872 validated runs</strong> across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure), with 100% functional-unit coverage using the audit-uniform method.</p>
 <ul>
 <li>Scope: transport/distribution stage only</li>
-<li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code></li>
+<li>Functional unit: <code>kg CO2e / 1000 kcal delivered to retail</code> (audit-uniform method)</li>
 <li>Design: matched-pair uncertainty within powertrain</li>
 <li>Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized</li>
-<li>Runs: 75,443 (deduplicated)</li>
+<li>Runs: 72,872 (61,118 diesel + 11,754 post-fix BEV)</li>
+<li>FU coverage: 100%</li>
 <li>Validation: PASS</li>
 </ul>
+<p><strong>Headline finding:</strong> The BEV-vs-diesel ranking reverses depending on which FU denominator is used. Under cube-limited loading BEV outperforms diesel by ~57%; under trailer-max normalization BEV appears worse. Denominator-free metrics (tonne-km, per-mile) consistently show BEV advantage of ~36%.</p>
 <p>Previous baseline: <code>local_chunked_run</code> (80 runs, 2026-03-09) retained below for reference.</p>
 </section>
 <section id="study-design" class="level2">
@@ -262,11 +265,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="reporting-metric" class="level3">
 <h3 class="anchored" data-anchor-id="reporting-metric">Reporting Metric</h3>
-<p>For each row:</p>
+<p><strong>Primary (audit-uniform method):</strong> Applied uniformly to all 72,872 rows:</p>
 <ul>
-<li><code>total_kcal_delivered = payload_kg_delivered * energy_density_kcal_per_kg</code></li>
-<li><code>co2_per_1000kcal = total_trip_co2_kg / total_kcal_delivered * 1000</code></li>
+<li><code>payload_kg = payload_max_lb_draw * load_fraction * 0.453592</code></li>
+<li><code>kcal_delivered = payload_kg * kcal_per_kg_product</code></li>
+<li><code>co2_per_1000kcal = co2_kg_total / kcal_delivered * 1000</code></li>
 </ul>
+<p><strong>Denominator-free alternatives</strong> (ISO 14083-aligned, FU-insensitive):</p>
+<ul>
+<li><code>co2_per_tonne_km = co2_kg_total / (payload_kg / 1000) / distance_km</code></li>
+<li><code>co2_per_mile = co2_kg_total / distance_miles</code></li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>FU sensitivity finding:</strong> Four candidate methods for computing the denominator produce divergent BEV-vs-diesel rankings. The audit-uniform method is the only one that covers all 72,872 rows with a consistent formula. See the <a href="./viz/transport_results.html#functional-unit-sensitivity-analysis">FU Sensitivity Analysis</a> for the full comparison.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="input-data-and-assumptions" class="level2">
@@ -306,10 +328,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="assets/transport/local_chunked_run/data/transport_sim_validation_report.txt">Validation report</a></li>
 </ul>
 </section>
-<section id="march-2026-production-audit-75443-runs" class="level2 section-title">
-<h2 class="section-title anchored" data-anchor-id="march-2026-production-audit-75443-runs">March 2026 Production Audit (75,443 runs)</h2>
+<section id="march-2026-production-audit-72872-runs" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="march-2026-production-audit-72872-runs">March 2026 Production Audit (72,872 runs)</h2>
 <div class="panel">
-<p>The production audit (2026-03-17) aggregated 75,443 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.</p>
+<p>The production audit (2026-03-17) aggregated 72,872 validated runs (61,118 diesel + 11,754 post-fix BEV) from 4 GCP and 4 Azure workers across all 8 scenario combinations. All rows have 100% FU coverage using the audit-uniform method (<code>payload_kg = payload_max_lb_draw * load_fraction * 0.453592</code>). A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.</p>
 </div>
 <section id="comprehensive-scenario-statistics" class="level3">
 <h3 class="anchored" data-anchor-id="comprehensive-scenario-statistics">Comprehensive Scenario Statistics</h3>
@@ -344,196 +366,100 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">dry_factory_set</td>
-<td style="text-align: right;">21634</td>
-<td style="text-align: right;">0.0480</td>
-<td style="text-align: right;">0.0274</td>
-<td style="text-align: right;">0.0442</td>
-<td style="text-align: right;">0.0828</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">616.4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">dry</td>
-<td style="text-align: left;">dry_factory_set</td>
-<td style="text-align: right;">9425</td>
-<td style="text-align: right;">0.0223</td>
-<td style="text-align: right;">0.0126</td>
-<td style="text-align: right;">0.0154</td>
-<td style="text-align: right;">0.0633</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">732.0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">refrigerated_factory_set</td>
-<td style="text-align: right;">21634</td>
-<td style="text-align: right;">0.0481</td>
-<td style="text-align: right;">0.0274</td>
-<td style="text-align: right;">0.0442</td>
-<td style="text-align: right;">0.0829</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">617.1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">dry</td>
-<td style="text-align: left;">refrigerated_factory_set</td>
-<td style="text-align: right;">9425</td>
-<td style="text-align: right;">0.0225</td>
-<td style="text-align: right;">0.0126</td>
-<td style="text-align: right;">0.0154</td>
-<td style="text-align: right;">0.0647</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">739.2</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">bev</td>
 <td style="text-align: left;">dry</td>
 <td style="text-align: left;">dry_factory_set</td>
-<td style="text-align: right;">6227</td>
-<td style="text-align: right;">0.0278</td>
-<td style="text-align: right;">0.0169</td>
+<td style="text-align: right;">5777</td>
+<td style="text-align: right;">0.0279</td>
+<td style="text-align: right;">0.0170</td>
 <td style="text-align: right;">0.0271</td>
-<td style="text-align: right;">0.0411</td>
-<td style="text-align: right;">15.53</td>
+<td style="text-align: right;">0.0412</td>
+<td style="text-align: right;">15.54</td>
 <td style="text-align: right;">1712.2</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">bev</td>
 <td style="text-align: left;">dry</td>
 <td style="text-align: left;">refrigerated_factory_set</td>
-<td style="text-align: right;">6227</td>
-<td style="text-align: right;">0.0288</td>
-<td style="text-align: right;">0.0175</td>
-<td style="text-align: right;">0.0281</td>
-<td style="text-align: right;">0.0426</td>
-<td style="text-align: right;">15.22</td>
+<td style="text-align: right;">5777</td>
+<td style="text-align: right;">0.0289</td>
+<td style="text-align: right;">0.0176</td>
+<td style="text-align: right;">0.0280</td>
+<td style="text-align: right;">0.0427</td>
+<td style="text-align: right;">15.23</td>
 <td style="text-align: right;">1773.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">8925</td>
+<td style="text-align: right;">0.0201</td>
+<td style="text-align: right;">0.0125</td>
+<td style="text-align: right;">0.0148</td>
+<td style="text-align: right;">0.0634</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">738.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">dry</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">8925</td>
+<td style="text-align: right;">0.0203</td>
+<td style="text-align: right;">0.0125</td>
+<td style="text-align: right;">0.0148</td>
+<td style="text-align: right;">0.0649</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">746.2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">bev</td>
 <td style="text-align: left;">refrigerated</td>
 <td style="text-align: left;">dry_factory_set</td>
-<td style="text-align: right;">52</td>
-<td style="text-align: right;">0.0468</td>
-<td style="text-align: right;">0.0273</td>
-<td style="text-align: right;">0.0449</td>
-<td style="text-align: right;">0.0726</td>
-<td style="text-align: right;">17.13</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.0455</td>
+<td style="text-align: right;">0.0299</td>
+<td style="text-align: right;">0.0441</td>
+<td style="text-align: right;">0.0683</td>
+<td style="text-align: right;">17.01</td>
 <td style="text-align: right;">1712.2</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">bev</td>
 <td style="text-align: left;">refrigerated</td>
 <td style="text-align: left;">refrigerated_factory_set</td>
-<td style="text-align: right;">52</td>
-<td style="text-align: right;">0.0485</td>
-<td style="text-align: right;">0.0283</td>
-<td style="text-align: right;">0.0465</td>
-<td style="text-align: right;">0.0751</td>
-<td style="text-align: right;">17.19</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.0471</td>
+<td style="text-align: right;">0.0310</td>
+<td style="text-align: right;">0.0457</td>
+<td style="text-align: right;">0.0708</td>
+<td style="text-align: right;">17.13</td>
 <td style="text-align: right;">1773.7</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">bev</td>
-<td style="text-align: left;">dry</td>
-<td style="text-align: left;">factory_kansas_hills</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">0.0457</td>
-<td style="text-align: right;">0.0245</td>
-<td style="text-align: right;">0.0424</td>
-<td style="text-align: right;">0.0783</td>
-<td style="text-align: right;">15.85</td>
-<td style="text-align: right;">1712.2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">bev</td>
-<td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">factory_kansas_hills</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">0.2201</td>
-<td style="text-align: right;">0.0926</td>
-<td style="text-align: right;">0.1692</td>
-<td style="text-align: right;">0.4616</td>
-<td style="text-align: right;">15.85</td>
-<td style="text-align: right;">1712.2</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">diesel</td>
-<td style="text-align: left;">dry</td>
-<td style="text-align: left;">factory_kansas_hills</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">0.1097</td>
-<td style="text-align: right;">0.0710</td>
-<td style="text-align: right;">0.0884</td>
-<td style="text-align: right;">0.2082</td>
+<td style="text-align: left;">refrigerated</td>
+<td style="text-align: left;">dry_factory_set</td>
+<td style="text-align: right;">21634</td>
+<td style="text-align: right;">0.0147</td>
+<td style="text-align: right;">0.0124</td>
+<td style="text-align: right;">0.0146</td>
+<td style="text-align: right;">0.0173</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">1712.2</td>
+<td style="text-align: right;">615.9</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">diesel</td>
 <td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">factory_kansas_hills</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">0.4993</td>
-<td style="text-align: right;">0.2284</td>
-<td style="text-align: right;">0.4539</td>
-<td style="text-align: right;">0.9461</td>
+<td style="text-align: left;">refrigerated_factory_set</td>
+<td style="text-align: right;">21634</td>
+<td style="text-align: right;">0.0147</td>
+<td style="text-align: right;">0.0124</td>
+<td style="text-align: right;">0.0146</td>
+<td style="text-align: right;">0.0173</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">1712.2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">bev</td>
-<td style="text-align: left;">dry</td>
-<td style="text-align: left;">factory_texas_freshpet</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">0.0475</td>
-<td style="text-align: right;">0.0256</td>
-<td style="text-align: right;">0.0439</td>
-<td style="text-align: right;">0.0811</td>
-<td style="text-align: right;">16.27</td>
-<td style="text-align: right;">1780.4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">bev</td>
-<td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">factory_texas_freshpet</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">0.2291</td>
-<td style="text-align: right;">0.0960</td>
-<td style="text-align: right;">0.1767</td>
-<td style="text-align: right;">0.4816</td>
-<td style="text-align: right;">16.27</td>
-<td style="text-align: right;">1780.4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">dry</td>
-<td style="text-align: left;">factory_texas_freshpet</td>
-<td style="text-align: right;">145</td>
-<td style="text-align: right;">0.1200</td>
-<td style="text-align: right;">0.0732</td>
-<td style="text-align: right;">0.1045</td>
-<td style="text-align: right;">0.2242</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">1777.4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">diesel</td>
-<td style="text-align: left;">refrigerated</td>
-<td style="text-align: left;">factory_texas_freshpet</td>
-<td style="text-align: right;">142</td>
-<td style="text-align: right;">0.3781</td>
-<td style="text-align: right;">0.1224</td>
-<td style="text-align: right;">0.2749</td>
-<td style="text-align: right;">0.9056</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">1777.5</td>
+<td style="text-align: right;">616.6</td>
 </tr>
 </tbody>
 </table>
@@ -615,14 +541,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <table class="caption-top table table-sm table-striped small">
 <caption>BEV runs: charging fix validation — pre-fix vs post-fix comparison</caption>
 <colgroup>
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 4%">
+<col style="width: 9%">
+<col style="width: 18%">
+<col style="width: 9%">
+<col style="width: 13%">
 <col style="width: 11%">
-<col style="width: 20%">
 <col style="width: 11%">
-<col style="width: 14%">
-<col style="width: 12%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -634,34 +561,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th style="text-align: right;">mean_trip_h</th>
 <th style="text-align: right;">mean_energy_kwh</th>
 <th style="text-align: right;">mean_distance</th>
+<th style="text-align: left;">fu_method</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">dry</td>
 <td style="text-align: left;">TRUE</td>
-<td style="text-align: right;">12614</td>
-<td style="text-align: right;">1739.68</td>
-<td style="text-align: right;">0.0286</td>
-<td style="text-align: right;">86.08</td>
-<td style="text-align: right;">4025.9</td>
+<td style="text-align: right;">11554</td>
+<td style="text-align: right;">1738.32</td>
+<td style="text-align: right;">0.0284</td>
+<td style="text-align: right;">85.92</td>
+<td style="text-align: right;">4025.5</td>
 <td style="text-align: right;">1743</td>
+<td style="text-align: left;">audit_uniform</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">refrigerated</td>
 <td style="text-align: left;">TRUE</td>
-<td style="text-align: right;">264</td>
-<td style="text-align: right;">1900.31</td>
-<td style="text-align: right;">0.1549</td>
-<td style="text-align: right;">96.17</td>
-<td style="text-align: right;">4269.0</td>
-<td style="text-align: right;">1745</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">1872.71</td>
+<td style="text-align: right;">0.0463</td>
+<td style="text-align: right;">89.55</td>
+<td style="text-align: right;">4435.1</td>
+<td style="text-align: right;">1743</td>
+<td style="text-align: left;">audit_uniform</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </section>
+</section>
+<section id="functional-unit-sensitivity-analysis" class="level2 section-title">
+<h2 class="section-title anchored" data-anchor-id="functional-unit-sensitivity-analysis">Functional Unit Sensitivity Analysis</h2>
+<div class="panel">
+<p>The choice of FU denominator is a first-order determinant of the BEV-vs-diesel comparison. Four methods were evaluated:</p>
+<ol type="1">
+<li><strong>Phase2 load model</strong> — Cube+weight constrained packing (item to box to pallet to truck). Dry: ~16.4 tonnes, Refrigerated: ~3.4 tonnes. 80 validated rows.</li>
+<li><strong>Legacy stored</strong> — Original March 16 validated dataset (old pipeline). Unknown payload source. 46,720 rows.</li>
+<li><strong>Exogenous draw</strong> — Stochastic cargo weight from triangular distribution (8k–42k lb). Mean ~10.9 tonnes. 26,152 rows.</li>
+<li><strong>Audit uniform</strong> — Trailer max capacity x load fraction. Mean ~19.0 tonnes. All 72,872 rows.</li>
+</ol>
+<p>Under cube-limited physical loading (phase2), refrigerated product fills only ~3.4 tonnes per truck due to case geometry. BEV’s lower absolute CO2 per trip gives it a ~57% advantage. Under trailer-max normalization (audit-uniform), payload is assumed at ~19 tonnes, inflating kcal_delivered by ~5.6x for refrigerated freight and compressing per-FU emissions — erasing the BEV advantage. This is an artifact of the denominator assumption, not a real change in energy efficiency.</p>
+<p><strong>Recommendation:</strong> Report denominator-free metrics (CO2/tonne-km, CO2/mile) alongside FU-based results. The FU sensitivity is itself a finding worth reporting.</p>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_fu_sensitivity_two_panel.png" class="img-fluid figure-img"></p>
+<figcaption>FU sensitivity: two-panel comparison</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/transport/audit_2026-03-17/figures/fig_payload_by_method.png" class="img-fluid figure-img"></p>
+<figcaption>Payload distributions by method</figcaption>
+</figure>
+</div>
 </section>
 <section id="previous-baseline-local_chunked_run-80-runs-2026-03-09" class="level2 section-title">
 <h2 class="section-title anchored" data-anchor-id="previous-baseline-local_chunked_run-80-runs-2026-03-09">Previous Baseline (local_chunked_run, 80 runs, 2026-03-09)</h2>
@@ -759,11 +715,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="scientific-package-and-reproducibility" class="level2">
 <h2 class="anchored" data-anchor-id="scientific-package-and-reproducibility">Scientific Package and Reproducibility</h2>
-<section id="production-audit-2026-03-17-75443-runs" class="level3">
-<h3 class="anchored" data-anchor-id="production-audit-2026-03-17-75443-runs">Production Audit (2026-03-17, 75,443 runs)</h3>
+<section id="production-audit-2026-03-17-72872-runs-audit-uniform-fu" class="level3">
+<h3 class="anchored" data-anchor-id="production-audit-2026-03-17-72872-runs-audit-uniform-fu">Production Audit (2026-03-17, 72,872 runs, audit-uniform FU)</h3>
 <ul>
-<li>Audit figures: <a href="assets/transport/downloads/audit_2026-03-17_figures.zip">ZIP</a></li>
-<li>Audit data: <a href="assets/transport/downloads/audit_2026-03-17_data.zip">ZIP</a></li>
+<li>Audit figures: <a href="assets/transport/downloads/audit_2026-03-17_figures.zip">ZIP</a> (24 figures including FU sensitivity)</li>
+<li>Audit data: <a href="assets/transport/downloads/audit_2026-03-17_data.zip">ZIP</a> (7 tables + 2 memos)</li>
 </ul>
 </section>
 <section id="baseline-local_chunked_run-80-runs" class="level3">

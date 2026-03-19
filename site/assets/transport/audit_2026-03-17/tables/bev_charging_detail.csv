@@ -1,5 +1,5 @@
-product_type,origin_network,n_runs,pct_with_charging,mean_charge_stops,median_charge_stops,p05_charge_stops,p95_charge_stops,mean_time_charging_min,median_time_charging_min,mean_energy_kwh_total,mean_energy_kwh_tru,mean_co2_kg,mean_co2_per_1000kcal,mean_charging_attempts,mean_occupied_events,mean_broken_events,mean_wait_time_min,mean_failed_frac
-dry,dry_factory_set,3730,100,15.53,15,15,18,3286.1,3232.3,3953.1,0,1708.85,0.027862,0,0,0,0,0
-dry,refrigerated_factory_set,3730,100,15.22,15,14,18,2125.8,2134.5,4095.1,0,1770.22,0.028862,0,0,0,0,0
-refrigerated,dry_factory_set,49,100,17.08,16,15,19.6,3743.7,3889.7,4391.5,429,1903.13,0.046811,0,0,0,0,0
-refrigerated,refrigerated_factory_set,49,100,17.1,17,15,20.6,2241.3,2229.3,4549,444.2,1971.37,0.048489,0,0,0,0,0
+product_type,origin_network,n_runs,pct_with_charging,mean_charge_stops,median_charge_stops,mean_co2_kg,mean_co2_per_1000kcal,mean_energy_kwh,fu_method
+dry,dry_factory_set,5777,100,15.54,15,1707.66,0.027854,3954.5,audit_uniform
+dry,refrigerated_factory_set,5777,100,15.23,15,1768.98,0.028854,4096.5,audit_uniform
+refrigerated,dry_factory_set,100,100,17.01,16,1839.69,0.04546,4357,audit_uniform
+refrigerated,refrigerated_factory_set,100,100,17.13,17,1905.72,0.047091,4513.3,audit_uniform

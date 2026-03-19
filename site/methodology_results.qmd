@@ -5,14 +5,17 @@ title: "Methodology and Scientific Results"
 ::: {.hero}
 ## Executive Summary
 
-This release documents the production audit `audit_2026-03-17` aggregating **75,443 deduplicated runs** across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure).
+This release documents the production audit `audit_2026-03-17` aggregating **72,872 validated runs** across 8 scenarios from multi-cloud workers (4 GCP + 4 Azure), with 100% functional-unit coverage using the audit-uniform method.
 
 - Scope: transport/distribution stage only
-- Functional unit: `kg CO2e / 1000 kcal delivered to retail`
+- Functional unit: `kg CO2e / 1000 kcal delivered to retail` (audit-uniform method)
 - Design: matched-pair uncertainty within powertrain
 - Scenarios: BEV/diesel x dry/refrigerated x centralized/regionalized
-- Runs: 75,443 (deduplicated)
+- Runs: 72,872 (61,118 diesel + 11,754 post-fix BEV)
+- FU coverage: 100%
 - Validation: PASS
+
+**Headline finding:** The BEV-vs-diesel ranking reverses depending on which FU denominator is used. Under cube-limited loading BEV outperforms diesel by ~57%; under trailer-max normalization BEV appears worse. Denominator-free metrics (tonne-km, per-mile) consistently show BEV advantage of ~36%.
 
 Previous baseline: `local_chunked_run` (80 runs, 2026-03-09) retained below for reference.
 :::
@@ -32,10 +35,20 @@ Within each powertrain, dry/refrigerated rows share operating-condition draws (t
 
 ### Reporting Metric
 
-For each row:
+**Primary (audit-uniform method):** Applied uniformly to all 72,872 rows:
 
-- `total_kcal_delivered = payload_kg_delivered * energy_density_kcal_per_kg`
-- `co2_per_1000kcal = total_trip_co2_kg / total_kcal_delivered * 1000`
+- `payload_kg = payload_max_lb_draw * load_fraction * 0.453592`
+- `kcal_delivered = payload_kg * kcal_per_kg_product`
+- `co2_per_1000kcal = co2_kg_total / kcal_delivered * 1000`
+
+**Denominator-free alternatives** (ISO 14083-aligned, FU-insensitive):
+
+- `co2_per_tonne_km = co2_kg_total / (payload_kg / 1000) / distance_km`
+- `co2_per_mile = co2_kg_total / distance_miles`
+
+::: {.callout-warning}
+**FU sensitivity finding:** Four candidate methods for computing the denominator produce divergent BEV-vs-diesel rankings. The audit-uniform method is the only one that covers all 72,872 rows with a consistent formula. See the [FU Sensitivity Analysis](viz/transport_results.qmd#functional-unit-sensitivity-analysis) for the full comparison.
+:::
 
 ## Input Data and Assumptions
 
@@ -68,10 +81,10 @@ Validation artifact:
 
 - [Validation report](assets/transport/local_chunked_run/data/transport_sim_validation_report.txt)
 
-## March 2026 Production Audit (75,443 runs) { .section-title }
+## March 2026 Production Audit (72,872 runs) { .section-title }
 
 ::: {.panel}
-The production audit (2026-03-17) aggregated 75,443 deduplicated runs from 4 GCP and 4 Azure workers across all 8 scenario combinations. A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.
+The production audit (2026-03-17) aggregated 72,872 validated runs (61,118 diesel + 11,754 post-fix BEV) from 4 GCP and 4 Azure workers across all 8 scenario combinations. All rows have 100% FU coverage using the audit-uniform method (`payload_kg = payload_max_lb_draw * load_fraction * 0.453592`). A critical BEV charging fix was applied mid-campaign: pre-fix runs had 0 charging stops, post-fix runs correctly model en-route DCFC charging events.
 :::
 
 ### Comprehensive Scenario Statistics
@@ -137,6 +150,25 @@ if (file.exists(bev_path)) {
 }
 ```
 
+## Functional Unit Sensitivity Analysis { .section-title }
+
+::: {.panel}
+The choice of FU denominator is a first-order determinant of the BEV-vs-diesel comparison. Four methods were evaluated:
+
+1. **Phase2 load model** --- Cube+weight constrained packing (item to box to pallet to truck). Dry: ~16.4 tonnes, Refrigerated: ~3.4 tonnes. 80 validated rows.
+2. **Legacy stored** --- Original March 16 validated dataset (old pipeline). Unknown payload source. 46,720 rows.
+3. **Exogenous draw** --- Stochastic cargo weight from triangular distribution (8k--42k lb). Mean ~10.9 tonnes. 26,152 rows.
+4. **Audit uniform** --- Trailer max capacity x load fraction. Mean ~19.0 tonnes. All 72,872 rows.
+
+Under cube-limited physical loading (phase2), refrigerated product fills only ~3.4 tonnes per truck due to case geometry. BEV's lower absolute CO2 per trip gives it a ~57% advantage. Under trailer-max normalization (audit-uniform), payload is assumed at ~19 tonnes, inflating kcal_delivered by ~5.6x for refrigerated freight and compressing per-FU emissions --- erasing the BEV advantage. This is an artifact of the denominator assumption, not a real change in energy efficiency.
+
+**Recommendation:** Report denominator-free metrics (CO2/tonne-km, CO2/mile) alongside FU-based results. The FU sensitivity is itself a finding worth reporting.
+:::
+
+![FU sensitivity: two-panel comparison](assets/transport/audit_2026-03-17/figures/fig_fu_sensitivity_two_panel.png)
+
+![Payload distributions by method](assets/transport/audit_2026-03-17/figures/fig_payload_by_method.png)
+
 ## Previous Baseline (local_chunked_run, 80 runs, 2026-03-09) { .section-title }
 
 ### Scenario-Level Summary (Baseline)
@@ -173,10 +205,10 @@ if (all(c("powertrain", "n", "mean", "median", "p05", "p95") %in% names(ps))) {
 
 ## Scientific Package and Reproducibility
 
-### Production Audit (2026-03-17, 75,443 runs)
+### Production Audit (2026-03-17, 72,872 runs, audit-uniform FU)
 
-- Audit figures: [ZIP](assets/transport/downloads/audit_2026-03-17_figures.zip)
-- Audit data: [ZIP](assets/transport/downloads/audit_2026-03-17_data.zip)
+- Audit figures: [ZIP](assets/transport/downloads/audit_2026-03-17_figures.zip) (24 figures including FU sensitivity)
+- Audit data: [ZIP](assets/transport/downloads/audit_2026-03-17_data.zip) (7 tables + 2 memos)
 
 ### Baseline (local_chunked_run, 80 runs)
 
