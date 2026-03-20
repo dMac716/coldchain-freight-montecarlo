@@ -131,6 +131,13 @@ Help the project by running simulations in your GitHub Codespace or on your Mac.
 
 [How to Help](contribute.qmd)
 :::
+
+::: {.quick-card}
+### About the Team
+Meet the researchers and faculty behind the simulation.
+
+[About Us](about.qmd)
+:::
 :::
 
 ## Pipeline Overview { .section-title }
