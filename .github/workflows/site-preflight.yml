@@ -98,7 +98,131 @@ jobs:
       - name: Validate rendered outputs exist
         shell: bash
         run: |
-          test -f docs/index.html
-          test -f docs/viz/flow_map.html
-          test -f docs/viz/scenario_explorer.html
+          echo "=== Page existence checks ==="
+          for page in \
+            docs/index.html \
+            docs/viz/flow_map.html \
+            docs/viz/transport_results.html \
+            docs/viz/scenario_explorer.html \
+            docs/methodology_results.html \
+            docs/route_sim_animation.html \
+            docs/about.html \
+            docs/scripts_reference.html \
+            docs/contribute.html; do
+            test -f "$page" || { echo "FAIL: $page missing"; exit 1; }
+            echo "  OK: $page"
+          done
+
+      - name: Validate route map has polyline data
+        shell: bash
+        run: |
+          echo "=== Route map polyline check ==="
+          # Static route map image must exist
+          test -f docs/assets/transport/audit_2026-03-17/figures/fig_route_map.png || \
+            { echo "FAIL: static route map PNG missing"; exit 1; }
+          echo "  OK: static route map PNG exists"
+          # Leaflet widget must contain polyline coordinate data
+          LNG_COUNT=$(grep -o '"lng":\[' docs/viz/flow_map.html | wc -l)
+          echo "  Polyline lng arrays: $LNG_COUNT"
+          test "$LNG_COUNT" -ge 6 || { echo "FAIL: expected >= 6 polyline arrays, got $LNG_COUNT"; exit 1; }
+          echo "  OK: $LNG_COUNT polyline arrays (6 routes expected)"
+
+      - name: Validate audit-uniform run counts
+        shell: bash
+        run: |
+          echo "=== Run count consistency ==="
+          # Index page must reference 72,872
+          grep -q "72,872" docs/index.html || { echo "FAIL: index.html missing 72,872 run count"; exit 1; }
+          echo "  OK: index.html has 72,872"
+          # Transport results must reference 72,872
+          grep -q "72,872" docs/viz/transport_results.html || { echo "FAIL: transport_results missing 72,872"; exit 1; }
+          echo "  OK: transport_results has 72,872"
+          # No stale 75,443 references
+          STALE=$(grep -rl "75,443\|75.443\|75443" docs/*.html docs/viz/*.html 2>/dev/null | wc -l)
+          test "$STALE" -eq 0 || { echo "FAIL: $STALE pages still reference stale 75,443 count"; grep -rl "75,443\|75.443\|75443" docs/*.html docs/viz/*.html; exit 1; }
+          echo "  OK: no stale 75,443 references"
+
+      - name: Validate FU sensitivity section exists
+        shell: bash
+        run: |
+          echo "=== FU sensitivity content ==="
+          grep -q "Functional Unit Sensitivity" docs/viz/transport_results.html || \
+            { echo "FAIL: transport_results missing FU sensitivity section"; exit 1; }
+          echo "  OK: FU sensitivity section present"
+          grep -q "tonne-km" docs/viz/transport_results.html || \
+            { echo "FAIL: transport_results missing tonne-km metrics"; exit 1; }
+          echo "  OK: tonne-km metrics present"
+          grep -q "audit_uniform" docs/viz/transport_results.html || \
+            { echo "FAIL: transport_results missing audit_uniform reference"; exit 1; }
+          echo "  OK: audit_uniform method referenced"
+
+      - name: Validate about page team content
+        shell: bash
+        run: |
+          echo "=== About page checks ==="
+          for name in "Alan Jenn" "David MacDonald" "Miguel Craven" "Rayhan" "Morty"; do
+            grep -q "$name" docs/about.html || { echo "FAIL: about.html missing $name"; exit 1; }
+            echo "  OK: $name present"
+          done
+          # Team photos must exist
+          for photo in alan_jenn.jpg david.jpg miguel.jpg rayhan.jpg morty.jpg; do
+            test -f "docs/assets/team/$photo" || { echo "FAIL: team photo $photo missing"; exit 1; }
+            echo "  OK: $photo exists"
+          done
+          # Banners
+          test -f docs/assets/team/eei_banner.png || { echo "FAIL: EEI banner missing"; exit 1; }
+          test -f docs/assets/team/coe_logo.png || { echo "FAIL: COE logo missing"; exit 1; }
+          echo "  OK: banners present"
+
+      - name: Validate download bundles exist
+        shell: bash
+        run: |
+          echo "=== Download bundle checks ==="
+          test -f docs/assets/transport/downloads/audit_2026-03-17_figures.zip || \
+            { echo "FAIL: figures ZIP missing"; exit 1; }
+          test -f docs/assets/transport/downloads/audit_2026-03-17_data.zip || \
+            { echo "FAIL: data ZIP missing"; exit 1; }
+          echo "  OK: download ZIPs present"
+
+      - name: Validate video autoplay script
+        shell: bash
+        run: |
+          echo "=== Video autoplay checks ==="
+          test -f docs/assets/video-autoplay.js || { echo "FAIL: video-autoplay.js missing"; exit 1; }
+          grep -q "video-autoplay.js" docs/route_sim_animation.html || \
+            { echo "FAIL: animations page missing video-autoplay script"; exit 1; }
+          grep -q "video-autoplay.js" docs/viz/transport_results.html || \
+            { echo "FAIL: transport_results missing video-autoplay script"; exit 1; }
+          echo "  OK: video autoplay script included"
+
+      - name: Validate key figures exist
+        shell: bash
+        run: |
+          echo "=== Key figure checks ==="
+          FIGDIR=docs/assets/transport/audit_2026-03-17/figures
+          for fig in \
+            fig_a_co2_by_scenario.png \
+            fig_b_co2_density.png \
+            fig_c_cdf.png \
+            fig_e_trip_duration.png \
+            fig_f_charge_stops.png \
+            fig_h_electrification.png \
+            fig_fu_sensitivity_two_panel.png \
+            fig_payload_by_method.png \
+            fig_s1_pipeline.png \
+            fig_route_map.png; do
+            test -f "$FIGDIR/$fig" || { echo "FAIL: $fig missing"; exit 1; }
+            echo "  OK: $fig"
+          done
+
+      - name: Validate comprehensive_scenario_stats has audit-uniform data
+        shell: bash
+        run: |
+          echo "=== CSV data checks ==="
+          CSV=docs/assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv
+          test -f "$CSV" || { echo "FAIL: comprehensive_scenario_stats.csv missing"; exit 1; }
+          grep -q "audit_uniform" "$CSV" || { echo "FAIL: CSV missing audit_uniform fu_method column"; exit 1; }
+          ROWS=$(wc -l < "$CSV")
+          test "$ROWS" -ge 9 || { echo "FAIL: expected >= 9 rows (header + 8 scenarios), got $ROWS"; exit 1; }
+          echo "  OK: $ROWS rows, audit_uniform method"
 
