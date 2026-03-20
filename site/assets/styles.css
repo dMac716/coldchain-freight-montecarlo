@@ -75,6 +75,17 @@ h1, h2, h3 {
   max-width: 74ch;
 }
 
+.hero a {
+  color: #b8dcff;
+  text-decoration: underline;
+  text-decoration-color: rgba(184, 220, 255, 0.5);
+}
+
+.hero a:hover {
+  color: #fff;
+  text-decoration-color: #fff;
+}
+
 .cta-row {
   display: flex;
   flex-wrap: wrap;

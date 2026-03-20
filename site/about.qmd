@@ -81,7 +81,7 @@ Energy efficiency, renewable energy, geothermal, energy policy.
 
 **Chief Morale Officer**
 
-Morty is the namesake of our sister project, [MortyMonteCarlo](https://dmac716.github.io/MortyMonteCarlo/), which computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) for the same dog food products simulated here. He takes his role very seriously.
+Morty is the namesake of our sister project, [MortyMonteCarlo](https://dmac716.github.io/MortyMonteCarlo/), which computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) for the same dog food products simulated here. A key benefit of that project: we can now reverse-engineer any dog food recipe to its proper ratio and qualitative composition. He takes his role very seriously.
 :::
 :::
 
