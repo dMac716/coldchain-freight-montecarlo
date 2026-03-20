@@ -23,6 +23,8 @@ website:
         text: Scripts
       - href: contribute.qmd
         text: Contribute Compute
+      - href: about.qmd
+        text: About
 
 format:
   html:
