@@ -57,7 +57,7 @@ jobs:
       # Workload Identity Federation (preferred — no long-lived secrets)
       - name: Authenticate to GCS via Workload Identity
         id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         if: vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -67,7 +67,7 @@ jobs:
       # Fallback: service account JSON key (legacy)
       - name: Authenticate to GCS via service account key
         if: steps.auth.outcome != 'success' && secrets.GCP_SA_KEY != ''
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
         continue-on-error: true
