@@ -74,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="../assets/styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -137,9 +137,19 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#production-audit-summary" id="toc-production-audit-summary" class="nav-link active" data-scroll-target="#production-audit-summary">Production Audit Summary</a></li>
+  <li><a href="#per-run-explorer" id="toc-per-run-explorer" class="nav-link" data-scroll-target="#per-run-explorer">Per-Run Explorer</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -163,6 +173,9 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="production-audit-summary" class="level2">
+<h2 class="anchored" data-anchor-id="production-audit-summary">Production Audit Summary</h2>
+<p>Scenario-level statistics from the 72,872-run audit-uniform dataset.</p>
 <h3 class="anchored">
 March 2026 Production Audit (72,872 runs)
 </h3>
@@ -463,10 +476,10 @@ refrigerated_factory_set
 </tr>
 </tbody>
 </table>
-<hr>
-<h4 class="anchored">
-Per-Run Explorer (local chunked run sample)
-</h4>
+</section>
+<section id="per-run-explorer" class="level2">
+<h2 class="anchored" data-anchor-id="per-run-explorer">Per-Run Explorer</h2>
+<p>Filter and sort individual simulation runs by scenario, powertrain, and origin. Data from the baseline local chunked run (80 runs).</p>
 <p>
 <strong>Data source:</strong> <code>../assets/transport/local_chunked_run/data/transport_sim_rows.csv</code> &nbsp;|&nbsp; <strong>Total rows:</strong> 80 &nbsp;|&nbsp; <strong>Date:</strong> 2026-03-17
 </p>
@@ -3806,6 +3819,7 @@ Davis, CA Petco
 <script>const sSel=document.getElementById('scenario-filter');const pSel=document.getElementById('power-filter');const oSel=document.getElementById('origin-filter');const summaryDiv=document.getElementById('filter-summary');const rows=[...document.querySelectorAll('#scenario-table tbody tr')];const hdr=['Rep','Scenario','Powertrain','Origin','Destination','Distance (mi)','Duration (h)','Congestion (h)','Diesel gal','BEV kWh','Charge stops','Total CO2 kg','CO2 / 1000 kcal'];function applyFilters(){ const s=sSel.value.toUpperCase(), p=pSel.value.toUpperCase(), o=oSel.value.toUpperCase(); let n=0, sumDist=0, sumDur=0, sumCO2=0, sumKWh=0, sumChg=0; rows.forEach(r=>{   const keepS=(s==='ALL'||r.dataset.scenario===s);   const keepP=(p==='ALL'||r.dataset.power===p);   const keepO=(o==='ALL'||r.dataset.origin===o);   const vis=keepS&&keepP&&keepO;   r.style.display=vis?'':'none';   if(vis){n++;const c=r.cells;sumDist+=parseFloat(c[5].textContent)||0;sumDur+=parseFloat(c[6].textContent)||0;sumCO2+=parseFloat(c[11].textContent)||0;sumKWh+=parseFloat(c[9].textContent)||0;sumChg+=parseFloat(c[10].textContent)||0;} }); if(n>0){  summaryDiv.innerHTML='<b>Showing '+n+' runs</b> &mdash; Avg Distance: '+(sumDist/n).toFixed(1)+' mi | Avg Duration: '+(sumDur/n).toFixed(2)+' h | Avg CO2: '+(sumCO2/n).toFixed(1)+' kg | Avg BEV kWh: '+(sumKWh/n).toFixed(1)+' | Avg Charge Stops: '+(sumChg/n).toFixed(1); } else { summaryDiv.innerHTML='<b>No matching runs</b>'; }}sSel.addEventListener('change', applyFilters);pSel.addEventListener('change', applyFilters);oSel.addEventListener('change', applyFilters);applyFilters();document.getElementById('csv-download-btn').addEventListener('click',function(){ const vis=rows.filter(r=>r.style.display!=='none'); let csv=hdr.join(',')+String.fromCharCode(10); vis.forEach(r=>{csv+=[...r.cells].map(c=>c.textContent).join(',')+String.fromCharCode(10);}); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob); a.download='scenario_explorer_filtered.csv';a.click();});</script>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -4209,7 +4223,20 @@ Davis, CA Petco
   });
   </script>
 </div> <!-- /content -->
-<script src="assets/video-autoplay.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var videos = document.querySelectorAll('video');
+  if (!videos.length) return;
+  videos.forEach(function(v) { v.loop = true; v.muted = true; v.playsInline = true; });
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) { entry.target.play().catch(function(){}); }
+      else { entry.target.pause(); }
+    });
+  }, { threshold: 0.3 });
+  videos.forEach(function(v) { observer.observe(v); });
+});
+</script>
 
 
 
