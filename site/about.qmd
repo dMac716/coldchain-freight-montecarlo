@@ -10,9 +10,9 @@ This project is developed by graduate students in the [Energy Graduate Group](ht
 
 ## Faculty Advisor
 
-::: {.grid-2}
-::: {.quick-card style="text-align:center;"}
-![Alan Jenn](assets/team/alan_jenn.jpg){width=180 style="border-radius:50%; object-fit:cover; width:180px; height:180px;"}
+::: {style="max-width:480px;"}
+::: {.quick-card .team-card}
+![](assets/team/alan_jenn.jpg){.team-photo}
 
 ### Alan Jenn, Ph.D.
 
@@ -30,47 +30,41 @@ Ph.D. in Engineering and Public Policy, Carnegie Mellon University.
 
 ## Graduate Researchers
 
-::: {.grid-2}
-::: {.quick-card style="text-align:center;"}
-![David MacDonald](assets/team/david.jpg){width=180 style="border-radius:50%; object-fit:cover; width:180px; height:180px;"}
+::: {.grid-3}
+::: {.quick-card .team-card}
+![](assets/team/david.jpg){.team-photo}
 
 ### David MacDonald
 
 **Master's Student, Energy Graduate Group**
 
-Remote and off-grid power, energy storage, microhydro systems, agrovoltaics, Smart Home technologies, repurposed electronics, passive energy systems, distributed energy infrastructure, environmental design, and energy resilience for emergency preparedness.
-
-David is an inventor with a software engineering and renewable energy background. He has developed applications for Apple platforms including HomeKit and CarPlay, and holds multiple provisional patents for low-energy mechanical systems.
+Remote and off-grid power, energy storage, microhydro systems, agrovoltaics, Smart Home technologies, distributed energy infrastructure, and energy resilience for emergency preparedness.
 
 [EEI Profile](https://energy.ucdavis.edu/people/macdonald-david/){.btn-pill}
 :::
 
-::: {.quick-card style="text-align:center;"}
-![Miguel Craven](assets/team/miguel.jpg){width=180 style="border-radius:50%; object-fit:cover; width:180px; height:180px;"}
+::: {.quick-card .team-card}
+![](assets/team/miguel.jpg){.team-photo}
 
 ### Miguel Craven
 
 **Master's Student, Energy Graduate Group**
 **Student Regent, UC Board of Regents**
 
-Renewable energy and biofuels, public policy, energy economics.
+Renewable energy and biofuels, public policy, energy economics. B.S. Mechanical Engineering, UC Merced. Former Student Body President.
 
-Miguel completed his B.S. in Mechanical Engineering at UC Merced, where he served as Student Body President. His undergraduate work spanned electric vehicles, unmanned vehicles, medical assistance devices, and agricultural devices. He currently serves as Student Regent on the UC Board of Regents, advocating for housing access, freedom of expression, and diversity in higher education.
-
-[EEI Profile](https://energy.ucdavis.edu/people/craven-miguel/){.btn-pill} [UC Regents Bio](https://regents.universityofcalifornia.edu/about/members-and-advisors/bios/miguel-craven.html){.btn-pill}
+[EEI Profile](https://energy.ucdavis.edu/people/craven-miguel/){.btn-pill} [UC Regents](https://regents.universityofcalifornia.edu/about/members-and-advisors/bios/miguel-craven.html){.btn-pill}
 :::
 
-::: {.quick-card style="text-align:center;"}
-![Rayhan Khayrunnas Syarief Moo](assets/team/rayhan.jpg){width=180 style="border-radius:50%; object-fit:cover; width:180px; height:180px;"}
+::: {.quick-card .team-card}
+![](assets/team/rayhan.jpg){.team-photo}
 
 ### Rayhan Khayrunnas Syarief Moo
 
 **Master's Student, Energy Graduate Group**
 **Fulbright Scholar**
 
-Energy efficiency, renewable energy, geothermal, energy policy.
-
-Rayhan is an engineering consultant based in Jakarta who earned his B.S. in Mechanical Engineering from Institut Teknologi Sepuluh Nopember, Surabaya. Through the Fulbright Master's Degree Scholarship, he is pursuing graduate studies at the UC Davis Energy Efficiency Institute.
+Energy efficiency, renewable energy, geothermal, energy policy. B.S. Mechanical Engineering, Institut Teknologi Sepuluh Nopember.
 
 [EEI Profile](https://energy.ucdavis.edu/people/khayrunnas-syarief-moo-rayhan/){.btn-pill}
 :::
@@ -79,8 +73,8 @@ Rayhan is an engineering consultant based in Jakarta who earned his B.S. in Mech
 ## And One More Team Member...
 
 ::: {.grid-2}
-::: {.quick-card style="text-align:center;"}
-![Morty](assets/team/morty.jpg){width=180 style="border-radius:50%; object-fit:cover; width:180px; height:180px;"}
+::: {.quick-card .team-card}
+![](assets/team/morty.jpg){.team-photo}
 
 ### Morty
 
@@ -100,10 +94,7 @@ The simulation codebase and all artifacts are open source and available on [GitH
 
 ---
 
-::: {style="text-align:center; margin-top:2rem;"}
-[![UC Davis Energy and Efficiency Institute](assets/team/eei_banner.png){style="max-width:400px; margin:1rem;"}](https://energy.ucdavis.edu/)
-
-[![UC Davis Civil and Environmental Engineering](assets/team/cee_banner.png){style="max-width:600px; margin:1rem;"}](https://cee.engineering.ucdavis.edu/)
-
-[![UC Davis College of Engineering](assets/team/coe_logo.png){style="max-width:350px; margin:1rem;"}](https://engineering.ucdavis.edu/)
+::: {.banner-row}
+[![UC Davis Energy and Efficiency Institute](assets/team/eei_banner.png){style="max-height:60px;"}](https://energy.ucdavis.edu/)
+[![UC Davis College of Engineering](assets/team/coe_logo.png){style="max-height:60px;"}](https://engineering.ucdavis.edu/)
 :::

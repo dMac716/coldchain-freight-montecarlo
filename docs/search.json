@@ -1,59 +1,45 @@
 [
   {
-    "objectID": "scripts_reference.html",
-    "href": "scripts_reference.html",
-    "title": "Scripts Reference",
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About the Team",
     "section": "",
-    "text": "Script\nPurpose\nUsage\n\n\n\n\ntools/run_route_sim_mc.R\nRun paired MC transport simulation\nRscript tools/run_route_sim_mc.R --config test_kit.yaml --scenario ANALYSIS_CORE --product_type dry --powertrain bev --n 500 --seed 42\n\n\ntools/run_route_sim.R\nSingle route simulation run\nRscript tools/run_route_sim.R --config test_kit.yaml\n\n\ntools/run_chunk.R\nRun a single Monte Carlo chunk\nRscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOKE_LOCAL\n\n\ntools/run_local.R\nConvenience wrapper for local smoke runs\nRscript tools/run_local.R\n\n\ntools/worker_run_and_upload.sh\nRun sim, tar results, upload to GCS, clean\nGCS_BUCKET=coldchain-freight-sources SEED=2001 N=20 bash tools/worker_run_and_upload.sh"
+    "text": "This project is developed by graduate students in the Energy Graduate Group at the UC Davis Energy and Efficiency Institute, under the supervision of Professor Alan Jenn."
   },
   {
-    "objectID": "scripts_reference.html#simulation",
-    "href": "scripts_reference.html#simulation",
-    "title": "Scripts Reference",
+    "objectID": "about.html#the-team-behind-the-simulation",
+    "href": "about.html#the-team-behind-the-simulation",
+    "title": "About the Team",
     "section": "",
-    "text": "Script\nPurpose\nUsage\n\n\n\n\ntools/run_route_sim_mc.R\nRun paired MC transport simulation\nRscript tools/run_route_sim_mc.R --config test_kit.yaml --scenario ANALYSIS_CORE --product_type dry --powertrain bev --n 500 --seed 42\n\n\ntools/run_route_sim.R\nSingle route simulation run\nRscript tools/run_route_sim.R --config test_kit.yaml\n\n\ntools/run_chunk.R\nRun a single Monte Carlo chunk\nRscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOKE_LOCAL\n\n\ntools/run_local.R\nConvenience wrapper for local smoke runs\nRscript tools/run_local.R\n\n\ntools/worker_run_and_upload.sh\nRun sim, tar results, upload to GCS, clean\nGCS_BUCKET=coldchain-freight-sources SEED=2001 N=20 bash tools/worker_run_and_upload.sh"
+    "text": "This project is developed by graduate students in the Energy Graduate Group at the UC Davis Energy and Efficiency Institute, under the supervision of Professor Alan Jenn."
   },
   {
-    "objectID": "scripts_reference.html#route-data-pipeline",
-    "href": "scripts_reference.html#route-data-pipeline",
-    "title": "Scripts Reference",
-    "section": "Route & Data Pipeline",
-    "text": "Route & Data Pipeline\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/route_precompute_google.sh\nPrecompute facility-to-retail routes via Google Routes API\nGOOGLE_MAPS_API_KEY=... bash tools/route_precompute_google.sh\n\n\ntools/build_google_routes_cache_traffic.sh\nBuild traffic-aware OD distance cache\nbash tools/build_google_routes_cache_traffic.sh\n\n\ntools/run_google_routes_cache_pipeline.sh\nFull OD cache pipeline (single entry point)\nbash tools/run_google_routes_cache_pipeline.sh\n\n\ntools/charging_stations_cache_google.R\nCache EV charging station locations along corridors\nRscript tools/charging_stations_cache_google.R\n\n\ntools/route_precompute_bev_with_charging_google.R\nGenerate BEV charging waypoint plans\nRscript tools/route_precompute_bev_with_charging_google.R\n\n\ntools/faf_extract_distances.R\nExtract FAF5 freight distance distributions\nRscript tools/faf_extract_distances.R\n\n\ntools/preflight.R\nValidate inputs before simulation\nRscript tools/preflight.R --mode SMOKE_LOCAL --scenario CENTRALIZED"
+    "objectID": "about.html#faculty-advisor",
+    "href": "about.html#faculty-advisor",
+    "title": "About the Team",
+    "section": "Faculty Advisor",
+    "text": "Faculty Advisor\n\n\n\n\nAlan Jenn, Ph.D.\nAssistant Professor, Civil and Environmental Engineering Chair, Energy Graduate Group Institute of Transportation Studies\nPlug-in electric vehicles: integration with the electric grid, adoption of the technology, use in ride-hailing companies, and impact on transportation finance. Developer of the Grid Optimized Operation Dispatch (GOOD) model.\nPh.D. in Engineering and Public Policy, Carnegie Mellon University.\nCEE Profile EEI Profile"
   },
   {
-    "objectID": "scripts_reference.html#result-collection-aggregation",
-    "href": "scripts_reference.html#result-collection-aggregation",
-    "title": "Scripts Reference",
-    "section": "Result Collection & Aggregation",
-    "text": "Result Collection & Aggregation\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/pull_worker_results.sh\nPull run bundles from all GCP + Azure workers\nbash tools/pull_worker_results.sh --upload-gcs\n\n\ntools/merge_run_bundles.sh\nMerge and deduplicate summaries from all sources\nbash tools/merge_run_bundles.sh --include-local --output-dir artifacts/analysis\n\n\ntools/aggregate.R\nMerge histogram chunks within a run group\nRscript tools/aggregate.R --run_group BASE --mode REAL_RUN\n\n\ntools/get_codespace_results.sh\nPoll Codespaces for completed run bundles\nbash tools/get_codespace_results.sh\n\n\ntools/submit_results.sh\nSubmit results as a GitHub PR\nbash tools/submit_results.sh"
+    "objectID": "about.html#graduate-researchers",
+    "href": "about.html#graduate-researchers",
+    "title": "About the Team",
+    "section": "Graduate Researchers",
+    "text": "Graduate Researchers\n\n\n\n\nDavid MacDonald\nMaster’s Student, Energy Graduate Group\nRemote and off-grid power, energy storage, microhydro systems, agrovoltaics, Smart Home technologies, distributed energy infrastructure, and energy resilience for emergency preparedness.\nEEI Profile\n\n\n\n\n\nMiguel Craven\nMaster’s Student, Energy Graduate Group Student Regent, UC Board of Regents\nRenewable energy and biofuels, public policy, energy economics. B.S. Mechanical Engineering, UC Merced. Former Student Body President.\nEEI Profile UC Regents\n\n\n\n\n\nRayhan Khayrunnas Syarief Moo\nMaster’s Student, Energy Graduate Group Fulbright Scholar\nEnergy efficiency, renewable energy, geothermal, energy policy. B.S. Mechanical Engineering, Institut Teknologi Sepuluh Nopember.\nEEI Profile"
   },
   {
-    "objectID": "scripts_reference.html#analysis-validation",
-    "href": "scripts_reference.html#analysis-validation",
-    "title": "Scripts Reference",
-    "section": "Analysis & Validation",
-    "text": "Analysis & Validation\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/audit_analysis.R\nComprehensive R analysis with FU derivation, 10 figures, 5 tables\nRscript tools/audit_analysis.R &lt;input.csv&gt; &lt;output_dir&gt;\n\n\ntools/validate_cross_platform_audit.R\nCompare analysis across LOCAL/GCS/Azure for proof of computation\nRscript tools/validate_cross_platform_audit.R --local_csv data.csv --gcs_csv gcs.csv --outdir artifacts/validation\n\n\ntools/gcs_full_audit.sh\nRun full audit on a GCP VM from GCS tarballs\nbash tools/gcs_full_audit.sh (run on VM)\n\n\ntools/validate_artifact.R\nValidate a single artifact bundle\nRscript tools/validate_artifact.R --artifact_dir outputs/run_bundle/foo\n\n\ntools/validate_bev_plans.R\nValidate BEV route plan coverage\nRscript tools/validate_bev_plans.R --bev_plans_csv data/derived/bev_route_plans.csv\n\n\ntools/compute_fu.R\nSingle entry point for FU computation with method enforcement\nRscript tools/compute_fu.R --input data.csv.gz --output out.csv.gz --method audit_uniform\n\n\ntools/fu_final_package.R\nPublication FU sensitivity package (figures, frozen dataset, memo)\nRscript tools/fu_final_package.R\n\n\ntools/fu_comparison_analysis.R\nGenerate 11 figures + 6 tables comparing all four FU methods\nRscript tools/fu_comparison_analysis.R\n\n\ntools/recover_fu_backfill.R\nDeterministic FU recovery for missing rows (sensitivity artifact)\nRscript tools/recover_fu_backfill.R\n\n\ntools/build_audit_uniform_dataset.R\nBuild uniform audit-formula dataset (100% FU coverage)\nRscript tools/build_audit_uniform_dataset.R"
+    "objectID": "about.html#and-one-more-team-member",
+    "href": "about.html#and-one-more-team-member",
+    "title": "About the Team",
+    "section": "And One More Team Member…",
+    "text": "And One More Team Member…\n\n\n\n\nMorty\nChief Morale Officer\nMorty is the namesake of our sister project, MortyMonteCarlo, which computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) for the same dog food products simulated here. He takes his role very seriously."
   },
   {
-    "objectID": "scripts_reference.html#graphics-site",
-    "href": "scripts_reference.html#graphics-site",
-    "title": "Scripts Reference",
-    "section": "Graphics & Site",
-    "text": "Graphics & Site\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/regenerate_transport_graphics.sh\nFull graphics pipeline (6 stages)\nBUNDLE_ROOT=outputs/run_bundle/foo bash tools/regenerate_transport_graphics.sh run_id\n\n\ntools/select_representative_runs.R\nPick median-CO2 runs for animation\nRscript tools/select_representative_runs.R --runs_csv runs.csv --out_csv rep.csv\n\n\ntools/update_site_from_audit.sh\nUpdate site assets from audit bundle, render, optionally commit\nbash tools/update_site_from_audit.sh --audit-dir /tmp/audit --commit\n\n\nscripts/render_run_graphs.R\nRender diagnostic graphs for a single run\nRscript scripts/render_run_graphs.R --run_dir runs/&lt;id&gt;\n\n\ntools/make_presentation_artifacts.R\nGenerate presentation-ready paired comparison artifacts\nRscript tools/make_presentation_artifacts.R"
-  },
-  {
-    "objectID": "scripts_reference.html#cloud-infrastructure",
-    "href": "scripts_reference.html#cloud-infrastructure",
-    "title": "Scripts Reference",
-    "section": "Cloud Infrastructure",
-    "text": "Cloud Infrastructure\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/bootstrap_worker.sh\nSet up GCP or Azure VM (image-first, fallback to full install)\nbash tools/bootstrap_worker.sh --platform gcp --name worker-new\n\n\ntools/create_worker_image.sh\nCreate GCP VM disk image from configured worker\nbash tools/create_worker_image.sh gcp-ta-worker-2 us-central1-a\n\n\ntools/manage_worker_image.sh\nDownload/upload/deploy VM images\nbash tools/manage_worker_image.sh download\n\n\ntools/preflight_cloud.sh\nPre-flight check: quota, SSH, GCS, disk, running sims\nbash tools/preflight_cloud.sh\n\n\ntools/publish_run_to_gcp.sh\nUpload run artifacts to GCS\nbash tools/publish_run_to_gcp.sh"
-  },
-  {
-    "objectID": "scripts_reference.html#make-targets",
-    "href": "scripts_reference.html#make-targets",
-    "title": "Scripts Reference",
-    "section": "Make Targets",
-    "text": "Make Targets\nmake test                     # Full testthat suite\nmake smoke                    # End-to-end smoke test\nmake smoke-local              # Local-lane isolated smoke (n=50, seed=42)\nmake lint                     # lintr + shellcheck\nmake local                    # Quick SMOKE_LOCAL run (n=5000, seed=123)\nmake real SCENARIO=CENTRALIZED N=5000 SEED=123 RUN_GROUP=BASE\nmake aggregate RUN_GROUP=BASE MODE=REAL_RUN\nmake preflight MODE=SMOKE_LOCAL SCENARIO=CENTRALIZED\nmake route-chain              # Full route chain: routes -&gt; stations -&gt; BEV plans\nmake render-graphs RUN_DIR=runs/&lt;id&gt;"
+    "objectID": "about.html#acknowledgments",
+    "href": "about.html#acknowledgments",
+    "title": "About the Team",
+    "section": "Acknowledgments",
+    "text": "Acknowledgments\n\nThis work is supported by the UC Davis Energy Graduate Group and the Institute of Transportation Studies. The distributed compute infrastructure spans Google Cloud Platform, Microsoft Azure, and GitHub Codespaces. Route geometry is provided by the Google Routes API under academic licensing.\nThe simulation codebase and all artifacts are open source and available on GitHub."
   },
   {
     "objectID": "contribute.html",
@@ -235,7 +221,7 @@
     "href": "index.html#explore",
     "title": "Cold-Chain Freight Monte Carlo",
     "section": "Explore",
-    "text": "Explore\n\n\nRoute Map\nInteractive map of actual driving routes from both facilities to Davis, CA with traffic-aware durations.\nOpen Route Map\n\n\nTransport Results\nMonte Carlo distributions, paired comparisons, and diagnostic figures.\nOpen Transport Results\n\n\nScenario Explorer\nFilter and sort individual simulation runs by scenario, powertrain, and origin.\nOpen Scenario Explorer\n\n\nMethodology\nStudy design, input assumptions, validation gates, and scientific results.\nOpen Methodology\n\n\nAnimation Gallery\nRoute replay animations for diesel vs BEV trips, MC convergence evolution.\nOpen Animations\n\n\nContribute Compute\nHelp the project by running simulations in your GitHub Codespace or on your Mac.\nHow to Help"
+    "text": "Explore\n\n\nRoute Map\nInteractive map of actual driving routes from both facilities to Davis, CA with traffic-aware durations.\nOpen Route Map\n\n\nTransport Results\nMonte Carlo distributions, paired comparisons, and diagnostic figures.\nOpen Transport Results\n\n\nScenario Explorer\nFilter and sort individual simulation runs by scenario, powertrain, and origin.\nOpen Scenario Explorer\n\n\nMethodology\nStudy design, input assumptions, validation gates, and scientific results.\nOpen Methodology\n\n\nAnimation Gallery\nRoute replay animations for diesel vs BEV trips, MC convergence evolution.\nOpen Animations\n\n\nContribute Compute\nHelp the project by running simulations in your GitHub Codespace or on your Mac.\nHow to Help\n\n\nAbout the Team\nMeet the researchers and faculty behind the simulation.\nAbout Us"
   },
   {
     "objectID": "index.html#pipeline-overview",
@@ -406,45 +392,59 @@
     "text": "Download Bundles\n\nProduction Audit (2026-03-17, 72,872 runs, audit-uniform FU)\n\nAudit figures ZIP (24 figures including FU sensitivity)\nAudit data ZIP (7 tables + 2 memos)\n\n\n\nBaseline (local_chunked_run, 80 runs)\n\nFull report bundle ZIP\nData ZIP\nFigures ZIP\nAnimations ZIP\n\nRaw files:\n\nRows CSV\nPaired summary CSV\nPowertrain summary CSV\nGraphics input CSV\nValidation report\nMerged runs CSV"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About the Team",
+    "objectID": "scripts_reference.html",
+    "href": "scripts_reference.html",
+    "title": "Scripts Reference",
     "section": "",
-    "text": "This project is developed by graduate students in the Energy Graduate Group at the UC Davis Energy and Efficiency Institute, under the supervision of Professor Alan Jenn."
+    "text": "Script\nPurpose\nUsage\n\n\n\n\ntools/run_route_sim_mc.R\nRun paired MC transport simulation\nRscript tools/run_route_sim_mc.R --config test_kit.yaml --scenario ANALYSIS_CORE --product_type dry --powertrain bev --n 500 --seed 42\n\n\ntools/run_route_sim.R\nSingle route simulation run\nRscript tools/run_route_sim.R --config test_kit.yaml\n\n\ntools/run_chunk.R\nRun a single Monte Carlo chunk\nRscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOKE_LOCAL\n\n\ntools/run_local.R\nConvenience wrapper for local smoke runs\nRscript tools/run_local.R\n\n\ntools/worker_run_and_upload.sh\nRun sim, tar results, upload to GCS, clean\nGCS_BUCKET=coldchain-freight-sources SEED=2001 N=20 bash tools/worker_run_and_upload.sh"
   },
   {
-    "objectID": "about.html#the-team-behind-the-simulation",
-    "href": "about.html#the-team-behind-the-simulation",
-    "title": "About the Team",
+    "objectID": "scripts_reference.html#simulation",
+    "href": "scripts_reference.html#simulation",
+    "title": "Scripts Reference",
     "section": "",
-    "text": "This project is developed by graduate students in the Energy Graduate Group at the UC Davis Energy and Efficiency Institute, under the supervision of Professor Alan Jenn."
+    "text": "Script\nPurpose\nUsage\n\n\n\n\ntools/run_route_sim_mc.R\nRun paired MC transport simulation\nRscript tools/run_route_sim_mc.R --config test_kit.yaml --scenario ANALYSIS_CORE --product_type dry --powertrain bev --n 500 --seed 42\n\n\ntools/run_route_sim.R\nSingle route simulation run\nRscript tools/run_route_sim.R --config test_kit.yaml\n\n\ntools/run_chunk.R\nRun a single Monte Carlo chunk\nRscript tools/run_chunk.R --scenario CENTRALIZED --n 5000 --seed 123 --mode SMOKE_LOCAL\n\n\ntools/run_local.R\nConvenience wrapper for local smoke runs\nRscript tools/run_local.R\n\n\ntools/worker_run_and_upload.sh\nRun sim, tar results, upload to GCS, clean\nGCS_BUCKET=coldchain-freight-sources SEED=2001 N=20 bash tools/worker_run_and_upload.sh"
   },
   {
-    "objectID": "about.html#faculty-advisor",
-    "href": "about.html#faculty-advisor",
-    "title": "About the Team",
-    "section": "Faculty Advisor",
-    "text": "Faculty Advisor\n\n\n\n\n\nAlan Jenn\n\n\n\nAlan Jenn, Ph.D.\nAssistant Professor, Civil and Environmental Engineering Chair, Energy Graduate Group Institute of Transportation Studies\nPlug-in electric vehicles: integration with the electric grid, adoption of the technology, use in ride-hailing companies, and impact on transportation finance. Developer of the Grid Optimized Operation Dispatch (GOOD) model.\nPh.D. in Engineering and Public Policy, Carnegie Mellon University.\nCEE Profile EEI Profile"
+    "objectID": "scripts_reference.html#route-data-pipeline",
+    "href": "scripts_reference.html#route-data-pipeline",
+    "title": "Scripts Reference",
+    "section": "Route & Data Pipeline",
+    "text": "Route & Data Pipeline\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/route_precompute_google.sh\nPrecompute facility-to-retail routes via Google Routes API\nGOOGLE_MAPS_API_KEY=... bash tools/route_precompute_google.sh\n\n\ntools/build_google_routes_cache_traffic.sh\nBuild traffic-aware OD distance cache\nbash tools/build_google_routes_cache_traffic.sh\n\n\ntools/run_google_routes_cache_pipeline.sh\nFull OD cache pipeline (single entry point)\nbash tools/run_google_routes_cache_pipeline.sh\n\n\ntools/charging_stations_cache_google.R\nCache EV charging station locations along corridors\nRscript tools/charging_stations_cache_google.R\n\n\ntools/route_precompute_bev_with_charging_google.R\nGenerate BEV charging waypoint plans\nRscript tools/route_precompute_bev_with_charging_google.R\n\n\ntools/faf_extract_distances.R\nExtract FAF5 freight distance distributions\nRscript tools/faf_extract_distances.R\n\n\ntools/preflight.R\nValidate inputs before simulation\nRscript tools/preflight.R --mode SMOKE_LOCAL --scenario CENTRALIZED"
   },
   {
-    "objectID": "about.html#graduate-researchers",
-    "href": "about.html#graduate-researchers",
-    "title": "About the Team",
-    "section": "Graduate Researchers",
-    "text": "Graduate Researchers\n\n\n\n\n\nDavid MacDonald\n\n\n\nDavid MacDonald\nMaster’s Student, Energy Graduate Group\nRemote and off-grid power, energy storage, microhydro systems, agrovoltaics, Smart Home technologies, repurposed electronics, passive energy systems, distributed energy infrastructure, environmental design, and energy resilience for emergency preparedness.\nDavid is an inventor with a software engineering and renewable energy background. He has developed applications for Apple platforms including HomeKit and CarPlay, and holds multiple provisional patents for low-energy mechanical systems.\nEEI Profile\n\n\n\n\n\n\nMiguel Craven\n\n\n\nMiguel Craven\nMaster’s Student, Energy Graduate Group Student Regent, UC Board of Regents\nRenewable energy and biofuels, public policy, energy economics.\nMiguel completed his B.S. in Mechanical Engineering at UC Merced, where he served as Student Body President. His undergraduate work spanned electric vehicles, unmanned vehicles, medical assistance devices, and agricultural devices. He currently serves as Student Regent on the UC Board of Regents, advocating for housing access, freedom of expression, and diversity in higher education.\nEEI Profile UC Regents Bio\n\n\n\n\n\n\nRayhan Khayrunnas Syarief Moo\n\n\n\nRayhan Khayrunnas Syarief Moo\nMaster’s Student, Energy Graduate Group Fulbright Scholar\nEnergy efficiency, renewable energy, geothermal, energy policy.\nRayhan is an engineering consultant based in Jakarta who earned his B.S. in Mechanical Engineering from Institut Teknologi Sepuluh Nopember, Surabaya. Through the Fulbright Master’s Degree Scholarship, he is pursuing graduate studies at the UC Davis Energy Efficiency Institute.\nEEI Profile"
+    "objectID": "scripts_reference.html#result-collection-aggregation",
+    "href": "scripts_reference.html#result-collection-aggregation",
+    "title": "Scripts Reference",
+    "section": "Result Collection & Aggregation",
+    "text": "Result Collection & Aggregation\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/pull_worker_results.sh\nPull run bundles from all GCP + Azure workers\nbash tools/pull_worker_results.sh --upload-gcs\n\n\ntools/merge_run_bundles.sh\nMerge and deduplicate summaries from all sources\nbash tools/merge_run_bundles.sh --include-local --output-dir artifacts/analysis\n\n\ntools/aggregate.R\nMerge histogram chunks within a run group\nRscript tools/aggregate.R --run_group BASE --mode REAL_RUN\n\n\ntools/get_codespace_results.sh\nPoll Codespaces for completed run bundles\nbash tools/get_codespace_results.sh\n\n\ntools/submit_results.sh\nSubmit results as a GitHub PR\nbash tools/submit_results.sh"
   },
   {
-    "objectID": "about.html#and-one-more-team-member",
-    "href": "about.html#and-one-more-team-member",
-    "title": "About the Team",
-    "section": "And One More Team Member…",
-    "text": "And One More Team Member…\n\n\n\n\n\nMorty\n\n\n\nMorty\nChief Morale Officer\nMorty is the namesake of our sister project, MortyMonteCarlo, which computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) for the same dog food products simulated here. He takes his role very seriously."
+    "objectID": "scripts_reference.html#analysis-validation",
+    "href": "scripts_reference.html#analysis-validation",
+    "title": "Scripts Reference",
+    "section": "Analysis & Validation",
+    "text": "Analysis & Validation\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/audit_analysis.R\nComprehensive R analysis with FU derivation, 10 figures, 5 tables\nRscript tools/audit_analysis.R &lt;input.csv&gt; &lt;output_dir&gt;\n\n\ntools/validate_cross_platform_audit.R\nCompare analysis across LOCAL/GCS/Azure for proof of computation\nRscript tools/validate_cross_platform_audit.R --local_csv data.csv --gcs_csv gcs.csv --outdir artifacts/validation\n\n\ntools/gcs_full_audit.sh\nRun full audit on a GCP VM from GCS tarballs\nbash tools/gcs_full_audit.sh (run on VM)\n\n\ntools/validate_artifact.R\nValidate a single artifact bundle\nRscript tools/validate_artifact.R --artifact_dir outputs/run_bundle/foo\n\n\ntools/validate_bev_plans.R\nValidate BEV route plan coverage\nRscript tools/validate_bev_plans.R --bev_plans_csv data/derived/bev_route_plans.csv\n\n\ntools/compute_fu.R\nSingle entry point for FU computation with method enforcement\nRscript tools/compute_fu.R --input data.csv.gz --output out.csv.gz --method audit_uniform\n\n\ntools/fu_final_package.R\nPublication FU sensitivity package (figures, frozen dataset, memo)\nRscript tools/fu_final_package.R\n\n\ntools/fu_comparison_analysis.R\nGenerate 11 figures + 6 tables comparing all four FU methods\nRscript tools/fu_comparison_analysis.R\n\n\ntools/recover_fu_backfill.R\nDeterministic FU recovery for missing rows (sensitivity artifact)\nRscript tools/recover_fu_backfill.R\n\n\ntools/build_audit_uniform_dataset.R\nBuild uniform audit-formula dataset (100% FU coverage)\nRscript tools/build_audit_uniform_dataset.R"
   },
   {
-    "objectID": "about.html#acknowledgments",
-    "href": "about.html#acknowledgments",
-    "title": "About the Team",
-    "section": "Acknowledgments",
-    "text": "Acknowledgments\n\nThis work is supported by the UC Davis Energy Graduate Group and the Institute of Transportation Studies. The distributed compute infrastructure spans Google Cloud Platform, Microsoft Azure, and GitHub Codespaces. Route geometry is provided by the Google Routes API under academic licensing.\nThe simulation codebase and all artifacts are open source and available on GitHub.\n\n\n\n\n\n\nUC Davis Energy and Efficiency Institute\n\n\n\n\n\nUC Davis Civil and Environmental Engineering\n\n\n\n\n\nUC Davis College of Engineering"
+    "objectID": "scripts_reference.html#graphics-site",
+    "href": "scripts_reference.html#graphics-site",
+    "title": "Scripts Reference",
+    "section": "Graphics & Site",
+    "text": "Graphics & Site\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/regenerate_transport_graphics.sh\nFull graphics pipeline (6 stages)\nBUNDLE_ROOT=outputs/run_bundle/foo bash tools/regenerate_transport_graphics.sh run_id\n\n\ntools/select_representative_runs.R\nPick median-CO2 runs for animation\nRscript tools/select_representative_runs.R --runs_csv runs.csv --out_csv rep.csv\n\n\ntools/update_site_from_audit.sh\nUpdate site assets from audit bundle, render, optionally commit\nbash tools/update_site_from_audit.sh --audit-dir /tmp/audit --commit\n\n\nscripts/render_run_graphs.R\nRender diagnostic graphs for a single run\nRscript scripts/render_run_graphs.R --run_dir runs/&lt;id&gt;\n\n\ntools/make_presentation_artifacts.R\nGenerate presentation-ready paired comparison artifacts\nRscript tools/make_presentation_artifacts.R"
+  },
+  {
+    "objectID": "scripts_reference.html#cloud-infrastructure",
+    "href": "scripts_reference.html#cloud-infrastructure",
+    "title": "Scripts Reference",
+    "section": "Cloud Infrastructure",
+    "text": "Cloud Infrastructure\n\n\n\n\n\n\n\n\nScript\nPurpose\nUsage\n\n\n\n\ntools/bootstrap_worker.sh\nSet up GCP or Azure VM (image-first, fallback to full install)\nbash tools/bootstrap_worker.sh --platform gcp --name worker-new\n\n\ntools/create_worker_image.sh\nCreate GCP VM disk image from configured worker\nbash tools/create_worker_image.sh gcp-ta-worker-2 us-central1-a\n\n\ntools/manage_worker_image.sh\nDownload/upload/deploy VM images\nbash tools/manage_worker_image.sh download\n\n\ntools/preflight_cloud.sh\nPre-flight check: quota, SSH, GCS, disk, running sims\nbash tools/preflight_cloud.sh\n\n\ntools/publish_run_to_gcp.sh\nUpload run artifacts to GCS\nbash tools/publish_run_to_gcp.sh"
+  },
+  {
+    "objectID": "scripts_reference.html#make-targets",
+    "href": "scripts_reference.html#make-targets",
+    "title": "Scripts Reference",
+    "section": "Make Targets",
+    "text": "Make Targets\nmake test                     # Full testthat suite\nmake smoke                    # End-to-end smoke test\nmake smoke-local              # Local-lane isolated smoke (n=50, seed=42)\nmake lint                     # lintr + shellcheck\nmake local                    # Quick SMOKE_LOCAL run (n=5000, seed=123)\nmake real SCENARIO=CENTRALIZED N=5000 SEED=123 RUN_GROUP=BASE\nmake aggregate RUN_GROUP=BASE MODE=REAL_RUN\nmake preflight MODE=SMOKE_LOCAL SCENARIO=CENTRALIZED\nmake route-chain              # Full route chain: routes -&gt; stations -&gt; BEV plans\nmake render-graphs RUN_DIR=runs/&lt;id&gt;"
   }
 ]
