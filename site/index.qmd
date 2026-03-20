@@ -156,6 +156,16 @@ This repository handles the **transport stage** of the lifecycle. The full lifec
 That site mirrors and updates automatically when this repository publishes new artifacts to `artifacts/analysis_final_*/`. Both projects share the same functional unit (kg CO2e / 1,000 kcal delivered to retail) and product definitions.
 :::
 
+## Download Results & Code { .section-title }
+
+::: {.panel}
+[Download Submission Package (11 MB)](assets/transport/downloads/coldchain_submission_package.zip){.btn-pill style="background: var(--primary); border-color: var(--primary); font-size: 1rem; padding: 0.5rem 1.2rem;"}
+
+Includes: 72,872-row dataset, 20 figures, 10 tables, analysis code, simulation engine, tests, and documentation.
+
+See also: [GitHub Repository](https://github.com/dMac716/coldchain-freight-montecarlo) for the full codebase.
+:::
+
 ## Reproducibility { .section-title }
 
 ::: {.panel}

@@ -218,6 +218,10 @@ If your browser blocks inline playback from GitHub Pages, use the direct downloa
 
 ## Download Bundles
 
+### Submission Package (Code + Data + Results)
+
+- [Full submission package](../assets/transport/downloads/coldchain_submission_package.zip) (11 MB — code, dataset, 20 figures, 10 tables, memos, tests)
+
 ### Production Audit (2026-03-17, 72,872 runs, audit-uniform FU)
 
 - [Audit figures ZIP](../assets/transport/downloads/audit_2026-03-17_figures.zip) (24 figures including FU sensitivity)
