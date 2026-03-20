@@ -1,5 +1,6 @@
 ---
 title: "About the Team"
+toc: false
 ---
 
 ::: {.hero}
@@ -72,7 +73,7 @@ Energy efficiency, renewable energy, geothermal, and energy policy. Engineering 
 :::
 :::
 
-## And One More Team Member...
+## Chief Morale Officer
 
 ::: {.grid-2}
 ::: {.quick-card .team-card}

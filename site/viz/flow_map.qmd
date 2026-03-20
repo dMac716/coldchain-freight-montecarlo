@@ -91,8 +91,8 @@ for (i in seq_len(nrow(routes))) {
   if (is.null(pts) || nrow(pts) < 2) next
 
   fid <- as.character(r$facility_id)
-  col <- fac_colors[fid] %||% "#666666"
-  label <- fac_labels[fid] %||% fid
+  col <- unname(fac_colors[fid]) %||% "#666666"
+  label <- unname(fac_labels[fid]) %||% fid
   is_primary <- as.integer(r$route_rank) == 1L
   dist_mi <- round(as.numeric(r$distance_m) / 1609.344)
   dur_h <- round(as.numeric(r$duration_s) / 3600, 1)
@@ -142,9 +142,9 @@ if (nrow(fac) > 0) {
   for (j in seq_len(nrow(fac))) {
     f <- fac[j, , drop = FALSE]
     fid <- as.character(f$facility_id)
-    col <- fac_colors[fid] %||% "#333"
-    lab <- fac_labels[fid] %||% fid
-    short_lab <- fac_short_labels[fid] %||% fid
+    col <- unname(fac_colors[fid]) %||% "#333"
+    lab <- unname(fac_labels[fid]) %||% fid
+    short_lab <- unname(fac_short_labels[fid]) %||% fid
     map <- map |>
       addCircleMarkers(
         lng = as.numeric(f$lon), lat = as.numeric(f$lat),
