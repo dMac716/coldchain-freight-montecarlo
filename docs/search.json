@@ -231,6 +231,13 @@
     "text": "Sister Project: Full LCA\n\nThis repository handles the transport stage of the lifecycle. The full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) is computed in a companion project:\nMortyMonteCarlo — Full LCA\nThat site mirrors and updates automatically when this repository publishes new artifacts to artifacts/analysis_final_*/. Both projects share the same functional unit (kg CO2e / 1,000 kcal delivered to retail) and product definitions."
   },
   {
+    "objectID": "index.html#download-results-code",
+    "href": "index.html#download-results-code",
+    "title": "Cold-Chain Freight Monte Carlo",
+    "section": "Download Results & Code",
+    "text": "Download Results & Code\n\nDownload Submission Package (11 MB)\nIncludes: 72,872-row dataset, 20 figures, 10 tables, analysis code, simulation engine, tests, and documentation.\nSee also: GitHub Repository for the full codebase."
+  },
+  {
     "objectID": "index.html#reproducibility",
     "href": "index.html#reproducibility",
     "title": "Cold-Chain Freight Monte Carlo",
@@ -382,7 +389,7 @@
     "href": "viz/transport_results.html#download-bundles",
     "title": "Transport Monte Carlo Results",
     "section": "Download Bundles",
-    "text": "Download Bundles\n\nProduction Audit (2026-03-17, 72,872 runs, audit-uniform FU)\n\nAudit figures ZIP (24 figures including FU sensitivity)\nAudit data ZIP (7 tables + 2 memos)\n\n\n\nBaseline (local_chunked_run, 80 runs)\n\nFull report bundle ZIP\nData ZIP\nFigures ZIP\nAnimations ZIP\n\nRaw files:\n\nRows CSV\nPaired summary CSV\nPowertrain summary CSV\nGraphics input CSV\nValidation report\nMerged runs CSV"
+    "text": "Download Bundles\n\nSubmission Package (Code + Data + Results)\n\nFull submission package (11 MB — code, dataset, 20 figures, 10 tables, memos, tests)\n\n\n\nProduction Audit (2026-03-17, 72,872 runs, audit-uniform FU)\n\nAudit figures ZIP (24 figures including FU sensitivity)\nAudit data ZIP (7 tables + 2 memos)\n\n\n\nBaseline (local_chunked_run, 80 runs)\n\nFull report bundle ZIP\nData ZIP\nFigures ZIP\nAnimations ZIP\n\nRaw files:\n\nRows CSV\nPaired summary CSV\nPowertrain summary CSV\nGraphics input CSV\nValidation report\nMerged runs CSV"
   },
   {
     "objectID": "scripts_reference.html",
