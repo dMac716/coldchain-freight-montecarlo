@@ -252,6 +252,13 @@ pre code {
   margin: 1rem 0;
 }
 
+.grid-5 {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1rem 0;
+}
+
 .role-badge {
   display: inline-block;
   background: #edf4fb;
@@ -275,6 +282,26 @@ pre code {
   box-shadow: 0 4px 12px rgba(15, 38, 63, 0.12) !important;
   display: block;
   margin: 0 auto 0.8rem;
+}
+
+.morty-photo-wrap {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 0.8rem;
+  border: 3px solid var(--border);
+  box-shadow: 0 4px 12px rgba(15, 38, 63, 0.12);
+}
+
+.morty-photo-wrap img {
+  width: 220% !important;
+  height: auto !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  margin-left: -55%;
+  margin-top: 15%;
 }
 
 .team-card {
@@ -312,7 +339,8 @@ pre code {
     font-size: 1.3rem;
   }
   .grid-3,
-  .grid-4 {
+  .grid-4,
+  .grid-5 {
     grid-template-columns: 1fr;
   }
 }
