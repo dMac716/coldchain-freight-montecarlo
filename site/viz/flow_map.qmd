@@ -2,6 +2,10 @@
 title: "Route Map: Factory to Retail"
 ---
 
+![Driving routes from both facilities to Petco Davis, CA. Blue: Topeka, KS (dry, 1,712 mi). Orange: Ennis, TX (refrigerated, 1,774 mi). Solid lines are primary routes; dashed are alternatives. Google Routes API, TRAFFIC_AWARE_OPTIMAL.](../assets/transport/audit_2026-03-17/figures/fig_route_map.png)
+
+### Interactive Map
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 if (!requireNamespace("leaflet", quietly = TRUE)) {
   cat("<p><em>Leaflet package not available. Map rendering skipped.</em></p>")
