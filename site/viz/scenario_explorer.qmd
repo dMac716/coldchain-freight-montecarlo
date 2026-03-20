@@ -2,13 +2,17 @@
 title: "Scenario Explorer"
 ---
 
+## Production Audit Summary
+
+Scenario-level statistics from the 72,872-run audit-uniform dataset.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 pick_path <- function(paths) {
   for (p in paths) if (file.exists(p)) return(p)
   ""
 }
 
-# --- March 2026 Production Audit (59,434 runs) ---
+# --- March 2026 Production Audit ---
 audit_stats_path <- pick_path(c(
   "../assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv",
   "../../site/assets/transport/audit_2026-03-17/tables/comprehensive_scenario_stats.csv"
@@ -45,8 +49,17 @@ if (nzchar(audit_stats_path)) {
     cat("</tr>\n")
   }
   cat("</tbody></table>\n")
-  cat("<hr/>\n")
-  cat("<h4>Per-Run Explorer (local chunked run sample)</h4>\n")
+}
+```
+
+## Per-Run Explorer
+
+Filter and sort individual simulation runs by scenario, powertrain, and origin. Data from the baseline local chunked run (80 runs).
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+pick_path <- function(paths) {
+  for (p in paths) if (file.exists(p)) return(p)
+  ""
 }
 
 fu_rows_path <- pick_path(c(
