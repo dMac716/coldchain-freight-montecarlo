@@ -10,7 +10,7 @@ This project is developed by graduate students in the [Energy Graduate Group](ht
 
 ## The Team
 
-::: {.grid-5}
+::: {.grid-4}
 ::: {.quick-card .team-card}
 [Faculty Advisor]{.role-badge}
 
@@ -42,21 +42,6 @@ Remote and off-grid power, energy storage, microhydro systems, agrovoltaics, Sma
 :::
 
 ::: {.quick-card .team-card}
-[Chief Morale Officer]{.role-badge}
-
-::: {.morty-photo-wrap}
-![](assets/team/morty.jpg)
-:::
-
-### Morty
-
-**Namesake, MortyMonteCarlo**
-
-Morty is the namesake of our [sister project](https://dmac716.github.io/MortyMonteCarlo/), which computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) for the same dog food products simulated here. A key benefit: we can now reverse-engineer any dog food recipe to its proper ratio and qualitative composition.
-
-:::
-
-::: {.quick-card .team-card}
 [Graduate Researcher]{.role-badge}
 
 ![](assets/team/miguel.jpg){.team-photo}
@@ -84,6 +69,22 @@ Renewable energy and biofuels, public policy, energy economics. B.S. Mechanical 
 Energy efficiency, renewable energy, geothermal, and energy policy. Engineering consultant based in Jakarta. B.S. Mechanical Engineering, Institut Teknologi Sepuluh Nopember, Surabaya. Pursuing graduate studies at UC Davis through the Fulbright Master's Degree Scholarship.
 
 [EEI Profile](https://energy.ucdavis.edu/people/khayrunnas-syarief-moo-rayhan/){.btn-pill}
+:::
+:::
+
+## And One More Team Member...
+
+::: {.grid-2}
+::: {.quick-card .team-card}
+::: {.morty-photo-wrap}
+![](assets/team/morty.jpg)
+:::
+
+### Morty
+
+**Chief Morale Officer**
+
+Morty is the namesake of our sister project, [MortyMonteCarlo](https://dmac716.github.io/MortyMonteCarlo/), which computes the full lifecycle assessment (manufacturing, ingredient sourcing, packaging, retail) for the same dog food products simulated here. A key benefit of that project: we can now reverse-engineer any dog food recipe to its proper ratio and qualitative composition. He takes his role very seriously.
 :::
 :::
 
