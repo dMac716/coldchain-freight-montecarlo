@@ -13,10 +13,7 @@
 }
 
 body {
-  background:
-    radial-gradient(1200px 420px at 8% -5%, #dcecff 0%, transparent 55%),
-    radial-gradient(900px 360px at 100% 0%, #eef6ff 0%, transparent 50%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   line-height: 1.6;
 }
@@ -49,6 +46,11 @@ h1, h2, h3 {
 
 .content {
   max-width: 1080px;
+}
+
+/* Widen content when TOC is disabled */
+.page-columns.page-full .content {
+  max-width: 1280px;
 }
 
 .lead {
