@@ -76,9 +76,7 @@ Energy efficiency, renewable energy, geothermal, and energy policy. Engineering 
 
 ::: {.grid-2}
 ::: {.quick-card .team-card}
-::: {.morty-photo-wrap}
-![](assets/team/morty.jpg)
-:::
+![](assets/team/morty.jpg){.team-photo style="object-position: center 35%;"}
 
 ### Morty
 
