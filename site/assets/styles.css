@@ -227,11 +227,59 @@ pre code {
   font-size: 0.92rem;
 }
 
+.grid-3 {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 1rem 0;
+}
+
+.team-photo {
+  border-radius: 50% !important;
+  object-fit: cover;
+  width: 160px !important;
+  height: 160px !important;
+  border: 3px solid var(--border) !important;
+  box-shadow: 0 4px 12px rgba(15, 38, 63, 0.12) !important;
+  display: block;
+  margin: 0 auto 0.8rem;
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.team-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.3rem;
+}
+
+.banner-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.banner-row img {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
 @media (max-width: 820px) {
   .hero {
     padding: 1.05rem 0.95rem 0.9rem;
   }
   .kpi-value {
     font-size: 1.3rem;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr;
   }
 }

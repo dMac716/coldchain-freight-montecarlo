@@ -30,6 +30,8 @@ format:
   html:
     theme: cosmo
     css: assets/styles.css
+    include-after-body:
+      text: '<script src="assets/video-autoplay.js"></script>'
     toc: true
 
 execute:
