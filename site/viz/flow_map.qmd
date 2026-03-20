@@ -111,8 +111,8 @@ for (i in seq_len(nrow(routes))) {
     addPolylines(
       lng = pts$lon, lat = pts$lat,
       color = col,
-      weight = if (is_primary) 4 else 2,
-      opacity = if (is_primary) 0.85 else 0.35,
+      weight = if (is_primary) 6 else 3,
+      opacity = if (is_primary) 0.9 else 0.45,
       dashArray = if (is_primary) NULL else "8,6",
       popup = popup_txt,
       group = label
@@ -178,6 +178,23 @@ map <- map |>
     title = "Locations",
     opacity = 1
   )
+
+# Fit map to show all routes (Petco Davis to Topeka/Ennis corridor)
+all_lats <- c()
+all_lons <- c()
+for (i in seq_len(nrow(routes))) {
+  pts <- decode_route(as.character(routes$encoded_polyline[i]))
+  if (!is.null(pts) && nrow(pts) > 0) {
+    all_lats <- c(all_lats, range(pts$lat))
+    all_lons <- c(all_lons, range(pts$lon))
+  }
+}
+if (length(all_lats) > 0) {
+  map <- map |> fitBounds(
+    lng1 = min(all_lons) - 0.5, lat1 = min(all_lats) - 0.5,
+    lng2 = max(all_lons) + 0.5, lat2 = max(all_lats) + 0.5
+  )
+}
 
 map
 ```
