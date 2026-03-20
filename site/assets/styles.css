@@ -26,6 +26,11 @@ body {
   box-shadow: 0 2px 16px rgba(20, 43, 68, 0.18);
 }
 
+.sidebar, .sidebar-navigation, #quarto-sidebar {
+  background: transparent !important;
+  border-right: none !important;
+}
+
 .navbar-brand,
 .navbar-title {
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
