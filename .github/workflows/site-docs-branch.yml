@@ -54,7 +54,7 @@ jobs:
             libpng-dev
 
       - name: Cache renv packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: renv/library
           key: ${{ runner.os }}-site-docs-renv-${{ hashFiles('renv.lock') }}
@@ -62,7 +62,7 @@ jobs:
             ${{ runner.os }}-site-docs-renv-
 
       - name: Cache renv downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/R/renv
           key: ${{ runner.os }}-site-docs-renv-downloads-${{ hashFiles('renv.lock') }}
