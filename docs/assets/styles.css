@@ -353,9 +353,12 @@ pre code {
   border-radius: 0 !important;
 }
 
-/* When no TOC, let content use full width with minimal margins */
-.page-rows-contents {
-  grid-template-columns: minmax(1rem, 1fr) minmax(auto, 1280px) minmax(1rem, 1fr) !important;
+/* Ensure TOC sidebar stays in its own left column, not overlapping content */
+.page-columns .sidebar {
+  position: sticky !important;
+  top: 70px;
+  height: fit-content;
+  z-index: 10;
 }
 
 @media (max-width: 820px) {
