@@ -24,7 +24,7 @@ body {
 }
 
 .sidebar, .sidebar-navigation, #quarto-sidebar {
-  background: transparent !important;
+  background: var(--bg) !important;
   border-right: none !important;
 }
 
