@@ -1,0 +1,161 @@
+Reconciliation Report — 2026-03-18 02:44:13.926231
+========================================
+
+BUCKET COUNTS:
+                     bucket      N
+                     <char>  <int>
+1:        legacy_bugged_bev 141742
+2: stochastic_rerun_dropped  92358
+3:    stochastic_rerun_kept  64574
+4:         unique_canonical   5748
+5:      mirror_only_salvage   2727
+6:  exact_duplicate_dropped   2582
+7:     exact_duplicate_kept   2550
+8: mirror_snapshot_mismatch     20
+
+Row accounting: discovered=312301, bucketed=312301, MATCH=TRUE
+
+BY SOURCE DIRECTORY:
+    source_directory                   bucket     N
+              <char>                   <char> <int>
+ 1:     local_backup        legacy_bugged_bev 18934
+ 2:     local_backup stochastic_rerun_dropped 18334
+ 3:     local_backup      mirror_only_salvage  1960
+ 4:     local_backup mirror_snapshot_mismatch    20
+ 5:   reruns_bev_fix        legacy_bugged_bev 33724
+ 6:   reruns_bev_fix stochastic_rerun_dropped 29316
+ 7:   reruns_bev_fix    stochastic_rerun_kept 20906
+ 8:   reruns_bev_fix         unique_canonical  4896
+ 9:   reruns_bev_fix  exact_duplicate_dropped  2550
+10:   reruns_bev_fix     exact_duplicate_kept   350
+11:             runs        legacy_bugged_bev 89084
+12:             runs stochastic_rerun_dropped 44708
+13:             runs    stochastic_rerun_kept 43668
+14:             runs     exact_duplicate_kept  2200
+15:             runs         unique_canonical   852
+16:   transport_runs      mirror_only_salvage   767
+17:   transport_runs  exact_duplicate_dropped    32
+
+BY SOURCE PLATFORM:
+    source_platform                   bucket     N
+             <char>                   <char> <int>
+ 1:           azure        legacy_bugged_bev 34724
+ 2:           azure stochastic_rerun_dropped 24956
+ 3:           azure    stochastic_rerun_kept 17346
+ 4:           azure         unique_canonical  4858
+ 5:           azure  exact_duplicate_dropped  2550
+ 6:           azure     exact_duplicate_kept   350
+ 7:          camber        legacy_bugged_bev 18000
+ 8:          camber    stochastic_rerun_kept  9000
+ 9:          camber stochastic_rerun_dropped  9000
+10:       codespace        legacy_bugged_bev  6600
+11:       codespace    stochastic_rerun_kept  2400
+12:       codespace stochastic_rerun_dropped  2400
+13:       codespace      mirror_only_salvage   767
+14:       codespace  exact_duplicate_dropped    32
+15:             gcp        legacy_bugged_bev 43098
+16:             gcp stochastic_rerun_dropped 21308
+17:             gcp    stochastic_rerun_kept 20268
+18:             gcp     exact_duplicate_kept  2200
+19:             gcp         unique_canonical   852
+20:           local        legacy_bugged_bev 36120
+21:           local stochastic_rerun_dropped 34134
+22:           local    stochastic_rerun_kept 15000
+23:           local      mirror_only_salvage  1960
+24:           local mirror_snapshot_mismatch    20
+25:         unknown        legacy_bugged_bev  3200
+26:         unknown    stochastic_rerun_kept   560
+27:         unknown stochastic_rerun_dropped   560
+28:         unknown         unique_canonical    38
+    source_platform                   bucket     N
+             <char>                   <char> <int>
+
+BY POWERTRAIN × PRODUCT_TYPE:
+    powertrain product_type                   bucket      N
+        <char>       <char>                   <char>  <int>
+ 1:        bev          dry        legacy_bugged_bev  18844
+ 2:        bev          dry    stochastic_rerun_kept   8162
+ 3:        bev          dry         unique_canonical   3042
+ 4:        bev          dry      mirror_only_salvage   1080
+ 5:        bev          dry stochastic_rerun_dropped    490
+ 6:        bev          dry  exact_duplicate_dropped    358
+ 7:        bev          dry     exact_duplicate_kept    350
+ 8:        bev refrigerated        legacy_bugged_bev 122898
+ 9:        bev refrigerated stochastic_rerun_dropped   8652
+10:        bev refrigerated      mirror_only_salvage    200
+11:        bev refrigerated         unique_canonical    194
+12:        bev refrigerated mirror_snapshot_mismatch     20
+13:        bev refrigerated  exact_duplicate_dropped      8
+14:        bev refrigerated    stochastic_rerun_kept      6
+15:     diesel          dry    stochastic_rerun_kept  13138
+16:     diesel          dry         unique_canonical   2512
+17:     diesel          dry  exact_duplicate_dropped   2208
+18:     diesel          dry     exact_duplicate_kept   2200
+19:     diesel          dry      mirror_only_salvage   1225
+20:     diesel          dry stochastic_rerun_dropped   1200
+21:     diesel refrigerated stochastic_rerun_dropped  82016
+22:     diesel refrigerated    stochastic_rerun_kept  43268
+23:     diesel refrigerated      mirror_only_salvage    222
+24:     diesel refrigerated  exact_duplicate_dropped      8
+    powertrain product_type                   bucket      N
+        <char>       <char>                   <char>  <int>
+
+BY ORIGIN_NETWORK:
+              origin_network                   bucket     N
+                      <char>                   <char> <int>
+ 1:          dry_factory_set        legacy_bugged_bev 70871
+ 2:          dry_factory_set stochastic_rerun_dropped 46179
+ 3:          dry_factory_set    stochastic_rerun_kept 32287
+ 4:          dry_factory_set         unique_canonical  2874
+ 5:          dry_factory_set  exact_duplicate_dropped  1275
+ 6:          dry_factory_set     exact_duplicate_kept  1275
+ 7:          dry_factory_set      mirror_only_salvage   980
+ 8:          dry_factory_set mirror_snapshot_mismatch    10
+ 9:     factory_kansas_hills      mirror_only_salvage   320
+10:     factory_kansas_hills  exact_duplicate_dropped    16
+11:   factory_texas_freshpet      mirror_only_salvage   447
+12:   factory_texas_freshpet  exact_duplicate_dropped    16
+13: refrigerated_factory_set        legacy_bugged_bev 70871
+14: refrigerated_factory_set stochastic_rerun_dropped 46179
+15: refrigerated_factory_set    stochastic_rerun_kept 32287
+16: refrigerated_factory_set         unique_canonical  2874
+17: refrigerated_factory_set  exact_duplicate_dropped  1275
+18: refrigerated_factory_set     exact_duplicate_kept  1275
+19: refrigerated_factory_set      mirror_only_salvage   980
+20: refrigerated_factory_set mirror_snapshot_mismatch    10
+              origin_network                   bucket     N
+                      <char>                   <char> <int>
+
+LEGACY BUGGED BEV COUNT:  141742 
+MIRROR-ONLY SALVAGE COUNT:  2727 
+MIRROR SNAPSHOT MISMATCH COUNT:  20 
+  (stochastic traffic variants from backup/codespace snapshots;
+   excluded from scientific quality summaries, retained in reconciliation only)
+
+FINAL RETAINED COUNTS:
+  Dataset A (canonical master):    217341 rows
+  Dataset B (analysis post-fix):   72872 rows
+
+DIESEL BASELINE VERIFICATION:
+  Dry:    actual=0.028288, expected=0.0283, drift=0.04%
+  Refrig: actual=0.048057, expected=0.0480, drift=0.12%
+
+CONFLICT COUNTS:
+  Identity conflicts: 0
+  Stochastic reruns:  64574 kept, 92378 dropped
+
+CROSS-PLATFORM VERIFICATION:
+  Shared run_ids checked:    9084
+  Exact payload matches:     9064
+  Payload mismatches:        20
+  Primary-only run_ids:      63788
+  Mirror-only run_ids:       21799
+
+  MISMATCH CLASSIFICATION:
+    mirror_snapshot_mismatch:  20
+      (Either side from local_backup/, transport_runs/, or codespace platform.
+       These are verification mirrors, not independent merge sources.
+       Excluded from scientific quality assessment of Dataset B.
+       Retained in reconciliation_report.csv for audit only.)
+    primary_source_mismatch:   0
+      (Both sides from runs/ or reruns_bev_fix/. Would require manual review.)

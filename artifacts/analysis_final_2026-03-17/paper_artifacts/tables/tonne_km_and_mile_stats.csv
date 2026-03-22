@@ -1,0 +1,9 @@
+powertrain,product_type,origin_network,n,mean_co2_per_tkm,sd,p05,p50,p95,mean_co2_per_mile,mean_co2_per_trip
+bev,dry,dry_factory_set,5777,0.0326,0.0084,0.0199,0.0318,0.0476,0.997,1707.7
+bev,dry,refrigerated_factory_set,5777,0.0326,0.0084,0.0199,0.0318,0.0476,0.997,1769
+diesel,dry,dry_factory_set,8925,0.0507,0.0089,0.0428,0.0481,0.0742,1.552,1233.7
+diesel,dry,refrigerated_factory_set,8925,0.0506,0.0087,0.0428,0.0481,0.0733,1.549,1244.8
+bev,refrigerated,dry_factory_set,100,0.0351,0.0085,0.0233,0.0347,0.0494,1.074,1839.7
+bev,refrigerated,refrigerated_factory_set,100,0.0351,0.0085,0.0233,0.0347,0.0494,1.074,1905.7
+diesel,refrigerated,dry_factory_set,21634,0.0477,0.0033,0.0427,0.0475,0.0534,1.461,899.7
+diesel,refrigerated,refrigerated_factory_set,21634,0.0477,0.0033,0.0427,0.0475,0.0534,1.461,900.7

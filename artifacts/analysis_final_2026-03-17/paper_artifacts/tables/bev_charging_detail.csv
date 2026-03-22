@@ -1,0 +1,5 @@
+product_type,origin_network,n_runs,pct_with_charging,mean_charge_stops,median_charge_stops,mean_co2_kg,mean_co2_per_1000kcal,mean_energy_kwh,fu_method
+dry,dry_factory_set,5777,100,15.54,15,1707.66,0.027854,3954.5,audit_uniform
+dry,refrigerated_factory_set,5777,100,15.23,15,1768.98,0.028854,4096.5,audit_uniform
+refrigerated,dry_factory_set,100,100,17.01,16,1839.69,0.04546,4357,audit_uniform
+refrigerated,refrigerated_factory_set,100,100,17.13,17,1905.72,0.047091,4513.3,audit_uniform

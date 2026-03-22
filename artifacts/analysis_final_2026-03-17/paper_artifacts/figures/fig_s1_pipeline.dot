@@ -1,0 +1,137 @@
+digraph pipeline {
+  graph [
+    rankdir=TB
+    fontname="Helvetica Neue"
+    fontsize=13
+    bgcolor=white
+    pad=0.5
+    nodesep=0.6
+    ranksep=0.5
+    splines=polyline
+    dpi=300
+    compound=true
+    label=<<B><FONT POINT-SIZE="16" COLOR="#1a1a1a">Figure S1: Cold-Chain Freight Monte Carlo Simulation Pipeline</FONT><BR/><FONT POINT-SIZE="11" COLOR="#666666">Distributed route simulation with paired-uncertainty design across multi-cloud infrastructure</FONT></B>>
+    labelloc=t
+    labeljust=c
+  ]
+  node [
+    fontname="Helvetica Neue"
+    fontsize=11
+    style="filled,rounded"
+    shape=box
+    penwidth=1.5
+    margin="0.15,0.08"
+  ]
+  edge [
+    color="#555555"
+    penwidth=1.2
+    arrowsize=0.7
+  ]
+
+  // ── Stage 1: Data Inputs ──
+  subgraph cluster_inputs {
+    label=<<B><FONT POINT-SIZE="12" COLOR="#1e3a5f">1 &nbsp; DATA INPUTS</FONT></B>>
+    labeljust=l
+    style="filled,rounded"
+    fillcolor="#f0f7ff"
+    color="#2563eb"
+    penwidth=1.8
+    margin=14
+
+    subgraph {
+      rank=same
+      A1 [label="Scenario matrix\nEmission factors\nSampling priors · Grid CI" fillcolor="#dbeafe" color="#2563eb" fontcolor="#1e3a5f" shape=cylinder]
+      A2 [label="Google Routes API\nBEV charge plans\nOD distance cache" fillcolor="#dbeafe" color="#2563eb" fontcolor="#1e3a5f" shape=cylinder]
+    }
+  }
+
+  // ── Stage 2: Route Simulation ──
+  subgraph cluster_sim {
+    label=<<B><FONT POINT-SIZE="12" COLOR="#78350f">2 &nbsp; ROUTE SIMULATION</FONT></B>>
+    labeljust=l
+    style="filled,rounded"
+    fillcolor="#fffbeb"
+    color="#d97706"
+    penwidth=1.8
+    margin=14
+
+    subgraph {
+      rank=same
+      B [label="Validate\ninputs" fillcolor="#fef3c7" color="#d97706" fontcolor="#78350f"]
+      C [label="Route sim engine\nTraffic · TRU · Powertrain\nCharging (R/sim/01–10)" fillcolor="#fef3c7" color="#d97706" fontcolor="#78350f"]
+      D [label="Paired MC draws\n(CRN design)" fillcolor="#fef3c7" color="#d97706" fontcolor="#78350f"]
+    }
+
+    B -> C
+    C -> D
+  }
+
+  // ── Stage 3: Multi-Cloud Fleet ──
+  subgraph cluster_fleet {
+    label=<<B><FONT POINT-SIZE="12" COLOR="#4c1d95">3 &nbsp; DISTRIBUTED COMPUTE (72,872 validated runs)</FONT></B>>
+    labeljust=l
+    style="filled,rounded"
+    fillcolor="#f5f3ff"
+    color="#7c3aed"
+    penwidth=1.8
+    margin=14
+
+    subgraph {
+      rank=same
+      E1 [label="macOS\nlocal" fillcolor="#ede9fe" color="#7c3aed" fontcolor="#4c1d95"]
+      E2 [label="GCP\n×4 VMs" fillcolor="#ede9fe" color="#7c3aed" fontcolor="#4c1d95"]
+      E3 [label="Azure\n×4 VMs" fillcolor="#ede9fe" color="#7c3aed" fontcolor="#4c1d95"]
+    }
+  }
+
+  // ── Stage 4: Collection & Analysis ──
+  subgraph cluster_collect {
+    label=<<B><FONT POINT-SIZE="12" COLOR="#064e3b">4 &nbsp; COLLECTION &amp; ANALYSIS</FONT></B>>
+    labeljust=l
+    style="filled,rounded"
+    fillcolor="#ecfdf5"
+    color="#059669"
+    penwidth=1.8
+    margin=14
+
+    subgraph {
+      rank=same
+      F [label="Pull & merge\nworker results" fillcolor="#d1fae5" color="#059669" fontcolor="#064e3b"]
+      G [label="Deduplicate\nby run_id" fillcolor="#d1fae5" color="#059669" fontcolor="#064e3b"]
+      H [label="Audit analysis &\nFU computation" fillcolor="#d1fae5" color="#059669" fontcolor="#064e3b"]
+    }
+
+    F -> G
+    G -> H
+  }
+
+  // ── Stage 5: Publishing ──
+  subgraph cluster_publish {
+    label=<<B><FONT POINT-SIZE="12" COLOR="#831843">5 &nbsp; PUBLISHING</FONT></B>>
+    labeljust=l
+    style="filled,rounded"
+    fillcolor="#fdf2f8"
+    color="#db2777"
+    penwidth=1.8
+    margin=14
+
+    subgraph {
+      rank=same
+      I [label="Frozen artifacts\nfigures · tables · dataset" fillcolor="#fce7f3" color="#db2777" fontcolor="#831843"]
+      J [label="GitHub Pages" fillcolor="#fce7f3" color="#db2777" fontcolor="#831843"]
+    }
+
+    I -> J
+  }
+
+  // ── Cross-cluster edges ──
+  A1 -> B
+  A2 -> C
+  D -> E1
+  D -> E2
+  D -> E3
+  E1 -> F
+  E2 -> F
+  E3 -> F
+  H -> I
+}

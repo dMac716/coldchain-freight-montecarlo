@@ -1,0 +1,26 @@
+{
+  "dataset": "analysis_postfix_validated.csv.gz",
+  "built_at": "2026-03-18T02:44:13-0700",
+  "total_rows": 72872,
+  "counts_per_scenario": {
+    "bev/dry/dry_factory_set": 5777,
+    "bev/dry/refrigerated_factory_set": 5777,
+    "diesel/dry/dry_factory_set": 8925,
+    "diesel/dry/refrigerated_factory_set": 8925,
+    "bev/refrigerated/dry_factory_set": 100,
+    "bev/refrigerated/refrigerated_factory_set": 100,
+    "diesel/refrigerated/dry_factory_set": 21634,
+    "diesel/refrigerated/refrigerated_factory_set": 21634
+  },
+  "mean_co2_per_1000kcal_per_scenario": {
+    "diesel/refrigerated/dry_factory_set": 0.048,
+    "diesel/refrigerated/refrigerated_factory_set": 0.0481,
+    "diesel/dry/dry_factory_set": 0.0283,
+    "diesel/dry/refrigerated_factory_set": 0.0283
+  },
+  "diesel_baseline": {
+    "dry_mean": 0.0283,
+    "refrig_mean": 0.0481
+  },
+  "content_hash": "744273174d876985c36065dd4fdf8dd56ceec94a6caff0352b905748c64f8627"
+}

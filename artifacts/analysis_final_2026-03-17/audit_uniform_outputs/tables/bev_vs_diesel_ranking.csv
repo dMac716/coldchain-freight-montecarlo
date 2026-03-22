@@ -1,0 +1,6 @@
+product_type,method,diesel_mean,bev_mean,bev_minus_diesel,pct_reduction,bev_wins
+dry,C_audit_uniform,0.020201,0.028354,0.008154,-40.4,FALSE
+dry,B_exo_draw,0.041427,0.053145,0.011718,-28.3,FALSE
+dry,D_phase2,0.07429,0.032456,-0.041834,56.3,TRUE
+refrigerated,C_audit_uniform,0.014662,0.046276,0.031614,-215.6,FALSE
+refrigerated,D_phase2,0.668364,0.28833,-0.380034,56.9,TRUE

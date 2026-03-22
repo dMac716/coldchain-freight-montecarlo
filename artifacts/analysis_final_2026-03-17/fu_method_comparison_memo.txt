@@ -1,0 +1,102 @@
+FU Method Comparison Memo — 2026-03-18 04:46:13.481031
+================================================================
+
+BACKGROUND
+----------
+Dataset B (analysis_postfix_validated.csv.gz) had 72,872 rows but only
+46,720 (64.1%) had co2_per_1000kcal. Four candidate methods exist for
+computing the functional unit denominator (kcal_delivered).
+
+METHODS
+-------
+A. Old stored:      From March 16 validated dataset (old run_chunk pipeline).
+                    Payload source unknown; only available for 46,720 rows.
+
+B. Exo draw:        payload_lb from sample_exogenous_draws(cfg, seed).
+                    Uses cfg$cargo$payload_lb triangular(8k,22k,42k).
+                    Deterministic per seed. Applied to 26,152 missing rows.
+
+C. Audit uniform:   payload_kg = payload_max_lb_draw * load_fraction * 0.453592.
+                    From tools/audit_analysis.R lines 20-25.
+                    Applied uniformly to ALL 72,872 rows.
+
+D. Phase2 valid.:   payload_kg = actual_units_loaded * unit_weight_lb * 0.45359237.
+                    Load-model (cube+weight constrained) from validated 80-row run.
+                    Requires units_per_case config (missing in production config).
+
+COMPARISON TABLE (co2_per_1000kcal)
+-----------------------------------
+               scenario              method     n     mean       sd      p05
+                 <char>              <char> <int>    <num>    <num>    <num>
+ 1:             dry/bev B_exo_draw_recovery 11554 0.053145 0.018972 0.028381
+ 2:             dry/bev     C_audit_uniform 11554 0.028354 0.007522 0.017237
+ 3:             dry/bev  D_phase2_validated    20 0.032456 0.009601 0.018103
+ 4:          dry/diesel        A_old_stored  3452 0.028288 0.010145 0.016567
+ 5:          dry/diesel B_exo_draw_recovery 14398 0.041427 0.037514 0.016805
+ 6:          dry/diesel     C_audit_uniform 17850 0.020201 0.015677 0.012480
+ 7:          dry/diesel  D_phase2_validated    20 0.074290 0.004749 0.069105
+ 8:    refrigerated/bev B_exo_draw_recovery   200 0.088858 0.029891 0.049652
+ 9:    refrigerated/bev     C_audit_uniform   200 0.046276 0.012068 0.029974
+10:    refrigerated/bev  D_phase2_validated    20 0.288330 0.106611 0.140584
+11: refrigerated/diesel        A_old_stored 43268 0.048057 0.017583 0.027424
+12: refrigerated/diesel     C_audit_uniform 43268 0.014662 0.001498 0.012359
+13: refrigerated/diesel  D_phase2_validated    20 0.668364 0.225734 0.325368
+         p50      p95
+       <num>    <num>
+ 1: 0.049971 0.088758
+ 2: 0.027569 0.041877
+ 3: 0.032067 0.048176
+ 4: 0.025883 0.048661
+ 5: 0.027785 0.127231
+ 6: 0.014829 0.064085
+ 7: 0.073696 0.083144
+ 8: 0.080674 0.140280
+ 9: 0.045277 0.070683
+10: 0.284909 0.437945
+11: 0.044211 0.082854
+12: 0.014568 0.017274
+13: 0.663923 1.075532
+
+
+PAYLOAD SUMMARY (kg)
+--------------------
+  A. Old stored:      mean ~7554 (back-calculated from kcal_delivered)
+  B. Exogenous draw:  mean  10882 (from cargo distribution, high variance)
+  C. Audit uniform:   mean  19050 (trailer max * LF, low variance)
+  D. Phase2 load model: dry=16,442, refrig=3,370 (cube-limited)
+
+DIESEL BASELINES
+----------------
+  CLAUDE.md reference:  dry=0.0283, refrig=0.0480
+  A. Old stored:        dry=0.0283, refrig=0.0481
+  B. Exo draw recovery: dry=0.0414 (rerun rows only)
+  C. Audit uniform:     dry=0.0202, refrig=0.0147
+  D. Phase2 validated:  dry=0.0743, refrig=0.6684 (80 rows, different routes)
+
+KEY FINDING
+-----------
+No two methods produce the same FU values. The four methods use different
+payload definitions:
+  A uses an unknown old-pipeline payload.
+  B uses a stochastic cargo-weight draw (mean ~11 tonnes).
+  C uses trailer max capacity * load fraction (mean ~19 tonnes).
+  D uses cube+weight-constrained product mass (dry ~16t, refrig ~3.4t).
+
+Method C (audit uniform) is the only one that:
+  1. Can be applied to ALL 72,872 rows.
+  2. Uses only columns present in every row.
+  3. Matches the documented analysis-stage derivation.
+  4. Produces a single consistent denominator definition.
+
+DATASET STATUS
+--------------
+  CANONICAL CANDIDATE:  analysis_postfix_audit_uniform.csv.gz   (72,872 rows, 100% FU)
+  SENSITIVITY ONLY:     analysis_postfix_validated_enriched.csv.gz (exo-draw method)
+  ORIGINAL (mixed):     analysis_postfix_validated.csv.gz         (64.1% FU coverage)
+  COMPARISON:           fu_method_comparison.csv
+
+DECISION NEEDED
+---------------
+Accept audit-uniform (C) as canonical and update CLAUDE.md baselines, OR
+fix the config to enable load-model (D) for deterministic recomputation
+using the pallet-weight-constrained method.

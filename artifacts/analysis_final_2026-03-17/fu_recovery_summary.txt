@@ -1,0 +1,51 @@
+FU Recovery Summary — 2026-03-18 04:00:36.772538
+========================================
+
+GATE RESULTS:
+  GATE 0 (determinism):          PASSED
+  GATE 1 (kcal_per_kg cross-val): PASSED
+  GATE 2 (no NaN/Inf):           PASSED
+  GATE 3 (plausible range):      PASSED
+  GATE 4a (kcal_per_kg <1%):     PASSED
+  GATE 4c (distribution check):  PASSED
+  GATE 5 (diesel baseline):      PASSED (dry=0.038886, refrig=0.048057)
+  GATE 6 (no overwrites):        PASSED
+  GATE 7 (exact accounting):     PASSED (26152 = 26152 + 0 + 0)
+
+RECOVERY STATISTICS:
+  Total missing:    26152
+  Recovered:        26152
+  Failed:           0
+  Conflict:         0
+  Recovery rate:    100.0%
+
+RECOVERY METHOD:
+  exogenous_cargo_draw: payload_lb from sample_exogenous_draws(cfg, seed)
+  Uses cfg$cargo$payload_lb triangular distribution with LCG RNG (deterministic)
+  Formula: co2_per_1000kcal = co2_kg_total / (payload_kg * kcal_per_kg_product / 1000)
+
+COVERAGE BEFORE/AFTER:
+  Before: 46720 / 72872 (64.1%)
+  After:  72872 / 72872 (100.0%)
+
+BY SCENARIO (before → after):
+  dry/diesel: 3452 → 17850 / 17850
+  dry/bev: 0 → 11554 / 11554
+  refrigerated/diesel: 43268 → 43268 / 43268
+  refrigerated/bev: 0 → 200 / 200
+
+RECOVERED FU DISTRIBUTION BY SCENARIO:
+  dry/bev (recovered n=11554): mean=0.053145, sd=0.018972, p05=0.028381, p50=0.049971, p95=0.088758
+  dry/diesel (recovered n=14398): mean=0.041427, sd=0.037514, p05=0.016805, p50=0.027785, p95=0.127231
+  dry/diesel (existing  n=3452): mean=0.028288, sd=0.010145, p05=0.016567, p50=0.025883, p95=0.048661
+  refrigerated/bev (recovered n=200): mean=0.088858, sd=0.029891, p05=0.049652, p50=0.080674, p95=0.140280
+
+kcal_per_kg CROSS-CHECK:
+  Validated rows: 26152
+  Match <0.1%:    26152 (100.0%)
+  Mean delta:     0.0000%
+  P95 delta:      0.0000%
+  Max delta:      0.0000%
+
+POST-ENRICHMENT PLAUSIBILITY:
+  dry/diesel: mean shift = 1.30 sigma

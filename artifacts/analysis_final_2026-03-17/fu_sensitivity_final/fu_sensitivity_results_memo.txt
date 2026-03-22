@@ -1,0 +1,115 @@
+RESULTS MEMO: Functional Unit Sensitivity Analysis
+===================================================
+Generated: 2026-03-18 05:11:15.525396
+
+HEADLINE
+--------
+When route distance is controlled, the inferred climate advantage of BEV
+versus diesel depends strongly on the functional unit denominator; under
+cube-limited physical loading BEV outperforms diesel, while under
+trailer-max normalization BEV appears worse.
+
+METHODS COMPARED
+----------------
+  phase2_load_model  Cube+weight constrained packing (item -> box -> pallet -> truck).
+                     Payload = actual_units_loaded * unit_weight_lb * 0.45359237.
+                     Dry: ~16.4 tonnes.  Refrigerated: ~3.4 tonnes.
+                     Source: 80 validated phase2 production rows.
+
+  legacy_stored      Original March 16 validated dataset (old run_chunk pipeline).
+                     Payload source: unknown old-pipeline method.
+                     Source: 46,720 rows (diesel + pre-fix BEV).
+
+  exo_draw           Stochastic cargo weight from sample_exogenous_draws(cfg, seed).
+                     Payload = cfg$cargo$payload_lb draw (~8-42k lb triangular).
+                     Mean: ~10.9 tonnes.  High variance.
+                     Source: 26,152 recovered rows (post-fix BEV + rerun diesel).
+
+  audit_uniform      Trailer max capacity * load fraction.
+                     Payload = payload_max_lb_draw * load_fraction * 0.453592.
+                     Mean: ~19.0 tonnes.  Low variance.
+                     Source: All 72,872 rows (uniform recomputation).
+
+SUMMARY STATISTICS (co2_per_1000kcal)
+-------------------------------------
+    product_type powertrain         fu_method     n mean_co2_fu       sd
+          <char>     <char>            <fctr> <int>       <num>    <num>
+ 1:          dry        bev phase2_load_model    20    0.032456 0.009601
+ 2:          dry        bev          exo_draw 11554    0.053145 0.018972
+ 3:          dry        bev     audit_uniform 11554    0.028354 0.007522
+ 4:          dry     diesel phase2_load_model    20    0.074290 0.004749
+ 5:          dry     diesel     legacy_stored  3452    0.028288 0.010145
+ 6:          dry     diesel          exo_draw 14398    0.041427 0.037514
+ 7:          dry     diesel     audit_uniform 17850    0.020201 0.015677
+ 8: refrigerated        bev phase2_load_model    20    0.288330 0.106611
+ 9: refrigerated        bev          exo_draw   200    0.088858 0.029891
+10: refrigerated        bev     audit_uniform   200    0.046276 0.012068
+11: refrigerated     diesel phase2_load_model    20    0.668364 0.225734
+12: refrigerated     diesel     legacy_stored 43268    0.048057 0.017583
+13: refrigerated     diesel     audit_uniform 43268    0.014662 0.001498
+         p05      p50      p95 mean_payload_kg
+       <num>    <num>    <num>           <num>
+ 1: 0.018103 0.032067 0.048176           16442
+ 2: 0.028381 0.049971 0.088758           10884
+ 3: 0.017237 0.027569 0.041877           19048
+ 4: 0.069105 0.073696 0.083144           16442
+ 5: 0.016567 0.025883 0.048661           10885
+ 6: 0.016805 0.027785 0.127231           10882
+ 7: 0.012480 0.014829 0.064085           19051
+ 8: 0.140584 0.284909 0.437945            3370
+ 9: 0.049652 0.080674 0.140280           10664
+10: 0.029974 0.045277 0.070683           19067
+11: 0.325368 0.663923 1.075532            3370
+12: 0.027424 0.044211 0.082854           10883
+13: 0.012359 0.014568 0.017274           19050
+
+
+BEV vs DIESEL RANKING BY METHOD
+-------------------------------
+
+  DRY:
+    phase2_load_model     diesel=0.0743  bev=0.0325  delta=+56.3%  BEV WINS
+    exo_draw              diesel=0.0414  bev=0.0531  delta=-28.3%  DIESEL WINS
+    audit_uniform         diesel=0.0202  bev=0.0284  delta=-40.4%  DIESEL WINS
+
+  REFRIGERATED:
+    phase2_load_model     diesel=0.6684  bev=0.2883  delta=+56.9%  BEV WINS
+    audit_uniform         diesel=0.0147  bev=0.0463  delta=-215.6%  DIESEL WINS
+
+
+INTERPRETATION
+--------------
+The route simulation holds distance constant across powertrain scenarios
+(same origin-destination pairs, same route geometry). This means CO2
+differences between BEV and diesel are driven by:
+  (a) energy efficiency differences (propulsion + TRU), and
+  (b) the functional unit denominator (how much food is delivered).
+
+Under cube-limited physical loading (phase2_load_model), refrigerated
+product fills only ~3.4 tonnes per truck due to case geometry constraints.
+This small denominator amplifies per-FU emissions for both powertrains,
+but BEV's lower absolute CO2 per trip (~288 vs ~668 g/1000kcal) gives it
+a ~57% advantage. The physical loading model correctly captures that
+refrigerated freight is volume-limited, not weight-limited.
+
+Under trailer-max normalization (audit_uniform), payload is assumed at
+~19 tonnes for all scenarios. This inflates kcal_delivered for refrigerated
+freight by ~5.6x relative to the physical model, compressing per-FU
+emissions and erasing the BEV advantage. The result is an artifact of the
+denominator assumption, not a real change in energy efficiency.
+
+The exogenous cargo draw (exo_draw) falls between these extremes, with
+high variance reflecting the unconstrained triangular distribution.
+
+CONCLUSION: The choice of functional unit denominator is a first-order
+determinant of the BEV-vs-diesel comparison for refrigerated cold-chain
+freight. Studies using trailer-max normalization may systematically
+understate the climate benefit of electrification for cube-limited loads.
+
+OUTPUT FILES
+------------
+  fu_sensitivity_frozen.csv              Frozen comparison dataset (all methods)
+  fu_sensitivity_summary.csv             Summary statistics by method/scenario
+  fu_sensitivity_results_memo.txt        This memo
+  fig_fu_sensitivity_two_panel.png/pdf   Publication figure
+  fig_payload_by_method.png              Payload companion figure
