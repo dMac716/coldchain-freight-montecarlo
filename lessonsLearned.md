@@ -242,3 +242,44 @@ This file captures concrete implementation and debugging lessons all AI agents s
 - `tools/audit_analysis.R` is the canonical comprehensive analysis script. It derives FU metrics, validates BEV charging, and produces 10 figures + 5 tables.
 - `tools/manage_worker_image.sh` handles download/upload/deploy of VM images across GCP and local storage.
 - `tools/bootstrap_worker.sh` supports both GCP and Azure with image-first fast path and full-bootstrap fallback.
+
+### March 18-22, 2026: FU Sensitivity Analysis, Site Overhaul, and Leaflet Bug
+
+#### Functional unit sensitivity (the headline finding)
+- Four FU methods exist, each using a different payload definition. No two produce the same results. The BEV-vs-diesel ranking **reverses** depending on which method is used.
+- Under cube-limited loading (phase2 load model, ~3.4t refrigerated), BEV outperforms diesel by ~57%. Under trailer-max normalization (audit-uniform, ~19t), diesel appears to outperform BEV by ~216%.
+- This is an artifact of the denominator assumption, not a real change in energy efficiency.
+- Denominator-free metrics (CO2/tonne-km, CO2/mile) consistently show BEV advantage of ~36% regardless of FU method.
+- Root cause of missing FU in 26,152 rows: `config/test_kit.yaml` missing `units_per_case` for both product types → `product_mass_lb_per_truck = NA` → `kcal_delivered = NA` cascade.
+
+#### Leaflet htmlwidgets: named vector serialization bug
+- **ROOT CAUSE of invisible map routes for weeks**: R named vector lookup `fac_colors["FACILITY_DRY_TOPEKA"]` returns a named character. Leaflet's JSON serializer turns this into `{"FACILITY_DRY_TOPEKA": "#0d4f8f"}` instead of just `"#0d4f8f"`. The browser renders `stroke="[object Object]"` — invisible/transparent.
+- **Fix**: Always `unname()` when passing R named vector values to leaflet or any htmlwidgets function. E.g., `unname(fac_colors[fid])`.
+- This applies to `addPolylines()`, `addCircleMarkers()`, and any other leaflet function that takes color/label arguments from named vectors.
+
+#### Quarto site rendering
+- `execute: freeze: auto` caches R code output. When upstream data files change (updated CSVs, new artifacts), the frozen output is stale. Always `rm -rf site/_freeze` before rendering when data changes.
+- `include-after-body: '<script src="assets/video-autoplay.js">'` is a relative path. Pages in subdirectories (e.g., `viz/`) resolve it relative to themselves, causing 404. **Fix**: inline the script in `_quarto.yml` instead of referencing an external file.
+- `toc-location: left` puts the TOC in a margin sidebar. With `background: transparent`, it overlaps content (maps, images). Use `background: var(--bg)` to make it opaque.
+- Left TOC scroll-spy (active item highlighting on scroll) does not work as well as the default right-side TOC — known quarto limitation.
+- Quarto's default content max-width is ~800px. Override with CSS: `.content { max-width: 1280px; }`.
+- `scenario_explorer.qmd` had a `round()` error after updating `comprehensive_scenario_stats.csv` because the column was renamed from `mean_trip_duration_total_h` to `mean_trip_h`. Always use defensive column access with fallbacks.
+
+#### Circular profile photo cropping
+- `object-fit: cover` with fixed width/height crops from center by default, cutting off heads in portrait photos.
+- Use `object-position: center 20%` to keep faces in frame for standard headshots.
+- For unusual aspect ratios (e.g., full-body dog photo), pre-crop the source image with `sips --cropToHeightWidth` rather than fighting CSS.
+
+#### Graphviz vs Mermaid for pipeline diagrams
+- Mermaid clips subgraph labels when content is narrower than the label text. No fix exists.
+- Graphviz (dot) gives full control. Use `subgraph cluster_*` with HTML labels for bold/colored text.
+- `rank=same` inside a `cluster_*` subgraph removes nodes from the cluster. Use non-cluster subgraphs with `rank=same` nested inside the cluster instead.
+- Always generate PNG (300dpi), PDF (vector), and SVG for publication figures.
+
+#### Git LFS for large artifacts
+- GitHub warns on files >50 MB and blocks at 100 MB. Track `artifacts/**/*.csv.gz` and large CSVs with Git LFS.
+- Run `git lfs install && git lfs track "pattern"` then `git rm --cached <file> && git add <file>` to migrate existing files.
+
+#### CI regression checks for site
+- `site-preflight.yml` validates: page existence (all 9), polyline data (>=6 routes), run counts (72,872, no stale 75,443), FU sensitivity content, about page team members, download ZIPs, video autoplay, key figures, CSV data integrity.
+- These checks prevent silent regressions during site updates.
