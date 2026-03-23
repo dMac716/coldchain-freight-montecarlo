@@ -1,3 +1,4 @@
 artifacts/**/*.csv.gz filter=lfs diff=lfs merge=lfs -text
 artifacts/**/reconciliation_report.csv filter=lfs diff=lfs merge=lfs -text
 artifacts/**/fu_sensitivity_frozen.csv filter=lfs diff=lfs merge=lfs -text
+artifacts/**/analysis_dataset*.csv.gz filter=lfs diff=lfs merge=lfs -text
