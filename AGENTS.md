@@ -73,3 +73,44 @@ R's `system2("curl", ...)` and `httr` mangle multi-word HTTP headers, causing 40
 - Use concise Conventional-style messages (`chore:`, `feat:`, `fix:`, `docs:`).
 - Keep commits scoped (sources/provenance vs model logic vs docs).
 - PRs should include: what changed, why, affected files, commands run, AI involvement.
+
+<!-- agent-fleet-block v1 -->
+## Agent Fleet — cross-repo messaging & capabilities
+
+This repo (`coldchain-freight-montecarlo`) is a **member** of the dMac716 agent fleet. Its capabilities are
+declared in `fleet.capabilities.json`; cross-repo coordination runs through a
+host-level bus at `~/.agent-orchestration` (no secrets, append-only JSON). Full
+protocol: the agent-orchestration-kit's `docs/MESSAGING.md`.
+
+An agent working here should, on startup:
+
+```bash
+BUS=~/Repos/agent-orchestration-kit/bin/fleet-bus.sh   # or tools/agent-orchestration-kit/bin/fleet-bus.sh if vendored as a submodule
+"$BUS" inbox coldchain-freight-montecarlo                       # check for messages / handoffs addressed here
+"$BUS" discover --capability <X>          # find which repo owns a capability before doing it yourself
+FLEET_REPO=coldchain-freight-montecarlo "$BUS" send --to <repo> --type request --subject "..." --body "..."
+"$BUS" ack coldchain-freight-montecarlo <msg_id>                 # close the loop after acting
+```
+
+Keep `fleet.capabilities.json` accurate: add domain capability tags (e.g.
+`web-scraping`, `monte-carlo`, `ocr`) and re-run `fleet-bus.sh register . --force`
+when this repo gains a new capability.
+
+## AI operating notes
+
+**What this repo is:** Distributed Monte Carlo simulation comparing diesel vs BEV emissions for refrigerated cold-chain freight (UC Davis grad research). Primary language is R; Python scripts live in `scripts/` and `tools/`.
+
+**Run/test:** `make test` (testthat suite) | `make smoke` (offline end-to-end) | `Rscript tools/run_route_sim_mc.R --config test_kit.yaml --scenario ANALYSIS_CORE ...`
+
+**Token economy:**
+- Prefer targeted reads and `gbrain search` / `gbrain code-def` over broad Grep; the repo is registered as a gbrain source.
+- Use gstack skills: `/review` before merge, `/qa` for UI, `/cso` for security.
+
+**Key dirs:**
+- `R/` — core model pipeline (numbered 01..08)
+- `R/sim/` — route simulation engine
+- `tools/` — runnable entry points and pipeline scripts
+- `scripts/` — Python utility scripts
+- `tests/testthat/` — R unit/regression tests
+- `data/inputs_local/` — editable model inputs
+- `sources/` — provenance artifacts
